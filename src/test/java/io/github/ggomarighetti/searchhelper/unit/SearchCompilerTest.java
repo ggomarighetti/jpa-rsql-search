@@ -197,14 +197,16 @@ class SearchCompilerTest {
                         .conversionService(ApplicationConversionService.getSharedInstance())
                         .build(),
                 policy);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        SearchDefinition<TestTypes.Product> definition = definition(new AtomicReference<>());
 
         assertThrows(
                 SearchProtectionException.class,
                 () -> customCompiler.compile(
                         "taxId=in=(1,2)",
                         null,
-                        PageRequest.of(0, 10),
-                definition(new AtomicReference<>())));
+                        pageRequest,
+                        definition));
     }
 
     @Test
