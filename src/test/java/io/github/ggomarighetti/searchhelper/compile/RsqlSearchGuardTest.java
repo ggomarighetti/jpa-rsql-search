@@ -375,9 +375,10 @@ class RsqlSearchGuardTest {
 
     @Test
     void returnsRulesForbiddenWhenParsedFilterBreaksMultipleRules() {
+        SearchDefinition<TestTypes.Product> definition = filters();
         RsqlFilterValidationException exception = assertThrows(
                 RsqlFilterValidationException.class,
-                () -> guard.specification("passwordHash==abc;email!=not-an-email", filters()));
+                () -> guard.specification("passwordHash==abc;email!=not-an-email", definition));
 
         assertValidationCode(exception, RsqlFilterValidationException.RULES_FORBIDDEN);
         assertEquals(2, exception.errors().size());
