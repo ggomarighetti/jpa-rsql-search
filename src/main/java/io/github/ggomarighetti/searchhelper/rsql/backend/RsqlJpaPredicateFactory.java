@@ -13,5 +13,5 @@ public interface RsqlJpaPredicateFactory {
      * @param context custom predicate context
      * @return JPA predicate
      */
-    Predicate toPredicate(RsqlJpaPredicateContext context);
+    Predicate toPredicate(RsqlJpaPredicateContext<?, ?, ?, ?, ?> context);
 }
