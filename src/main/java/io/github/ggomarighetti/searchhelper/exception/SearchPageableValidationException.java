@@ -2,7 +2,6 @@ package io.github.ggomarighetti.searchhelper.exception;
 
 import io.github.ggomarighetti.searchhelper.validation.RuleViolation;
 import java.util.List;
-import java.util.Objects;
 
 /** Reports pageable or sorting input rejected by definition or policy rules. */
 public final class SearchPageableValidationException extends RuntimeException {
@@ -44,8 +43,8 @@ public final class SearchPageableValidationException extends RuntimeException {
             String message,
             List<RuleViolation> violations) {
         super(message);
-        this.code = requireCode(code);
-        this.violations = List.copyOf(Objects.requireNonNull(violations, "violations must not be null"));
+        this.code = ValidationExceptionSupport.requireCode(code);
+        this.violations = ValidationExceptionSupport.copyViolations(violations);
     }
 
     /**
@@ -64,12 +63,5 @@ public final class SearchPageableValidationException extends RuntimeException {
      */
     public List<RuleViolation> violations() {
         return violations;
-    }
-
-    private static String requireCode(String code) {
-        if (Objects.requireNonNull(code, "code must not be null").isBlank()) {
-            throw new IllegalArgumentException("code must not be blank");
-        }
-        return code;
     }
 }
