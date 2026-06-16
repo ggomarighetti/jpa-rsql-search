@@ -229,9 +229,10 @@ class SearchPageableGuardTest {
         SearchPageableValidationException pageException = assertThrows(
                 SearchPageableValidationException.class,
                 () -> guard.pageable(invalidPage, definition));
+        PageRequest invalidSize = PageRequest.of(0, 101);
         SearchPageableValidationException sizeException = assertThrows(
                 SearchPageableValidationException.class,
-                () -> guard.pageable(PageRequest.of(0, 101), definition()));
+                () -> guard.pageable(invalidSize, definition));
         SearchPageableValidationException offsetException = assertThrows(
                 SearchPageableValidationException.class,
                 () -> guard.pageable(PageRequest.of(100, 101), definition(SearchPolicy.builder()
