@@ -1,8 +1,5 @@
 package io.github.ggomarighetti.searchhelper.unit;
 
-import io.github.ggomarighetti.searchhelper.integration.bench.domain.Product;
-import io.github.ggomarighetti.searchhelper.integration.bench.domain.Review;
-import io.github.ggomarighetti.searchhelper.integration.bench.domain.Status;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
