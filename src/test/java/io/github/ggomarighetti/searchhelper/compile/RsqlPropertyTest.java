@@ -65,13 +65,12 @@ class RsqlPropertyTest {
 
         for (int i = 0; i < 250; i++) {
             String input = generator.comparisonWithDisallowedOperator();
-            try {
-                guard.specification(input, definition);
-                fail("Disallowed operator unexpectedly compiled: " + escaped(input));
-            } catch (Throwable throwable) {
-                if (!SearchPropertyFixtures.isExpectedRsqlThrowable(throwable)) {
-                    fail("Unexpected throwable for disallowed operator input [" + escaped(input) + "]", throwable);
-                }
+            Throwable throwable = assertThrows(
+                    Throwable.class,
+                    () -> guard.specification(input, definition),
+                    "Disallowed operator unexpectedly compiled: " + escaped(input));
+            if (!SearchPropertyFixtures.isExpectedRsqlThrowable(throwable)) {
+                fail("Unexpected throwable for disallowed operator input [" + escaped(input) + "]", throwable);
             }
         }
     }
