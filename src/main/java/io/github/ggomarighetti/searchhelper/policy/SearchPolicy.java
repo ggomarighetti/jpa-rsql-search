@@ -961,7 +961,7 @@ public final class SearchPolicy {
             requirePositive(defaultUnpagedSize, "paging.defaultUnpagedSize");
             requirePositive(maxUnpagedSize, "paging.maxUnpagedSize");
             Objects.requireNonNull(page, "paging.page must not be null");
-            slice = Objects.requireNonNull(slice, "paging.slice must not be null");
+            Objects.requireNonNull(slice, "paging.slice must not be null");
             if (maxPage < minPage) {
                 throw new IllegalArgumentException("paging.maxPage must be greater than or equal to paging.minPage");
             }
