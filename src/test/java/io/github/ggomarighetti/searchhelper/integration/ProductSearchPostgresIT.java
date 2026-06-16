@@ -233,12 +233,13 @@ class ProductSearchPostgresIT {
         assertRsqlCode("status==PUBLISHED", definition, RsqlFilterValidationException.RULES_FORBIDDEN);
         assertRsqlCode("publicId==not-a-uuid", definition, RsqlFilterValidationException.RULES_FORBIDDEN);
 
+        PageRequest unsafeSort = PageRequest.of(0, 10, Sort.by("internalCost"));
         SearchPageableValidationException sortException = assertThrows(
                 SearchPageableValidationException.class,
                 () -> compiler.compile(
                         null,
                         null,
-                        PageRequest.of(0, 10, Sort.by("internalCost")),
+                        unsafeSort,
                         definition));
         SearchPageableValidationException pageException = assertThrows(
                 SearchPageableValidationException.class,
