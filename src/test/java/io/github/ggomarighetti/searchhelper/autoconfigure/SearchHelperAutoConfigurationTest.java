@@ -74,12 +74,13 @@ class SearchHelperAutoConfigurationTest {
                             .paging()
                             .build();
 
+                    var pageRequest = org.springframework.data.domain.PageRequest.of(0, 25);
                     assertThrows(
                             SearchProtectionException.class,
                             () -> compiler.compile(
                                     "taxId=in=(1,2)",
                                     null,
-                                    org.springframework.data.domain.PageRequest.of(0, 25),
+                                    pageRequest,
                                     definition));
                 });
     }
