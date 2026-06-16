@@ -542,12 +542,12 @@ class SearchDefinitionTest {
 
     @Test
     void rejectsNestedCollectionValuedPathWhenElementTypeCannotBeResolved() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                SearchDefinition.builder().entity(TestTypes.Product.class)
-                        .fields(fields -> fields.add("reviewRating", Integer.class)
-                                .path("rawReviews.rating")
-                                .filterable(filter -> filter.allow(EQUAL)))
-                        .build());
+        var builder = SearchDefinition.builder().entity(TestTypes.Product.class)
+                .fields(fields -> fields.add("reviewRating", Integer.class)
+                        .path("rawReviews.rating")
+                        .filterable(filter -> filter.allow(EQUAL)));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
 
         assertTrue(exception.getMessage().contains("could not be resolved"));
     }
