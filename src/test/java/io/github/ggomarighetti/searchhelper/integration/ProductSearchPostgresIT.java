@@ -265,10 +265,11 @@ class ProductSearchPostgresIT {
                 .fields(fields -> fields.add("displayName", String.class)
                         .filterable(filter -> filter.allow(EQUAL)))
                 .build();
+        JpaSearchDefinitionValidator validator = jpaDefinitionValidator();
 
         SearchDefinitionValidationException exception = assertThrows(
                 SearchDefinitionValidationException.class,
-                () -> jpaDefinitionValidator().validate(definition));
+                () -> validator.validate(definition));
 
         assertEquals(SearchDefinitionValidationException.JPA_PATH_UNRESOLVED, exception.code());
     }
