@@ -10,7 +10,6 @@ import io.github.ggomarighetti.searchhelper.policy.SearchPolicy;
 import io.github.ggomarighetti.searchhelper.rsql.backend.RsqlBackendAdapter;
 import io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperator;
 import io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperatorDescriptor;
-import io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators;
 import io.github.ggomarighetti.searchhelper.rsql.RsqlCompilationRequest;
 import io.github.ggomarighetti.searchhelper.unit.TestTypes;
 import io.github.ggomarighetti.searchhelper.rsql.SearchRsqlEngine;
