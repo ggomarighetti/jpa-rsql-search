@@ -47,13 +47,12 @@ class RsqlPropertyTest {
 
         for (int i = 0; i < 250; i++) {
             String input = generator.comparisonWithUnknownSelector();
-            try {
-                guard.specification(input, definition);
-                fail("Unknown selector unexpectedly compiled: " + escaped(input));
-            } catch (Throwable throwable) {
-                if (!SearchPropertyFixtures.isExpectedRsqlThrowable(throwable)) {
-                    fail("Unexpected throwable for unknown selector input [" + escaped(input) + "]", throwable);
-                }
+            Throwable throwable = assertThrows(
+                    Throwable.class,
+                    () -> guard.specification(input, definition),
+                    "Unknown selector unexpectedly compiled: " + escaped(input));
+            if (!SearchPropertyFixtures.isExpectedRsqlThrowable(throwable)) {
+                fail("Unexpected throwable for unknown selector input [" + escaped(input) + "]", throwable);
             }
         }
     }
