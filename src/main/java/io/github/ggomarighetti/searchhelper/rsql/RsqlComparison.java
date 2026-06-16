@@ -16,7 +16,7 @@ public record RsqlComparison(String selector, RsqlOperator operator, List<String
     /** Validates and snapshots comparison data. */
     public RsqlComparison {
         Assert.hasText(selector, "selector must not be blank");
-        operator = Objects.requireNonNull(operator, "operator must not be null");
+        Objects.requireNonNull(operator, "operator must not be null");
         arguments = List.copyOf(Objects.requireNonNull(arguments, "arguments must not be null"));
     }
 }
