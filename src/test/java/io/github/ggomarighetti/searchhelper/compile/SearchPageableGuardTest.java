@@ -203,9 +203,10 @@ class SearchPageableGuardTest {
 
         assertEquals(3, guard.pageable(PageRequest.of(3, 50), definition).getPageNumber());
 
+        PageRequest invalidPage = PageRequest.of(4, 50);
         SearchPageableValidationException pageException = assertThrows(
                 SearchPageableValidationException.class,
-                () -> guard.pageable(PageRequest.of(4, 50), definition));
+                () -> guard.pageable(invalidPage, definition));
         SearchPageableValidationException sizeException = assertThrows(
                 SearchPageableValidationException.class,
                 () -> guard.pageable(PageRequest.of(0, 101), definition));
