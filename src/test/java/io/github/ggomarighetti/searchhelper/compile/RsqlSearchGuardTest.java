@@ -211,7 +211,7 @@ class RsqlSearchGuardTest {
 
         assertEquals("=first=", descriptor.symbol());
         assertEquals(List.of("=first=", "=second="), descriptor.symbols().stream().toList());
-        Set<String> symbols = descriptor.symbols();
+        var symbols = descriptor.symbols();
         assertThrows(UnsupportedOperationException.class, symbols::clear);
     }
 
