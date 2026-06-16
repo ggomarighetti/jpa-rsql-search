@@ -218,7 +218,8 @@ class SearchPageableGuardTest {
         assertTrue(pageException.violations().get(0).constraint().endsWith(".Max"));
         assertEquals("size", sizeException.violations().get(0).path());
         assertTrue(sizeException.violations().get(0).constraint().endsWith(".Max"));
-        assertThrows(UnsupportedOperationException.class, () -> pageException.violations().clear());
+        var violations = pageException.violations();
+        assertThrows(UnsupportedOperationException.class, violations::clear);
     }
 
     @Test
