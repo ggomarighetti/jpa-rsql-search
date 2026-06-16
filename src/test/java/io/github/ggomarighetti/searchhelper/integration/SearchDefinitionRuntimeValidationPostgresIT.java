@@ -57,11 +57,12 @@ class SearchDefinitionRuntimeValidationPostgresIT {
                 .run(context -> {
                     SearchCompiler compiler = context.getBean(SearchCompiler.class);
                     SearchDefinition<?> definition = context.getBean(SearchDefinition.class);
+                    PageRequest pageRequest = PageRequest.of(0, 20);
 
                     assertThatThrownBy(() -> compiler.compile(
                                     "displayName==Laptop",
                                     null,
-                                    PageRequest.of(0, 20),
+                                    pageRequest,
                                     definition))
                             .isInstanceOf(SearchDefinitionValidationException.class)
                             .hasMessageContaining("displayName")
