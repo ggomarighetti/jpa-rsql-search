@@ -475,10 +475,11 @@ class RsqlSearchGuardTest {
 
     @Test
     void rejectsRsqlArgumentLimitsBeforeConversionAndRules() {
+        SearchDefinition<TestTypes.Product> perComparisonDefinition = filters(limits -> limits
+                .filter(filter -> filter.maxArgumentsPerComparison(1)));
         SearchProtectionException perComparison = assertThrows(
                 SearchProtectionException.class,
-                () -> guard.specification("taxId=in=(20123456789,20987654321)", filters(limits -> limits
-                        .filter(filter -> filter.maxArgumentsPerComparison(1)))));
+                () -> guard.specification("taxId=in=(20123456789,20987654321)", perComparisonDefinition));
         SearchProtectionException total = assertThrows(
                 SearchProtectionException.class,
                 () -> guard.specification(
