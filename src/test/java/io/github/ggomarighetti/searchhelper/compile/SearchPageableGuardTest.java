@@ -285,11 +285,10 @@ class SearchPageableGuardTest {
         SearchPageableValidationException ignoreCase = assertThrows(
                 SearchPageableValidationException.class,
                 () -> guard.pageable(ignoreCaseSort, definition));
+        PageRequest nullHandlingSort = PageRequest.of(0, 25, Sort.by(Sort.Order.asc("amount").nullsLast()));
         SearchPageableValidationException nullHandling = assertThrows(
                 SearchPageableValidationException.class,
-                () -> guard.pageable(
-                        PageRequest.of(0, 25, Sort.by(Sort.Order.asc("amount").nullsLast())),
-                        definition()));
+                () -> guard.pageable(nullHandlingSort, definition));
 
         assertValidationCode(tooManyOrders, SearchPageableValidationException.SORT_LIMIT_EXCEEDED);
         assertValidationCode(duplicatedSelector, SearchPageableValidationException.SORT_LIMIT_EXCEEDED);
