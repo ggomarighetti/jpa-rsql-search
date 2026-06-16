@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import static io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators.EQUAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -73,7 +74,7 @@ class SmallApiCoverageTest {
         SearchQuery.Builder<TestTypes.Product> builder = SearchQuery.builder();
         builder.specification(term -> (root, criteria, criteriaBuilder) -> criteriaBuilder.conjunction());
 
-        thrownBy(IllegalArgumentException.class, () -> SearchQuery.builder().build());
+        assertNotNull(thrownBy(IllegalArgumentException.class, () -> SearchQuery.builder().build()));
         thrownBy(NullPointerException.class, () -> SearchQuery.builder().rule(null));
         thrownBy(NullPointerException.class, () -> SearchQuery.builder().specification(null));
         thrownBy(IllegalArgumentException.class, () -> builder.specification(term ->

@@ -4,6 +4,7 @@ import io.github.ggomarighetti.searchhelper.policy.SearchPolicy;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SearchPolicyTest {
     @Test
@@ -38,9 +39,9 @@ class SearchPolicyTest {
 
     @Test
     void rejectsInvalidNumericLimits() {
-        thrownBy(
+        assertNotNull(thrownBy(
                 IllegalArgumentException.class,
-                () -> SearchPolicy.Rsql.builder().maxLength(0).build());
+                () -> SearchPolicy.Rsql.builder().maxLength(0).build()));
         thrownBy(
                 IllegalArgumentException.class,
                 () -> SearchPolicy.Sorting.builder().maxRelationOrders(-1).build());

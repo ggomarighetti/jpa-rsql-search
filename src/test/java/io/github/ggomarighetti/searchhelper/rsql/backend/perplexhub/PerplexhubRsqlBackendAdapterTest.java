@@ -19,6 +19,7 @@ import org.springframework.boot.convert.ApplicationConversionService;
 
 import static io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators.EQUAL;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class PerplexhubRsqlBackendAdapterTest {
     private final PerplexhubRsqlBackendAdapter adapter = new PerplexhubRsqlBackendAdapter();
@@ -33,9 +34,9 @@ class PerplexhubRsqlBackendAdapterTest {
                 .build();
         RsqlCompilationRequest<TestTypes.Product> request = request("missing==value", ast, definition);
 
-        thrownBy(
+        assertNotNull(thrownBy(
                 IllegalStateException.class,
-                () -> adapter.compile(request).toPredicate(root(), query(), criteriaBuilder()));
+                () -> adapter.compile(request).toPredicate(root(), query(), criteriaBuilder())));
     }
 
     @Test
@@ -47,9 +48,9 @@ class PerplexhubRsqlBackendAdapterTest {
                 .build();
         RsqlCompilationRequest<TestTypes.Product> request = request("email==value", ast, definition);
 
-        thrownBy(
+        assertNotNull(thrownBy(
                 IllegalArgumentException.class,
-                () -> adapter.compile(request).toPredicate(root(), query(), criteriaBuilder()));
+                () -> adapter.compile(request).toPredicate(root(), query(), criteriaBuilder())));
     }
 
     private RsqlCompilationRequest<TestTypes.Product> request(

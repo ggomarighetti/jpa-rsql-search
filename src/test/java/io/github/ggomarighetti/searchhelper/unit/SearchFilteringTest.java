@@ -14,6 +14,7 @@ import static io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators.I
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SearchFilteringTest {
@@ -48,7 +49,7 @@ class SearchFilteringTest {
         SearchFiltering.Builder<String> explicitType = SearchFiltering.builder();
         explicitType.allow(EQUAL, String.class, operator -> {});
 
-        thrownBy(IllegalArgumentException.class, () -> implicitType.allow(EQUAL));
+        assertNotNull(thrownBy(IllegalArgumentException.class, () -> implicitType.allow(EQUAL)));
         thrownBy(IllegalArgumentException.class, () -> explicitType.allow(EQUAL, String.class, operator -> {}));
     }
 

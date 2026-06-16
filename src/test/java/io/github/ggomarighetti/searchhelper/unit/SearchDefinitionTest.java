@@ -17,6 +17,7 @@ import static io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators.E
 import static io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators.IN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -256,7 +257,7 @@ class SearchDefinitionTest {
                 .entity(TestTypes.Product.class)
                 .limits(limits -> limits.paging(paging -> paging.maxSize(10)));
 
-        thrownBy(IllegalArgumentException.class, pagingBuilder::paging);
+        assertNotNull(thrownBy(IllegalArgumentException.class, pagingBuilder::paging));
         thrownBy(
                 IllegalArgumentException.class,
                 () -> explicitLimitsBuilder.limits(limits -> limits.paging(paging -> paging.maxSize(10))));
@@ -265,12 +266,12 @@ class SearchDefinitionTest {
 
     @Test
     void rejectsDuplicateFilteringAndSortingDeclarations() {
-        thrownBy(IllegalArgumentException.class, () ->
+        assertNotNull(thrownBy(IllegalArgumentException.class, () ->
                 SearchDefinition.builder()
                         .entity(TestTypes.Product.class)
                         .fields(fields -> fields.add("email", String.class)
                                 .filterable()
-                                .filterable()));
+                                .filterable())));
         thrownBy(IllegalArgumentException.class, () ->
                 SearchDefinition.builder()
                         .entity(TestTypes.Product.class)

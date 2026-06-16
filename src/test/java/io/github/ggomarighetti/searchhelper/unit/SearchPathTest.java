@@ -23,6 +23,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -102,9 +103,9 @@ class SearchPathTest {
 
     @Test
     void rejectsCollectionPathsWhenElementTypeCannotResolveToAPropertyOwner() {
-        thrownBy(
+        assertNotNull(thrownBy(
                 IllegalArgumentException.class,
-                () -> SearchPath.metadata(GenericRoot.class, "sku", "genericLines.sku", String.class, DEEP_PATHS));
+                () -> SearchPath.metadata(GenericRoot.class, "sku", "genericLines.sku", String.class, DEEP_PATHS)));
         thrownBy(
                 IllegalArgumentException.class,
                 () -> SearchPath.metadata(GenericRoot.class, "sku", "nestedLines.sku", String.class, DEEP_PATHS));

@@ -2,6 +2,7 @@ package io.github.ggomarighetti.searchhelper.exception;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.github.ggomarighetti.searchhelper.validation.RuleViolation;
 import java.io.ByteArrayInputStream;
@@ -14,7 +15,9 @@ import org.junit.jupiter.api.Test;
 class ExceptionSerializationTest {
     @Test
     void rejectsBlankExceptionCodesAndNullViolationLists() {
-        thrownBy(IllegalArgumentException.class, () -> new SearchDefinitionValidationException(" ", "invalid"));
+        assertNotNull(thrownBy(
+                IllegalArgumentException.class,
+                () -> new SearchDefinitionValidationException(" ", "invalid")));
         thrownBy(IllegalArgumentException.class, () ->
                 new SearchDefinitionValidationException(" ", "invalid", new IllegalStateException("cause")));
         thrownBy(IllegalArgumentException.class, () ->

@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static io.github.ggomarighetti.searchhelper.unit.ExceptionAssertions.thrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class RsqlAstTest {
     @Test
@@ -19,7 +20,9 @@ class RsqlAstTest {
                 "email",
                 List.of("person@example.com"));
 
-        thrownBy(IllegalArgumentException.class, () -> RsqlAst.from(node, new RsqlOperatorRegistry(List.of())));
+        assertNotNull(thrownBy(
+                IllegalArgumentException.class,
+                () -> RsqlAst.from(node, new RsqlOperatorRegistry(List.of()))));
     }
 
     @Test
