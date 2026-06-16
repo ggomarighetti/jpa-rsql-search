@@ -30,6 +30,6 @@ public record RsqlCompilationRequest<T>(
         Objects.requireNonNull(ast, "ast must not be null");
         Objects.requireNonNull(definition, "definition must not be null");
         Objects.requireNonNull(conversionService, "conversionService must not be null");
-        operators = Objects.requireNonNull(operators, "operators must not be null");
+        Objects.requireNonNull(operators, "operators must not be null");
     }
 }
