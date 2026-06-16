@@ -20,7 +20,7 @@ public record FilterValidationError(
         RuleViolation violation) {
     /** Validates the fields required by the selected error code. */
     public FilterValidationError {
-        code = Objects.requireNonNull(code, "code must not be null");
+        Objects.requireNonNull(code, "code must not be null");
         if (argumentIndex != null && argumentIndex < 0) {
             throw new IllegalArgumentException("argumentIndex must not be negative");
         }
