@@ -104,9 +104,11 @@ class SearchPageableGuardTest {
 
     @Test
     void rejectsUnpagedPageableByDefault() {
+        Pageable pageable = Pageable.unpaged();
+        SearchDefinition<TestTypes.Product> definition = definition();
         SearchPageableValidationException exception = assertThrows(
                 SearchPageableValidationException.class,
-                () -> guard.pageable(Pageable.unpaged(), definition()));
+                () -> guard.pageable(pageable, definition));
 
         assertValidationCode(exception, SearchPageableValidationException.PAGE_LIMIT_EXCEEDED);
     }
