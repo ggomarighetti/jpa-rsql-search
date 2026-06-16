@@ -44,7 +44,7 @@ public final class SearchPageableValidationException extends RuntimeException {
             List<RuleViolation> violations) {
         super(message);
         this.code = ValidationExceptionSupport.requireCode(code);
-        this.violations = ValidationExceptionSupport.copyViolations(violations);
+        this.violations = ValidationExceptionSupport.copyList(violations, "violations");
     }
 
     /**

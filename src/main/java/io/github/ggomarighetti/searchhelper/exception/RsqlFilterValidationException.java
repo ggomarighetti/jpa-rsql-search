@@ -1,7 +1,6 @@
 package io.github.ggomarighetti.searchhelper.exception;
 
 import java.util.List;
-import java.util.Objects;
 
 /** Reports RSQL parse, policy, conversion, or semantic validation failures. */
 public final class RsqlFilterValidationException extends RuntimeException {
@@ -68,8 +67,8 @@ public final class RsqlFilterValidationException extends RuntimeException {
             List<RsqlValidationError> errors,
             Throwable cause) {
         super(message, cause);
-        this.code = requireCode(code);
-        this.errors = List.copyOf(Objects.requireNonNull(errors, "errors must not be null"));
+        this.code = ValidationExceptionSupport.requireCode(code);
+        this.errors = ValidationExceptionSupport.copyList(errors, "errors");
     }
 
     /**
@@ -88,12 +87,5 @@ public final class RsqlFilterValidationException extends RuntimeException {
      */
     public List<RsqlValidationError> errors() {
         return errors;
-    }
-
-    private static String requireCode(String code) {
-        if (Objects.requireNonNull(code, "code must not be null").isBlank()) {
-            throw new IllegalArgumentException("code must not be blank");
-        }
-        return code;
     }
 }

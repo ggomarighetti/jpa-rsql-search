@@ -1,6 +1,5 @@
 package io.github.ggomarighetti.searchhelper.exception;
 
-import io.github.ggomarighetti.searchhelper.validation.RuleViolation;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,7 +14,7 @@ final class ValidationExceptionSupport {
         return code;
     }
 
-    static List<RuleViolation> copyViolations(List<RuleViolation> violations) {
-        return List.copyOf(Objects.requireNonNull(violations, "violations must not be null"));
+    static <T> List<T> copyList(List<T> values, String parameterName) {
+        return List.copyOf(Objects.requireNonNull(values, parameterName + " must not be null"));
     }
 }

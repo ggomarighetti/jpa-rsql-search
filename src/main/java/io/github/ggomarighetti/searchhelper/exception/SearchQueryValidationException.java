@@ -65,7 +65,7 @@ public final class SearchQueryValidationException extends RuntimeException {
             Throwable cause) {
         super(message, cause);
         this.code = ValidationExceptionSupport.requireCode(code);
-        this.violations = ValidationExceptionSupport.copyViolations(violations);
+        this.violations = ValidationExceptionSupport.copyList(violations, "violations");
     }
 
     /**

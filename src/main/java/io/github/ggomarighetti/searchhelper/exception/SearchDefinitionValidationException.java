@@ -1,7 +1,5 @@
 package io.github.ggomarighetti.searchhelper.exception;
 
-import java.util.Objects;
-
 /** Reports an invalid search definition or incompatible engine/backend setup. */
 public final class SearchDefinitionValidationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
@@ -32,7 +30,7 @@ public final class SearchDefinitionValidationException extends RuntimeException 
      */
     public SearchDefinitionValidationException(String code, String message) {
         super(message);
-        this.code = requireCode(code);
+        this.code = ValidationExceptionSupport.requireCode(code);
     }
 
     /**
@@ -44,7 +42,7 @@ public final class SearchDefinitionValidationException extends RuntimeException 
      */
     public SearchDefinitionValidationException(String code, String message, Throwable cause) {
         super(message, cause);
-        this.code = requireCode(code);
+        this.code = ValidationExceptionSupport.requireCode(code);
     }
 
     /**
@@ -53,13 +51,6 @@ public final class SearchDefinitionValidationException extends RuntimeException 
      * @return stable machine-readable error code
      */
     public String code() {
-        return code;
-    }
-
-    private static String requireCode(String code) {
-        if (Objects.requireNonNull(code, "code must not be null").isBlank()) {
-            throw new IllegalArgumentException("code must not be blank");
-        }
         return code;
     }
 }
