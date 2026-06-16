@@ -132,12 +132,12 @@ class SearchPageableGuardTest {
 
     @Test
     void rejectsUnpagedLimitAboveConfiguredMaximum() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                SearchPolicy.builder()
-                        .paging(paging -> paging
-                                .maxUnpagedSize(10)
-                                .unpagedSize(11))
-                        .build());
+        var builder = SearchPolicy.builder()
+                .paging(paging -> paging
+                        .maxUnpagedSize(10)
+                        .unpagedSize(11));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, builder::build);
 
         assertEquals(
                 "paging.defaultUnpagedSize must be less than or equal to paging.maxUnpagedSize",
