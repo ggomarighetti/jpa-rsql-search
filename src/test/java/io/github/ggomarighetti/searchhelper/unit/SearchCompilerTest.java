@@ -139,8 +139,8 @@ class SearchCompilerTest {
                 () -> compiler.compile(
                         null,
                         null,
-                        PageRequest.of(0, 10),
-                        emptyDefinition(),
+                        pageRequest,
+                        definition,
                         (Specification<TestTypes.Product>) null));
 
         assertEquals("specifications must not be null", arrayException.getMessage());
