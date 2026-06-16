@@ -161,10 +161,11 @@ class SearchPageableGuardTest {
                 .fields(fields -> fields.add("email", String.class))
                 .paging()
                 .build();
+        PageRequest pageRequest = PageRequest.of(0, 25, Sort.by("email"));
 
         SearchPageableValidationException exception = assertThrows(
                 SearchPageableValidationException.class,
-                () -> guard.pageable(PageRequest.of(0, 25, Sort.by("email")), definition));
+                () -> guard.pageable(pageRequest, definition));
 
         assertValidationCode(exception, SearchPageableValidationException.SORT_RULES_FORBIDDEN);
     }
