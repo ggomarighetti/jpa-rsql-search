@@ -6,7 +6,6 @@ import io.github.ggomarighetti.searchhelper.exception.SearchDefinitionValidation
 import io.github.ggomarighetti.searchhelper.integration.bench.domain.Product;
 import io.github.ggomarighetti.searchhelper.policy.SearchPolicy;
 import io.github.ggomarighetti.searchhelper.query.SearchQuery;
-import io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators;
 import io.github.ggomarighetti.searchhelper.sort.SearchSorting;
 import java.math.BigDecimal;
 import java.util.Set;
