@@ -40,7 +40,7 @@ public record RsqlValidationError(
     public RsqlValidationError {
         requireText(code, "code");
         requireText(astPath, "astPath");
-        message = requireText(message, "message");
+        requireText(message, "message");
         if (argumentIndex != null && argumentIndex < 0) {
             throw new IllegalArgumentException("argumentIndex must not be negative");
         }
