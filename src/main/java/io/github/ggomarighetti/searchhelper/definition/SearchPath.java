@@ -231,10 +231,11 @@ public final class SearchPath {
                     readMethod,
                     field);
         }
-        if (descriptor != null && descriptor.getPropertyType() != null) {
+        Class<?> descriptorType = descriptor == null ? null : descriptor.getPropertyType();
+        if (descriptorType != null) {
             return new ResolvedSegment(
-                    descriptor.getPropertyType(),
-                    descriptor.getPropertyType(),
+                    descriptorType,
+                    descriptorType,
                     null,
                     field);
         }

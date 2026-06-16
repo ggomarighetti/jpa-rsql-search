@@ -287,8 +287,8 @@ final class RsqlRulesValidator {
         var result = field.filtering().operators().get(operator).validate(arguments, conversionService);
         List<RsqlValidationError> errors = new ArrayList<>();
         for (FilterValidationError error : result.errors()) {
-            switch (error.code()) {
-                case CONVERSION_FAILED -> errors.add(new RsqlValidationError(
+            if (error.code() == FilterValidationError.Code.CONVERSION_FAILED) {
+                errors.add(new RsqlValidationError(
                         RsqlValidationError.ARGUMENT_CONVERSION_FAILED,
                         astPath + ".arguments[" + error.argumentIndex() + "]",
                         field.selector(),
@@ -298,32 +298,30 @@ final class RsqlRulesValidator {
                         "Argument could not be converted to '%s'.".formatted(error.targetType()),
                         null,
                         null));
-                case ARGUMENT_RULE -> {
-                    var violation = error.violation();
-                    errors.add(new RsqlValidationError(
-                            RsqlValidationError.ARGUMENT_RULE_VIOLATION,
-                            astPath + ".arguments[" + error.argumentIndex() + "]",
-                            field.selector(),
-                            operator.name(),
-                            error.argumentIndex(),
-                            violation.path(),
-                            violation.message(),
-                            violation.messageTemplate(),
-                            violation.constraint()));
-                }
-                case ARGUMENTS_RULE -> {
-                    var violation = error.violation();
-                    errors.add(new RsqlValidationError(
-                            RsqlValidationError.ARGUMENTS_RULE_VIOLATION,
-                            astPath + ".arguments",
-                            field.selector(),
-                            operator.name(),
-                            null,
-                            violation.path(),
-                            violation.message(),
-                            violation.messageTemplate(),
-                            violation.constraint()));
-                }
+            } else if (error.code() == FilterValidationError.Code.ARGUMENT_RULE) {
+                var violation = error.violation();
+                errors.add(new RsqlValidationError(
+                        RsqlValidationError.ARGUMENT_RULE_VIOLATION,
+                        astPath + ".arguments[" + error.argumentIndex() + "]",
+                        field.selector(),
+                        operator.name(),
+                        error.argumentIndex(),
+                        violation.path(),
+                        violation.message(),
+                        violation.messageTemplate(),
+                        violation.constraint()));
+            } else {
+                var violation = error.violation();
+                errors.add(new RsqlValidationError(
+                        RsqlValidationError.ARGUMENTS_RULE_VIOLATION,
+                        astPath + ".arguments",
+                        field.selector(),
+                        operator.name(),
+                        null,
+                        violation.path(),
+                        violation.message(),
+                        violation.messageTemplate(),
+                        violation.constraint()));
             }
         }
         return errors;
