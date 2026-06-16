@@ -3,7 +3,6 @@ package io.github.ggomarighetti.searchhelper.rsql.operator;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import io.github.ggomarighetti.searchhelper.rsql.backend.RsqlJpaPredicateFactory;
 import java.util.Collections;
-import java.util.function.Consumer;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
