@@ -107,13 +107,14 @@ class DefaultFilterOperatorsTest {
 
     @Test
     void filteringWithDefaultsCannotDenyTheEntireProfile() {
+        var builder = SearchDefinition.builder()
+                .entity(TestTypes.Product.class)
+                .fields(fields -> fields.add("active", Boolean.class)
+                        .filterable(filter -> filter.withDefaults().deny(EQUAL, NOT_EQUAL)));
+
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> SearchDefinition.builder()
-                        .entity(TestTypes.Product.class)
-                        .fields(fields -> fields.add("active", Boolean.class)
-                                .filterable(filter -> filter.withDefaults().deny(EQUAL, NOT_EQUAL)))
-                        .build());
+                builder::build);
 
         assertEquals(
                 "selector 'active' filtering must declare at least one allowed operator",
