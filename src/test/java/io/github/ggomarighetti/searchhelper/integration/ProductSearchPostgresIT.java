@@ -40,7 +40,6 @@ import static io.github.ggomarighetti.searchhelper.rsql.operator.RsqlOperators.E
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @DataJpaTest(
         showSql = false,
