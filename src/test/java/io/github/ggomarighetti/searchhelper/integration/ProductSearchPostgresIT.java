@@ -241,12 +241,13 @@ class ProductSearchPostgresIT {
                         null,
                         unsafeSort,
                         definition));
+        PageRequest unsafePage = PageRequest.of(0, 51);
         SearchPageableValidationException pageException = assertThrows(
                 SearchPageableValidationException.class,
                 () -> compiler.compile(
                         null,
                         null,
-                        PageRequest.of(0, 51),
+                        unsafePage,
                         definition));
 
         assertEquals(SearchPageableValidationException.SORT_RULES_FORBIDDEN, sortException.code());
