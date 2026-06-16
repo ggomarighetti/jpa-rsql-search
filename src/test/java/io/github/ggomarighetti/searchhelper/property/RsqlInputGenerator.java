@@ -109,10 +109,15 @@ public final class RsqlInputGenerator {
     private String grouped() {
         String input = comparison();
         int groups = random.nextInt(5);
+        StringBuilder builder = new StringBuilder(input.length() + groups * 2);
         for (int i = 0; i < groups; i++) {
-            input = "(" + input + ")";
+            builder.append('(');
         }
-        return input;
+        builder.append(input);
+        for (int i = 0; i < groups; i++) {
+            builder.append(')');
+        }
+        return builder.toString();
     }
 
     private String comparison() {

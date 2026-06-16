@@ -10,6 +10,7 @@ import io.github.ggomarighetti.searchhelper.integration.inheritance.domain.Perso
 import io.github.ggomarighetti.searchhelper.integration.postgres.PostgresTestEnvironment;
 import io.github.ggomarighetti.searchhelper.jpa.JpaSearchDefinitionValidator;
 import java.time.LocalDate;
+import java.time.Month;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,8 @@ class PersonSubtypeSearchPostgresIT {
 
     @BeforeEach
     void seedPeople() {
-        entityManager.persist(new NaturalPerson("Ana", LocalDate.of(1985, 6, 15)));
-        entityManager.persist(new NaturalPerson("Bruno", LocalDate.of(2001, 2, 3)));
+        entityManager.persist(new NaturalPerson("Ana", LocalDate.of(1985, Month.JUNE, 15)));
+        entityManager.persist(new NaturalPerson("Bruno", LocalDate.of(2001, Month.FEBRUARY, 3)));
         entityManager.persist(new LegalPerson("Acme", "REG-001"));
         entityManager.flush();
         entityManager.clear();

@@ -88,7 +88,7 @@ public class Product {
 
     @Transient
     public String getDisplayName() {
-        return name;
+        return getName();
     }
 
     Product(

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.function.Consumer;
 import java.util.UUID;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
@@ -124,7 +125,7 @@ public final class ProductSeeder {
                 .price(amount("499.00"))
                 .active(true)
                 .archived(false)
-                .releaseDate(LocalDate.of(2024, 1, 15))
+                .releaseDate(LocalDate.of(2024, Month.JANUARY, 15))
                 .status(Status.PUBLISHED)
                 .category(category)
                 .supplier(supplier)

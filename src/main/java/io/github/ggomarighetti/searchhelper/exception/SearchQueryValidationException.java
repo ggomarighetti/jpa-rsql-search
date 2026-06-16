@@ -2,7 +2,6 @@ package io.github.ggomarighetti.searchhelper.exception;
 
 import io.github.ggomarighetti.searchhelper.validation.RuleViolation;
 import java.util.List;
-import java.util.Objects;
 
 /** Indicates that free-text query validation failed. */
 public final class SearchQueryValidationException extends RuntimeException {
@@ -65,8 +64,8 @@ public final class SearchQueryValidationException extends RuntimeException {
             List<RuleViolation> violations,
             Throwable cause) {
         super(message, cause);
-        this.code = requireCode(code);
-        this.violations = List.copyOf(Objects.requireNonNull(violations, "violations must not be null"));
+        this.code = ValidationExceptionSupport.requireCode(code);
+        this.violations = ValidationExceptionSupport.copyList(violations, "violations");
     }
 
     /**
@@ -85,12 +84,5 @@ public final class SearchQueryValidationException extends RuntimeException {
      */
     public List<RuleViolation> violations() {
         return violations;
-    }
-
-    private static String requireCode(String code) {
-        if (Objects.requireNonNull(code, "code must not be null").isBlank()) {
-            throw new IllegalArgumentException("code must not be blank");
-        }
-        return code;
     }
 }
