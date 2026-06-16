@@ -404,10 +404,11 @@ class RsqlSearchGuardTest {
 
     @Test
     void rejectsRsqlRawInputLongerThanLimit() {
+        SearchDefinition<TestTypes.Product> definition = filters(limits -> limits
+                .rsql(rsql -> rsql.maxLength(10)));
         RsqlFilterValidationException exception = assertThrows(
                 RsqlFilterValidationException.class,
-                () -> guard.specification("taxId==20123456789", filters(limits -> limits
-                        .rsql(rsql -> rsql.maxLength(10)))));
+                () -> guard.specification("taxId==20123456789", definition));
 
         assertValidationCode(exception, RsqlFilterValidationException.LIMIT_EXCEEDED);
     }
