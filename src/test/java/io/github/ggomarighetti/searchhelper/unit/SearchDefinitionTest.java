@@ -506,12 +506,13 @@ class SearchDefinitionTest {
 
     @Test
     void rejectsPathDeeperThanSafetyLimitByDefault() {
-        SearchDefinitionValidationException exception = assertThrows(SearchDefinitionValidationException.class, () ->
-                SearchDefinition.builder().entity(TestTypes.Product.class)
-                        .fields(fields -> fields.add("countryCode", String.class)
-                                .path("customer.region.country.code")
-                                .sortable())
-                        .build());
+        var builder = SearchDefinition.builder().entity(TestTypes.Product.class)
+                .fields(fields -> fields.add("countryCode", String.class)
+                        .path("customer.region.country.code")
+                        .sortable());
+
+        SearchDefinitionValidationException exception =
+                assertThrows(SearchDefinitionValidationException.class, builder::build);
 
         assertEquals(SearchDefinitionValidationException.PATH_LIMIT_EXCEEDED, exception.code());
     }
