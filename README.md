@@ -1,10 +1,13 @@
 # jpa-rsql-search
 
 [![Verify](https://github.com/ggomarighetti/jpa-rsql-search/actions/workflows/verify.yml/badge.svg)](https://github.com/ggomarighetti/jpa-rsql-search/actions/workflows/verify.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.ggomarighetti/jpa-rsql-search.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.ggomarighetti/jpa-rsql-search)
+[![Javadocs](https://javadoc.io/badge2/io.github.ggomarighetti/jpa-rsql-search/javadoc.svg)](https://javadoc.io/doc/io.github.ggomarighetti/jpa-rsql-search)
+[![GitHub Release](https://img.shields.io/github/v/release/ggomarighetti/jpa-rsql-search?display_name=tag)](https://github.com/ggomarighetti/jpa-rsql-search/releases)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-007396)](https://adoptium.net/)
 [![Spring Boot 4](https://img.shields.io/badge/Spring%20Boot-4.x-6DB33F)](https://spring.io/projects/spring-boot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Status: pre-release](https://img.shields.io/badge/status-pre--release-orange)](#project-status)
+[![Status: stable](https://img.shields.io/badge/status-stable-brightgreen)](#project-status)
 
 `jpa-rsql-search` is a small contract layer for Spring applications that accept
 dynamic search input and need to turn it into Spring Data JPA artifacts. It does
@@ -77,12 +80,31 @@ public search contract around it.
 
 ## Contents
 
+[Installation](#installation) |
 [Quick Example](#quick-example) |
 [API Reference](#api-reference) |
 [Configuration](#configuration) |
 [Error Handling](#error-handling) |
 [Customization](#customization) |
 [Project Status](#project-status)
+
+## Installation
+
+Maven:
+
+```xml
+<dependency>
+  <groupId>io.github.ggomarighetti</groupId>
+  <artifactId>jpa-rsql-search</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+Gradle Kotlin DSL:
+
+```kotlin
+implementation("io.github.ggomarighetti:jpa-rsql-search:1.0.0")
+```
 
 ## Quick Example
 
@@ -752,11 +774,12 @@ beans to enforce additional runtime checks on completed definitions.
 
 ## Project Status
 
-`jpa-rsql-search` is currently a pre-release project:
+`jpa-rsql-search` is a stable 1.x library:
 
-- current version: `0.1.0-SNAPSHOT`;
-- no Maven Central release has been published yet;
-- the public API may still evolve before `1.0`;
+- current version: `1.0.0`;
+- releases are published to Maven Central under
+  `io.github.ggomarighetti:jpa-rsql-search`;
+- the public API follows Semantic Versioning;
 - Spring Boot configuration metadata is included in the generated JAR;
 - the implementation is covered by unit, fuzz/property-style, and PostgreSQL
   integration tests.
@@ -791,9 +814,9 @@ Verify public Javadocs and release checks:
 ## Contributing
 
 Issues, bug reports, documentation improvements, and pull requests are welcome.
-Because the project is still pre-release, please keep proposed API changes
-small, explicit, and accompanied by tests or documentation updates where
-possible.
+Please keep proposed API changes small, explicit, and accompanied by tests or
+documentation updates where possible. PR titles should follow Conventional
+Commits so release notes and version bumps remain predictable.
 
 ## License
 
