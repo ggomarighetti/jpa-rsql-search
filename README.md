@@ -572,6 +572,13 @@ argument index, validation path, message, message template, and constraint.
 it includes path, message, template, and constraint type, but intentionally omits
 the invalid value.
 
+Protection limits are intentionally allowed to win over some semantic RSQL
+errors. After an operator is registered and a selector is declared, the compiler
+records comparison limits before selector-specific operator checks and argument
+conversion/validation. For oversized or adversarial input, callers may therefore
+receive `SearchProtectionException` instead of a more specific
+`RsqlValidationError` such as operator-not-allowed or argument-rule-violation.
+
 That makes custom rules declared with `SizeDef`, `PatternDef`, `MaxDef`, and
 other Hibernate Validator definitions behave like normal DTO validation from an
 API boundary perspective: you can transmit structured validation details to the
