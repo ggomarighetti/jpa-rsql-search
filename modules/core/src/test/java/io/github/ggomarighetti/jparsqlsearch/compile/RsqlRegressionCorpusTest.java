@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
-import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
+import io.github.ggomarighetti.jparsqlsearch.unit.TestRsqlEngines;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 class RsqlRegressionCorpusTest {
     @Test
     void weirdCorpusNeverEscapesUnexpectedThrowable() throws Exception {
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
         SearchDefinition<Product> definition = SearchPropertyFixtures.rsqlDefinition();
 
         for (String input : corpus()) {

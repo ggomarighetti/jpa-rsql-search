@@ -159,6 +159,9 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
+          <systemPropertyVariables>
+            <workspace.root>${maven.multiModuleProjectDirectory}</workspace.root>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
@@ -169,6 +172,9 @@
           <includes>
             <include>**/*IT.java</include>
           </includes>
+          <systemPropertyVariables>
+            <workspace.root>${maven.multiModuleProjectDirectory}</workspace.root>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>

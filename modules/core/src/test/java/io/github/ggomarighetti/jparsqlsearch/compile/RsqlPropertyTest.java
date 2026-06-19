@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
-import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
+import io.github.ggomarighetti.jparsqlsearch.unit.TestRsqlEngines;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,7 +24,7 @@ class RsqlPropertyTest {
 
     @Test
     void arbitraryRsqlInputNeverEscapesUnexpectedThrowable() {
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
         SearchDefinition<Product> definition = SearchPropertyFixtures.rsqlDefinition();
         RsqlInputGenerator generator = new RsqlInputGenerator(0xA08_001L);
 
@@ -42,7 +42,7 @@ class RsqlPropertyTest {
 
     @Test
     void selectorsOutsideWhitelistNeverCompile() {
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
         SearchDefinition<Product> definition = SearchPropertyFixtures.rsqlDefinition();
         RsqlInputGenerator generator = new RsqlInputGenerator(0xA08_002L);
 
@@ -60,7 +60,7 @@ class RsqlPropertyTest {
 
     @Test
     void disallowedOperatorsNeverCompile() {
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
         SearchDefinition<Product> definition = SearchPropertyFixtures.rsqlDefinition();
         RsqlInputGenerator generator = new RsqlInputGenerator(0xA08_003L);
 
@@ -78,65 +78,65 @@ class RsqlPropertyTest {
 
     @Test
     void exactRsqlLimitsAcceptNAndRejectNPlusOne() {
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku==A",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxLength("sku==A".length())))));
         assertLimitExceeded("sku==A",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxLength("sku==A".length() - 1))));
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "(((sku==A)))",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxParenthesesDepth(3)))));
         assertLimitExceeded("(((sku==A)))",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxParenthesesDepth(2))));
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku==A;name==B",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxNodes(3)))));
         assertLimitExceeded("sku==A;name==B",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxNodes(2))));
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku==A;name==B",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxComparisons(2)))));
         assertProtectionExceeded("sku==A;name==B",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxComparisons(1))),
                 "filter.max-comparisons");
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku==A;(name==B,amount==10)",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxDepth(3)))));
         assertLimitExceeded("sku==A;(name==B,amount==10)",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxDepth(2))));
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku==A;name==B;amount==10",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxLogicalChildren(3)))));
         assertLimitExceeded("sku==A;name==B;amount==10",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.rsql(rsql -> rsql.maxLogicalChildren(2))));
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku==A,name==B",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxOrBranches(2)))));
         assertProtectionExceeded("sku==A,name==B",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxOrBranches(1))),
                 "filter.max-or-branches");
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku=in=(A,B)",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxArgumentsPerComparison(2)))));
         assertProtectionExceeded("sku=in=(A,B)",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxArgumentsPerComparison(1))),
                 "filter.max-arguments-per-comparison");
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku=in=(A,B);name=in=(C,D)",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxArgumentsTotal(4)))));
         assertProtectionExceeded("sku=in=(A,B);name=in=(C,D)",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxArgumentsTotal(3))),
                 "filter.max-arguments-total");
 
-        assertDoesNotThrow(() -> new RsqlSearchGuard(PerplexhubRsqlEngines.defaults()).specification(
+        assertDoesNotThrow(() -> new RsqlSearchGuard(TestRsqlEngines.defaults()).specification(
                 "sku==ABC",
                 SearchPropertyFixtures.rsqlDefinition(limits -> limits.filter(filter -> filter.maxArgumentLength(3)))));
         assertProtectionExceeded("sku==ABC",
@@ -146,7 +146,7 @@ class RsqlPropertyTest {
 
     @Test
     void typedConversionsEitherCompileOrReturnRulesForbidden() {
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
         SearchDefinition<Product> definition = SearchPropertyFixtures.rsqlDefinition();
 
         List<String> valid = List.of(
@@ -180,7 +180,7 @@ class RsqlPropertyTest {
                 };
             }
         };
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.builder()
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.builder()
                 .backend(throwingBackend)
                 .build());
         SearchDefinition<Product> definition = SearchPropertyFixtures.rsqlDefinition();
@@ -194,7 +194,7 @@ class RsqlPropertyTest {
     }
 
     private static void assertLimitExceeded(String input, SearchDefinition<Product> definition) {
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
         RsqlFilterValidationException exception =
                 assertThrows(RsqlFilterValidationException.class, () -> guard.specification(input, definition));
         assertEquals(RsqlFilterValidationException.LIMIT_EXCEEDED, exception.code(), input);
@@ -204,7 +204,7 @@ class RsqlPropertyTest {
             String input,
             SearchDefinition<Product> definition,
             String expectedRule) {
-        RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+        RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
         SearchProtectionException exception =
                 assertThrows(SearchProtectionException.class, () -> guard.specification(input, definition));
         assertEquals(SearchProtectionException.PROTECTION_RULE_EXCEEDED, exception.code(), input);

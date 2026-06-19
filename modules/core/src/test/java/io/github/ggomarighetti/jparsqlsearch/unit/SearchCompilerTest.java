@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.unit;
 
-import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
+import io.github.ggomarighetti.jparsqlsearch.unit.TestRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.compile.CompiledSearch;
@@ -36,11 +36,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.data.jpa.domain.Specification.unrestricted;
 
 class SearchCompilerTest {
-    private final SearchCompiler compiler = new SearchCompiler(PerplexhubRsqlEngines.defaults(), SearchPolicy.defaults());
+    private final SearchCompiler compiler = new SearchCompiler(TestRsqlEngines.defaults(), SearchPolicy.defaults());
 
     @Test
     void constructsWithExplicitPolicy() {
-        SearchCompiler customCompiler = new SearchCompiler(PerplexhubRsqlEngines.defaults(), SearchPolicy.defaults());
+        SearchCompiler customCompiler = new SearchCompiler(TestRsqlEngines.defaults(), SearchPolicy.defaults());
 
         assertNotNull(customCompiler);
     }
@@ -201,7 +201,7 @@ class SearchCompilerTest {
                 .filter(filter -> filter.maxInValues(1))
                 .build();
         SearchCompiler customCompiler = new SearchCompiler(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(ApplicationConversionService.getSharedInstance())
                         .build(),
                 policy);
@@ -221,7 +221,7 @@ class SearchCompilerTest {
     void validatesDefinitionWithoutRsqlAndCachesSuccessfulValidationByInstance() {
         AtomicInteger validations = new AtomicInteger();
         SearchCompiler customCompiler = new SearchCompiler(
-                PerplexhubRsqlEngines.defaults(),
+                TestRsqlEngines.defaults(),
                 SearchPolicy.defaults(),
                 List.of(definition -> validations.incrementAndGet()));
         SearchDefinition<TestTypes.Product> definition = emptyDefinition();
@@ -237,7 +237,7 @@ class SearchCompilerTest {
     void doesNotCacheFailedDefinitionValidation() {
         AtomicInteger validations = new AtomicInteger();
         SearchCompiler customCompiler = new SearchCompiler(
-                PerplexhubRsqlEngines.defaults(),
+                TestRsqlEngines.defaults(),
                 SearchPolicy.defaults(),
                 List.of(definition -> {
                     validations.incrementAndGet();
@@ -260,7 +260,7 @@ class SearchCompilerTest {
     void validatesDefinitionOnlyOnceUnderConcurrentCompilation() throws Exception {
         AtomicInteger validations = new AtomicInteger();
         SearchCompiler customCompiler = new SearchCompiler(
-                PerplexhubRsqlEngines.defaults(),
+                TestRsqlEngines.defaults(),
                 SearchPolicy.defaults(),
                 List.of(definition -> validations.incrementAndGet()));
         SearchDefinition<TestTypes.Product> definition = emptyDefinition();

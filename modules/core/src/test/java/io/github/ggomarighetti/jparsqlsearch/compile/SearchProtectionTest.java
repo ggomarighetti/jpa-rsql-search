@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
-import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
+import io.github.ggomarighetti.jparsqlsearch.unit.TestRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchQueryValidationException;
@@ -43,7 +43,7 @@ class SearchProtectionTest {
                 .filter(filter -> filter.maxToManyPaths(0))
                 .build();
         RsqlSearchGuard guard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(
                                 org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
                         .build(),
@@ -68,7 +68,7 @@ class SearchProtectionTest {
                 .filter(filter -> filter.maxInValues(1))
                 .build();
         RsqlSearchGuard guard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(
                                 org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
                         .build(),
@@ -93,7 +93,7 @@ class SearchProtectionTest {
                 .filter(filter -> filter.maxOrJoinRoots(1))
                 .build();
         RsqlSearchGuard guard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(
                                 org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
                         .build(),
@@ -670,7 +670,7 @@ class SearchProtectionTest {
 
     private static SearchCompiler compiler(SearchPolicy policy) {
         return new SearchCompiler(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(
                                 org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
                         .build(),

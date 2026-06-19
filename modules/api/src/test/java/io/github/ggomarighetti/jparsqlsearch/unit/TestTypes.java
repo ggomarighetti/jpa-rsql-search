@@ -1,5 +1,8 @@
 package io.github.ggomarighetti.jparsqlsearch.unit;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -8,6 +11,7 @@ public final class TestTypes {
     private TestTypes() {
     }
 
+    @Entity
     public static class Product {
         public BigDecimal getPrice() {
             return null;
@@ -41,6 +45,12 @@ public final class TestTypes {
             return null;
         }
 
+        @ManyToOne
+        public Category getCategory() {
+            return null;
+        }
+
+        @OneToMany
         public List<Review> getReviews() {
             return null;
         }
@@ -51,6 +61,13 @@ public final class TestTypes {
         }
 
         public Status getStatus() {
+            return null;
+        }
+    }
+
+    @Entity
+    public static final class Category {
+        public String getName() {
             return null;
         }
     }

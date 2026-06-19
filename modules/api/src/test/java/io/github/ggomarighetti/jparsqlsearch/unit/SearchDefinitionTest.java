@@ -3,7 +3,6 @@ package io.github.ggomarighetti.jparsqlsearch.unit;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
-import io.github.ggomarighetti.jparsqlsearch.integration.bench.domain.Product;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.query.SearchQuery;
 import io.github.ggomarighetti.jparsqlsearch.sort.SearchSorting;
@@ -526,8 +525,8 @@ class SearchDefinitionTest {
 
     @Test
     void derivesRelationAndToManyTopologyAutomatically() {
-        SearchDefinition<Product> definition = SearchDefinition.builder()
-                .entity(Product.class)
+        SearchDefinition<TestTypes.Product> definition = SearchDefinition.builder()
+                .entity(TestTypes.Product.class)
                 .fields(fields -> {
                     fields.add("categoryName", String.class)
                             .path("category.name")

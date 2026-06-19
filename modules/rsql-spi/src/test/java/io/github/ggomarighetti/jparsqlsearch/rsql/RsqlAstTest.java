@@ -1,11 +1,12 @@
 package io.github.ggomarighetti.jparsqlsearch.rsql;
 
-import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorRegistry;
+import io.github.ggomarighetti.jparsqlsearch.rsql.operator.DefaultRsqlOperatorDescriptors;
+import io.github.ggomarighetti.jparsqlsearch.rsql.parser.DefaultRsqlParserFactory;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +36,11 @@ class RsqlAstTest {
 
     @Test
     void preservesLeftToRightComparisonOrder() {
-        RsqlAst ast = PerplexhubRsqlEngines.defaults().parse("email==a;name==b;taxId==c");
+        RsqlOperatorRegistry operators = new RsqlOperatorRegistry(DefaultRsqlOperatorDescriptors.all());
+        Node node = new DefaultRsqlParserFactory()
+                .create(operators)
+                .parse("email==a;name==b;taxId==c");
+        RsqlAst ast = RsqlAst.from(node, operators);
 
         assertEquals(
                 List.of("email", "name", "taxId"),

@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
-import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
+import io.github.ggomarighetti.jparsqlsearch.unit.TestRsqlEngines;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import cz.jirutka.rsql.parser.ast.Node;
@@ -44,13 +44,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RsqlSearchGuardTest {
-    private final RsqlSearchGuard guard = new RsqlSearchGuard(PerplexhubRsqlEngines.defaults());
+    private final RsqlSearchGuard guard = new RsqlSearchGuard(TestRsqlEngines.defaults());
 
     @Test
     void exposesConfiguredEngineAndPolicy() {
         RsqlSearchGuard conversionGuard =
-                new RsqlSearchGuard(PerplexhubRsqlEngines.builder().conversionService(ApplicationConversionService.getSharedInstance()).build());
-        SearchRsqlEngine engine = PerplexhubRsqlEngines.defaults();
+                new RsqlSearchGuard(TestRsqlEngines.builder().conversionService(ApplicationConversionService.getSharedInstance()).build());
+        SearchRsqlEngine engine = TestRsqlEngines.defaults();
         SearchPolicy policy = SearchPolicy.builder()
                 .filter(filter -> filter.maxComparisons(3))
                 .build();
@@ -80,7 +80,7 @@ class RsqlSearchGuardTest {
             }
         };
         RsqlSearchGuard throwingGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(ApplicationConversionService.getSharedInstance())
                         .backend(throwingBackend)
                         .build(),
@@ -104,7 +104,7 @@ class RsqlSearchGuardTest {
             }
         };
         RsqlSearchGuard throwingGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(ApplicationConversionService.getSharedInstance())
                         .backend(throwingBackend)
                         .build(),
@@ -132,7 +132,7 @@ class RsqlSearchGuardTest {
             }
         };
         RsqlSearchGuard throwingGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(ApplicationConversionService.getSharedInstance())
                         .backend(throwingBackend)
                         .build(),
@@ -156,7 +156,7 @@ class RsqlSearchGuardTest {
             }
         };
         RsqlSearchGuard distinctCapturingGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(ApplicationConversionService.getSharedInstance())
                         .backend(distinctCapturingBackend)
                         .build(),
@@ -187,7 +187,7 @@ class RsqlSearchGuardTest {
     void rejectsAllowedOperatorsThatTheDefaultJpaAdapterCannotExecute() {
         RsqlOperator customOperator = RsqlOperator.of("CUSTOM");
         RsqlSearchGuard customGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .operator(RsqlOperatorDescriptor.builder(customOperator)
                                 .symbol("=custom=")
                                 .build())
@@ -211,7 +211,7 @@ class RsqlSearchGuardTest {
         ApplicationConversionService conversionService = new ApplicationConversionService();
         conversionService.addConverter(String.class, CatalogCode.class, CatalogCode::new);
         RsqlSearchGuard customGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(conversionService)
                         .operator(RsqlOperatorDescriptor.builder(customOperator)
                                 .symbol("=catalogCode=")
@@ -238,7 +238,7 @@ class RsqlSearchGuardTest {
         ApplicationConversionService conversionService = new ApplicationConversionService();
         conversionService.addConverter(String.class, CatalogCode.class, CatalogCode::new);
         RsqlSearchGuard customGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(conversionService)
                         .operator(RsqlOperatorDescriptor.builder(customOperator)
                                 .symbol("=catalogCode=")
@@ -263,7 +263,7 @@ class RsqlSearchGuardTest {
             throw new IllegalStateException("converter not initialized");
         });
         RsqlSearchGuard customGuard = new RsqlSearchGuard(
-                PerplexhubRsqlEngines.builder()
+                TestRsqlEngines.builder()
                         .conversionService(conversionService)
                         .operator(RsqlOperatorDescriptor.builder(customOperator)
                                 .symbol("=brokenCode=")
@@ -471,7 +471,7 @@ class RsqlSearchGuardTest {
 
     @Test
     void reportsUnsupportedAstNodeAndUnregisteredOperator() throws ReflectiveOperationException {
-        RsqlRulesValidator validator = validator(filters(), PerplexhubRsqlEngines.defaults().operators());
+        RsqlRulesValidator validator = validator(filters(), TestRsqlEngines.defaults().operators());
 
         List<RsqlValidationError> unsupported = validator.validate(ast(new UnsupportedNode()));
         List<RsqlValidationError> unregistered = validator.validate(ast(new ComparisonNode(
@@ -638,9 +638,9 @@ class RsqlSearchGuardTest {
                             .filterable(filter -> filter.allow(EQUAL));
                 })
                 .build();
-        RsqlRulesValidator validator = validator(definition, PerplexhubRsqlEngines.defaults().operators());
+        RsqlRulesValidator validator = validator(definition, TestRsqlEngines.defaults().operators());
 
-        List<RsqlValidationError> errors = validator.validate(PerplexhubRsqlEngines.defaults()
+        List<RsqlValidationError> errors = validator.validate(TestRsqlEngines.defaults()
                 .parse("(categoryCode==laptops;sku==ABC),(sku==DEF)"));
 
         assertEquals(List.of(), errors);
@@ -662,7 +662,7 @@ class RsqlSearchGuardTest {
         assertEquals("category", rootPath.invoke(null, "category"));
         assertEquals("category", rootPath.invoke(null, "category.code"));
         assertNotNull(orMetadata.invoke(
-                validator(filters(), PerplexhubRsqlEngines.defaults().operators()),
+                validator(filters(), TestRsqlEngines.defaults().operators()),
                 new OrNode(List.of(new UnsupportedNode()))));
     }
 
@@ -754,7 +754,7 @@ class RsqlSearchGuardTest {
                 .filter(filter -> filter.maxArgumentsPerComparison(10))
                 .build();
         RsqlSearchGuard limitedGuard =
-                new RsqlSearchGuard(PerplexhubRsqlEngines.builder().conversionService(ApplicationConversionService.getSharedInstance()).build(), globalPolicy);
+                new RsqlSearchGuard(TestRsqlEngines.builder().conversionService(ApplicationConversionService.getSharedInstance()).build(), globalPolicy);
         SearchDefinition<TestTypes.Product> definition = filters(limits ->
                 limits.paging(paging -> paging.maxSize(7)));
 
