@@ -10,6 +10,7 @@ import java.util.jar.JarFile;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -34,7 +35,7 @@ class JarBoundaryIT {
             try (JarFile archive = new JarFile(jar.toFile())) {
                 archive.stream()
                         .filter(entry -> !entry.isDirectory())
-                        .map(entry -> entry.getName())
+                        .map(java.util.zip.ZipEntry::getName)
                         .filter(name -> name.endsWith(".class"))
                         .filter(name -> !name.equals("module-info.class"))
                         .forEach(name -> {
@@ -55,8 +56,8 @@ class JarBoundaryIT {
     void starterCarriesSpringBootDiscoveryMetadata() throws IOException {
         Path root = Path.of(System.getProperty("workspace.root"));
         try (JarFile starter = new JarFile(productJar(root, "jpa-rsql-search-spring-boot-starter").toFile())) {
-            assertTrue(starter.getEntry(
-                    "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports") != null);
+            assertNotNull(starter.getEntry(
+                    "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"));
         }
     }
 

@@ -38,6 +38,10 @@ import org.springframework.util.StringUtils;
  * should use this type instead of invoking internal validators independently.
  */
 public final class SearchCompiler {
+    private static final String DEFINITION_MUST_NOT_BE_NULL = "definition must not be null";
+    private static final String PAGEABLE_MUST_NOT_BE_NULL = "pageable must not be null";
+    private static final String POLICY_MUST_NOT_BE_NULL = "policy must not be null";
+
     private final RsqlSearchGuard rsqlSearchGuard;
     private final SearchQueryGuard searchQueryGuard;
     private final SearchPageableGuard searchPageableGuard;
@@ -65,7 +69,7 @@ public final class SearchCompiler {
             SearchPolicy policy,
             Collection<? extends SearchDefinitionValidator> definitionValidators) {
         Objects.requireNonNull(engine, "engine must not be null");
-        this.policy = Objects.requireNonNull(policy, "policy must not be null");
+        this.policy = Objects.requireNonNull(policy, POLICY_MUST_NOT_BE_NULL);
         this.rsqlSearchGuard = new RsqlSearchGuard(engine, policy, definitionValidators);
         this.searchQueryGuard = new SearchQueryGuard(policy);
         this.searchPageableGuard = new SearchPageableGuard(policy);
@@ -123,7 +127,7 @@ public final class SearchCompiler {
             Pageable pageable,
             SearchDefinition<T> definition,
             Specification<T>... specifications) {
-        Objects.requireNonNull(definition, "definition must not be null");
+        Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
         rsqlSearchGuard.validateDefinition(definition);
         SearchProtectionContext protection =
                 new SearchProtectionContext(definition.effectiveLimits(policy), mode);
@@ -149,7 +153,7 @@ public final class SearchCompiler {
             SearchDefinition<T> definition,
             SearchProtectionContext protection,
             Specification<T>... specifications) {
-        Objects.requireNonNull(definition, "definition must not be null");
+        Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
         Objects.requireNonNull(specifications, "specifications must not be null");
 
         List<Specification<T>> merged = new ArrayList<>(specifications.length + 2);
@@ -182,11 +186,11 @@ public final class SearchCompiler {
         }
 
         SearchQueryGuard(SearchPolicy policy) {
-            this.policy = Objects.requireNonNull(policy, "policy must not be null");
+            this.policy = Objects.requireNonNull(policy, POLICY_MUST_NOT_BE_NULL);
         }
 
         <T> Specification<T> specification(String query, SearchDefinition<T> definition) {
-            Objects.requireNonNull(definition, "definition must not be null");
+            Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
             SearchProtectionContext protection = new SearchProtectionContext(
                     effectivePolicy(definition), SearchProtectionContext.Mode.PAGE);
             return specification(query, definition, protection);
@@ -196,7 +200,7 @@ public final class SearchCompiler {
                 String query,
                 SearchDefinition<T> definition,
                 SearchProtectionContext protection) {
-            Objects.requireNonNull(definition, "definition must not be null");
+            Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
             Objects.requireNonNull(protection, "protection must not be null");
             if (!StringUtils.hasText(query)) {
                 protection.completeQuery();
@@ -269,8 +273,6 @@ public final class SearchCompiler {
     }
 
     static final class SearchPageableGuard {
-        private static final String DEFINITION_MUST_NOT_BE_NULL = "definition must not be null";
-
         private final SearchPolicy policy;
 
         SearchPageableGuard() {
@@ -278,11 +280,11 @@ public final class SearchCompiler {
         }
 
         SearchPageableGuard(SearchPolicy policy) {
-            this.policy = Objects.requireNonNull(policy, "policy must not be null");
+            this.policy = Objects.requireNonNull(policy, POLICY_MUST_NOT_BE_NULL);
         }
 
         Pageable pageable(Pageable pageable, SearchDefinition<?> definition) {
-            Objects.requireNonNull(pageable, "pageable must not be null");
+            Objects.requireNonNull(pageable, PAGEABLE_MUST_NOT_BE_NULL);
             Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
             SearchPolicy effectivePolicy = effectivePolicy(definition);
             return pageable(
@@ -295,7 +297,7 @@ public final class SearchCompiler {
                 Pageable pageable,
                 SearchDefinition<?> definition,
                 SearchProtectionContext protection) {
-            Objects.requireNonNull(pageable, "pageable must not be null");
+            Objects.requireNonNull(pageable, PAGEABLE_MUST_NOT_BE_NULL);
             Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
             Objects.requireNonNull(protection, "protection must not be null");
             SearchPolicy effectivePolicy = protection.policy();
@@ -438,7 +440,7 @@ public final class SearchCompiler {
                 Pageable source,
                 SearchDefinition<?> definition) {
             Objects.requireNonNull(source, "source must not be null");
-            Objects.requireNonNull(definition, "definition must not be null");
+            Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
             return source.getSort().stream()
                     .map(order -> definition.field(order.getProperty()).orElse(null))
                     .filter(Objects::nonNull)
@@ -446,7 +448,7 @@ public final class SearchCompiler {
         }
 
         static Pageable withoutSort(Pageable pageable) {
-            Objects.requireNonNull(pageable, "pageable must not be null");
+            Objects.requireNonNull(pageable, PAGEABLE_MUST_NOT_BE_NULL);
             return PageRequest.of(
                     pageable.getPageNumber(),
                     pageable.getPageSize(),
@@ -459,7 +461,7 @@ public final class SearchCompiler {
                 SearchDefinition<T> definition) {
             Objects.requireNonNull(specification, "specification must not be null");
             Objects.requireNonNull(sourceSort, "sourceSort must not be null");
-            Objects.requireNonNull(definition, "definition must not be null");
+            Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
             List<Sort.Order> requestedOrders = sourceSort.toList();
             return (root, query, criteriaBuilder) -> {
                 Predicate predicate = specification.toPredicate(root, query, criteriaBuilder);

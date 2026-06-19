@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ArchitectureRulesTest {
     private static final List<String> PRODUCT_MODULES = List.of(
@@ -61,14 +61,14 @@ class ArchitectureRulesTest {
 
         Set<String> expectedPatterns = new HashSet<>();
         PRODUCT_MODULES.forEach(module -> expectedPatterns.add(module + ":**"));
-        assertTrue(
-                mappedPatterns.equals(expectedPatterns),
-                () -> "Sonar architecture patterns differ from the product modules: "
-                        + mappedPatterns);
-        assertTrue(
-                mappedLabels.equals(new HashSet<>(PRODUCT_MODULES)),
-                () -> "Sonar architecture labels must match the Maven artifactIds: "
-                        + mappedLabels);
+        assertEquals(
+                expectedPatterns,
+                mappedPatterns,
+                () -> "Sonar architecture patterns differ from the product modules: " + mappedPatterns);
+        assertEquals(
+                new HashSet<>(PRODUCT_MODULES),
+                mappedLabels,
+                () -> "Sonar architecture labels must match the Maven artifactIds: " + mappedLabels);
     }
 
     @Test
