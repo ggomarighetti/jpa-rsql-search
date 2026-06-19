@@ -31,8 +31,6 @@ jobs:
       pull-requests: read
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      SONAR_ADMIN_TOKEN: ${{ secrets.SONAR_ADMIN_TOKEN }}
-      SONAR_ARCHITECTURE_TOKEN: ${{ secrets.SONAR_ADMIN_TOKEN || secrets.SONAR_TOKEN }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
@@ -101,15 +99,15 @@ jobs:
         run: node scripts/sync-sonar-architecture-model.mjs --check
 
       - name: Sync Sonar intended architecture
-        if: ${{ env.SONAR_ARCHITECTURE_TOKEN != '' }}
+        if: ${{ env.SONAR_TOKEN != '' }}
         env:
           SONAR_ORGANIZATION_ID: df8bd268-70a4-4338-a093-2cfebc6ad4ff
           SONAR_PROJECT_KEY: ggomarighetti_jpa-rsql-search
         run: node scripts/sync-sonar-architecture-model.mjs
 
       - name: Skip Sonar intended architecture sync
-        if: ${{ env.SONAR_ARCHITECTURE_TOKEN == '' }}
-        run: echo "No Sonar architecture token is configured; keeping the validated model declaration without changing SonarCloud."
+        if: ${{ env.SONAR_TOKEN == '' }}
+        run: echo "SONAR_TOKEN secret is not configured; keeping the validated model declaration without changing SonarCloud."
 
       - name: SonarQube Cloud analysis
         if: ${{ env.SONAR_TOKEN != '' }}

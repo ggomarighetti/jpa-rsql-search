@@ -4,10 +4,7 @@ import { resolve } from "node:path";
 const projectKey = process.env.SONAR_PROJECT_KEY ?? "ggomarighetti_jpa-rsql-search";
 const organizationId =
   process.env.SONAR_ORGANIZATION_ID ?? "df8bd268-70a4-4338-a093-2cfebc6ad4ff";
-const token =
-  process.env.SONAR_ARCHITECTURE_TOKEN ??
-  process.env.SONAR_ADMIN_TOKEN ??
-  process.env.SONAR_TOKEN;
+const token = process.env.SONAR_TOKEN;
 const checkOnly = process.argv.includes("--check");
 const modelPath = resolve(".sonar", "architecture-model.json");
 const expectedPatterns = new Set([
@@ -29,7 +26,7 @@ if (checkOnly) {
 
 if (!token) {
   throw new Error(
-    "SONAR_ARCHITECTURE_TOKEN, SONAR_ADMIN_TOKEN, or SONAR_TOKEN is required to synchronize the architecture model.",
+    "SONAR_TOKEN is required to synchronize the architecture model.",
   );
 }
 

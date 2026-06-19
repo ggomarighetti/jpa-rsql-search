@@ -58,10 +58,11 @@ El analisis del commit `daed1f3` en el PR #26 confirmo `Tangles = 0`,
 `e0b458c` mantuvo tres `Oversized` aun reduciendo API, RSQL SPI y core a 14
 hojas, porque el umbral se recalcula estadisticamente. La solucion final
 versiona `.sonar/architecture-model.json`, mapea los seis modulos fisicos y lo
-sincroniza antes de cada analisis cuando existe un `SONAR_ADMIN_TOKEN`. El
-`SONAR_TOKEN` existente conserva su alcance limitado a analisis. La
+sincroniza antes de cada analisis con el mismo `SONAR_TOKEN` usado por
+SonarCloud. Ese token debe pertenecer a un usuario con permisos suficientes
+para administrar el modelo de arquitectura y ejecutar el analisis. La
 confirmacion autoritativa final corresponde al siguiente analisis SonarCloud
-del mismo PR despues de instalar el secreto administrativo.
+del mismo PR despues de activar esos permisos sobre el token existente.
 
 ## 1. Flaw: Tangle RSQL
 
