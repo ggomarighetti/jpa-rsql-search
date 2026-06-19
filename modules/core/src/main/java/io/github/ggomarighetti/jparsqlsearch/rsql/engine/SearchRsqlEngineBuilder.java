@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.format.support.DefaultFormattingConversionService;
 
 /** Builder for {@link SearchRsqlEngine}. */
 public final class SearchRsqlEngineBuilder {
@@ -23,7 +23,7 @@ public final class SearchRsqlEngineBuilder {
     private final List<RsqlJpaOperatorBinding> jpaOperators = new ArrayList<>();
     private RsqlParserFactory parserFactory = new DefaultRsqlParserFactory();
     private RsqlBackendAdapter backend;
-    private ConversionService conversionService = ApplicationConversionService.getSharedInstance();
+    private ConversionService conversionService = new DefaultFormattingConversionService();
 
     SearchRsqlEngineBuilder(RsqlBackendAdapter backend) {
         this.backend = Objects.requireNonNull(backend, "backend must not be null");
