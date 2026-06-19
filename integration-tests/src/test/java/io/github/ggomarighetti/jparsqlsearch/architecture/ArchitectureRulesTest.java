@@ -50,25 +50,16 @@ class ArchitectureRulesTest {
         JsonNode model = new ObjectMapper()
                 .readTree(Files.readString(root.resolve(".sonar/architecture-model.json")));
         Set<String> mappedPatterns = new HashSet<>();
-        Set<String> mappedLabels = new HashSet<>();
         model.path("perspectives")
                 .path(0)
                 .path("groups")
-                .forEach(group -> {
-                    mappedLabels.add(group.path("label").asText());
-                    group.path("patterns")
-                            .forEach(pattern -> mappedPatterns.add(pattern.asText()));
-                });
+                .forEach(group -> collectArchitectureTypePatterns(group, null, "", mappedPatterns));
 
         Set<String> expectedPatterns = expectedSonarTypePatterns(root);
         assertEquals(
                 expectedPatterns,
                 mappedPatterns,
                 () -> "Sonar architecture patterns differ from production Java types: " + mappedPatterns);
-        assertEquals(
-                expectedPatterns,
-                mappedLabels,
-                () -> "Sonar architecture labels must match the production Java type patterns: " + mappedLabels);
     }
 
     @Test
@@ -120,5 +111,35 @@ class ArchitectureRulesTest {
             }
         }
         return patterns;
+    }
+
+    private static void collectArchitectureTypePatterns(
+            JsonNode group,
+            String module,
+            String namespace,
+            Set<String> mappedPatterns) {
+        String label = group.path("label").asText();
+        String currentModule = module == null ? label : module;
+        String currentNamespace = module == null ? "" : namespace.isBlank() ? label : namespace + "." + label;
+        JsonNode children = group.path("groups");
+        boolean leaf = !children.isArray() || children.isEmpty();
+        String expectedPattern = module == null
+                ? currentModule + ":**"
+                : currentModule + ":" + currentNamespace + (leaf ? "" : ".**");
+
+        assertEquals(
+                1,
+                group.path("patterns").size(),
+                () -> "Every Sonar architecture group must declare exactly one pattern: " + label);
+        assertEquals(
+                expectedPattern,
+                group.path("patterns").path(0).asText(),
+                () -> "Sonar architecture group pattern does not match its namespace path: " + label);
+
+        if (leaf) {
+            mappedPatterns.add(expectedPattern);
+            return;
+        }
+        children.forEach(child -> collectArchitectureTypePatterns(child, currentModule, currentNamespace, mappedPatterns));
     }
 }

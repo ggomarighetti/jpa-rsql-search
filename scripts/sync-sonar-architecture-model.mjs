@@ -7,6 +7,8 @@ const organizationId =
 const token = process.env.SONAR_TOKEN;
 const checkOnly = process.argv.includes("--check");
 const modelPath = resolve(".sonar", "architecture-model.json");
+const perspectiveLabel = "V2 Maven modules";
+const perspectiveDescription = "Direct modular boundaries for jpa-rsql-search v2.";
 const productModules = [
   "jpa-rsql-search-api",
   "jpa-rsql-search-rsql-spi",
@@ -15,7 +17,7 @@ const productModules = [
   "jpa-rsql-search-perplexhub",
   "jpa-rsql-search-spring-boot-starter",
 ];
-const expectedPatterns = await collectExpectedPatterns();
+const expectedModel = await buildExpectedModel();
 
 const model = JSON.parse(await readFile(modelPath, "utf8"));
 validateModel(model);
@@ -99,61 +101,35 @@ async function sonarRequest(url, options) {
 }
 
 function validateModel(candidate) {
-  const perspectives = candidate?.perspectives;
-  if (!Array.isArray(perspectives) || perspectives.length !== 1) {
-    throw new Error("The architecture declaration must contain one Java perspective.");
-  }
-  const [perspective] = perspectives;
-  if (perspective.language !== "java" || perspective.qualifiers !== "namespace") {
-    throw new Error("The architecture perspective must target Java namespaces.");
-  }
-  const groups = perspective.groups ?? [];
-  const labels = new Set();
-  const patterns = new Set();
-  for (const group of groups) {
-    const groupPatterns = group.patterns ?? [];
-    if ((group.groups ?? []).length > 0) {
-      throw new Error(
-        "The architecture declaration must keep production Java types as flat Sonar groups.",
-      );
-    }
-    if (groupPatterns.length !== 1 || groupPatterns[0] !== group.label) {
-      throw new Error(
-        "Each Sonar architecture group must map exactly one production Java type and use the same label.",
-      );
-    }
-    labels.add(group.label);
-    patterns.add(groupPatterns[0]);
-  }
-  if (
-    patterns.size !== expectedPatterns.size ||
-    labels.size !== expectedPatterns.size ||
-    [...expectedPatterns].some((pattern) => !patterns.has(pattern) || !labels.has(pattern))
-  ) {
-    throw new Error("The architecture declaration must map every production Java type once.");
-  }
-  if ((perspective.constraints ?? []).length > 0) {
+  if (JSON.stringify(candidate) !== JSON.stringify(expectedModel)) {
     throw new Error(
-      "Sonar intended architecture constraints are intentionally kept out of the synchronized model; Maven and ArchUnit enforce the DAG.",
+      "The architecture declaration must mirror the Maven module namespace tree derived from production Java sources.",
     );
   }
 }
 
-async function collectExpectedPatterns() {
-  const patterns = [];
+async function buildExpectedModel() {
+  const perspective = {
+    label: perspectiveLabel,
+    description: perspectiveDescription,
+    language: "java",
+    qualifiers: "namespace",
+    groups: [],
+  };
   for (const moduleName of productModules) {
     const sourceRoot = resolve(moduleName, "src", "main", "java");
     const files = await collectJavaFiles(sourceRoot);
-    patterns.push(
-      ...files.map((file) => {
-        const className = relative(sourceRoot, file)
-          .replace(/[\\/]/g, ".")
-          .replace(/\.java$/, "");
-        return `${moduleName}:${className}`;
-      }),
-    );
+    const moduleGroup = architectureGroup(moduleName, `${moduleName}:**`);
+    for (const file of files) {
+      const className = relative(sourceRoot, file)
+        .replace(/[\\/]/g, ".")
+        .replace(/\.java$/, "");
+      addNamespacePath(moduleGroup, moduleName, className);
+    }
+    sortGroups(moduleGroup.groups);
+    perspective.groups.push(moduleGroup);
   }
-  return new Set(patterns);
+  return { perspectives: [perspective] };
 }
 
 async function collectJavaFiles(directory) {
@@ -168,4 +144,36 @@ async function collectJavaFiles(directory) {
     }),
   );
   return files.flat().sort();
+}
+
+function architectureGroup(label, pattern) {
+  return { label, patterns: [pattern] };
+}
+
+function addNamespacePath(moduleGroup, moduleName, className) {
+  let current = moduleGroup;
+  const segments = className.split(".");
+  const namespacePrefix = [];
+  for (const [index, segment] of segments.entries()) {
+    namespacePrefix.push(segment);
+    current.groups ??= [];
+    let child = current.groups.find((candidate) => candidate.label === segment);
+    if (!child) {
+      const namespace = namespacePrefix.join(".");
+      const pattern =
+        index === segments.length - 1
+          ? `${moduleName}:${namespace}`
+          : `${moduleName}:${namespace}.**`;
+      child = architectureGroup(segment, pattern);
+      current.groups.push(child);
+    }
+    current = child;
+  }
+}
+
+function sortGroups(groups = []) {
+  groups.sort((left, right) => left.label.localeCompare(right.label));
+  for (const group of groups) {
+    sortGroups(group.groups);
+  }
 }
