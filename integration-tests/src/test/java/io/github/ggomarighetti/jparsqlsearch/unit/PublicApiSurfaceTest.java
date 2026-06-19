@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
+import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
 import java.lang.reflect.Modifier;
@@ -19,14 +20,13 @@ class PublicApiSurfaceTest {
         for (String type : List.of(
                 "RsqlRulesValidator",
                 "RsqlSearchGuard",
-                "SearchCompilationMode",
-                "SearchPageableGuard",
-                "SearchProtectionContext",
-                "SearchQueryGuard",
-                "SearchSpecificationSorting")) {
+                "SearchProtectionContext")) {
             Class<?> implementation =
                     Class.forName("io.github.ggomarighetti.jparsqlsearch.compile." + type);
             assertFalse(Modifier.isPublic(implementation.getModifiers()), type);
+        }
+        for (Class<?> implementation : SearchCompiler.class.getDeclaredClasses()) {
+            assertFalse(Modifier.isPublic(implementation.getModifiers()), implementation.getSimpleName());
         }
         for (String type : List.of(
                 "JpaRsqlSearchAutoConfiguration",
@@ -76,7 +76,18 @@ class PublicApiSurfaceTest {
                 "io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorDescriptor",
                 "io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorRegistry",
                 "io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlJpaPredicateFactory",
-                "io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlJpaPredicateContext")) {
+                "io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlJpaPredicateContext",
+                "io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinitionFactory",
+                "io.github.ggomarighetti.jparsqlsearch.filter.DefaultFilterOperators",
+                "io.github.ggomarighetti.jparsqlsearch.filter.FilterValidationError",
+                "io.github.ggomarighetti.jparsqlsearch.query.SearchQuerySpecification",
+                "io.github.ggomarighetti.jparsqlsearch.validation.HibernateRuleValidator",
+                "io.github.ggomarighetti.jparsqlsearch.rsql.parser.DefaultRsqlParserFactory",
+                "io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineCustomizer",
+                "io.github.ggomarighetti.jparsqlsearch.compile.SearchCompilationMode",
+                "io.github.ggomarighetti.jparsqlsearch.compile.SearchPageableGuard",
+                "io.github.ggomarighetti.jparsqlsearch.compile.SearchQueryGuard",
+                "io.github.ggomarighetti.jparsqlsearch.compile.SearchSpecificationSorting")) {
             assertThrows(ClassNotFoundException.class, () -> Class.forName(type), type);
         }
     }

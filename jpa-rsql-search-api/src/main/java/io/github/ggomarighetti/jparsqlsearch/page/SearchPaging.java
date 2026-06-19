@@ -1,7 +1,7 @@
 package io.github.ggomarighetti.jparsqlsearch.page;
 
-import io.github.ggomarighetti.jparsqlsearch.validation.HibernateRuleValidator;
 import io.github.ggomarighetti.jparsqlsearch.validation.RuleViolation;
+import io.github.ggomarighetti.jparsqlsearch.validation.RuleViolation.RuleValidator;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.List;
@@ -11,16 +11,16 @@ import org.hibernate.validator.cfg.ConstraintDef;
 /** Definition-level Bean Validation rules for page number and page size. */
 public final class SearchPaging implements AutoCloseable {
     private static final SearchPaging DISABLED =
-            new SearchPaging(false, HibernateRuleValidator.none(), HibernateRuleValidator.none());
+            new SearchPaging(false, RuleValidator.none(), RuleValidator.none());
 
     private final boolean enabled;
-    private final HibernateRuleValidator<Integer> page;
-    private final HibernateRuleValidator<Integer> size;
+    private final RuleValidator<Integer> page;
+    private final RuleValidator<Integer> size;
 
     private SearchPaging(
             boolean enabled,
-            HibernateRuleValidator<Integer> page,
-            HibernateRuleValidator<Integer> size) {
+            RuleValidator<Integer> page,
+            RuleValidator<Integer> size) {
         this.enabled = enabled;
         this.page = Objects.requireNonNull(page, "page must not be null");
         this.size = Objects.requireNonNull(size, "size must not be null");
@@ -151,8 +151,8 @@ public final class SearchPaging implements AutoCloseable {
         public SearchPaging build() {
             return new SearchPaging(
                     true,
-                    HibernateRuleValidator.forType(Integer.class, page.rules()),
-                    HibernateRuleValidator.forType(Integer.class, size.rules()));
+                    RuleValidator.forType(Integer.class, page.rules()),
+                    RuleValidator.forType(Integer.class, size.rules()));
         }
     }
 

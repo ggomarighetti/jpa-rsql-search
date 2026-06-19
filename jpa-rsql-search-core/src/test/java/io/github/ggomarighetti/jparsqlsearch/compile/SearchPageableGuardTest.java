@@ -1,5 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
+import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler.SearchPageableGuard;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.page.validation.SearchPageableValidationException;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;

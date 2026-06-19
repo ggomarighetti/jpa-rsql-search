@@ -5,7 +5,6 @@ import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubR
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendAdapter;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
-import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineCustomizer;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngines;
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import jakarta.persistence.EntityManager;

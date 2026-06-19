@@ -1,5 +1,7 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
+import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler.SearchPageableGuard;
+import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler.SearchQueryGuard;
 import io.github.ggomarighetti.jparsqlsearch.unit.TestRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
@@ -134,7 +136,8 @@ class SearchProtectionTest {
                 .findFirst()
                 .orElseThrow();
 
-        SearchProtectionContext protection = new SearchProtectionContext(policy, SearchCompilationMode.PAGE);
+        SearchProtectionContext protection =
+                new SearchProtectionContext(policy, SearchProtectionContext.Mode.PAGE);
         var nameField = definition.field("name").orElseThrow();
         List<String> escapedArguments = List.of("abc\\*");
         assertDoesNotThrow(() -> protection.recordComparison(
@@ -143,7 +146,8 @@ class SearchProtectionTest {
                 1,
                 escapedArguments));
 
-        SearchProtectionContext wildcardProtection = new SearchProtectionContext(policy, SearchCompilationMode.PAGE);
+        SearchProtectionContext wildcardProtection =
+                new SearchProtectionContext(policy, SearchProtectionContext.Mode.PAGE);
         List<String> wildcardArguments = List.of("abc*");
         SearchProtectionException exception = thrownBy(
                 SearchProtectionException.class,
@@ -164,7 +168,7 @@ class SearchProtectionTest {
                 SearchProtectionException.class,
                 () -> new SearchProtectionContext(
                         SearchPolicy.builder().filter(filter -> filter.maxNotInValues(1)).build(),
-                        SearchCompilationMode.PAGE)
+                        SearchProtectionContext.Mode.PAGE)
                         .recordComparison(
                                 definition.field("amount").orElseThrow(),
                                 descriptor(NOT_IN),
@@ -174,7 +178,7 @@ class SearchProtectionTest {
                 SearchProtectionException.class,
                 () -> new SearchProtectionContext(
                         SearchPolicy.builder().filter(filter -> filter.maxBetweenRanges(0)).build(),
-                        SearchCompilationMode.PAGE)
+                        SearchProtectionContext.Mode.PAGE)
                         .recordComparison(
                                 definition.field("amount").orElseThrow(),
                                 descriptor(BETWEEN),
@@ -184,7 +188,7 @@ class SearchProtectionTest {
                 SearchProtectionException.class,
                 () -> new SearchProtectionContext(
                         SearchPolicy.builder().filter(filter -> filter.maxNegatedComparisons(0)).build(),
-                        SearchCompilationMode.PAGE)
+                        SearchProtectionContext.Mode.PAGE)
                         .recordComparison(
                                 definition.field("amount").orElseThrow(),
                                 descriptor(NOT_EQUAL),
@@ -194,7 +198,7 @@ class SearchProtectionTest {
                 SearchProtectionException.class,
                 () -> new SearchProtectionContext(
                         SearchPolicy.builder().filter(filter -> filter.maxNegatedComparisons(0)).build(),
-                        SearchCompilationMode.PAGE)
+                        SearchProtectionContext.Mode.PAGE)
                         .recordComparison(
                                 definition.field("amount").orElseThrow(),
                                 descriptor(NOT_BETWEEN),
@@ -204,7 +208,7 @@ class SearchProtectionTest {
                 SearchProtectionException.class,
                 () -> new SearchProtectionContext(
                         SearchPolicy.builder().filter(filter -> filter.maxNegatedComparisons(0)).build(),
-                        SearchCompilationMode.PAGE)
+                        SearchProtectionContext.Mode.PAGE)
                         .recordComparison(
                                 definition.field("amount").orElseThrow(),
                                 descriptor(NOT_NULL),
@@ -417,10 +421,11 @@ class SearchProtectionTest {
                 .filter(filter -> filter.requireDistinctForToMany(true))
                 .build();
         SearchDefinition<TestTypes.Product> definition = comparisonDefinition(policy);
-        SearchProtectionContext protection = new SearchProtectionContext(policy, SearchCompilationMode.PAGE);
+        SearchProtectionContext protection =
+                new SearchProtectionContext(policy, SearchProtectionContext.Mode.PAGE);
 
         assertEquals(policy, protection.policy());
-        assertEquals(SearchCompilationMode.PAGE, protection.mode());
+        assertEquals(SearchProtectionContext.Mode.PAGE, protection.mode());
         protection.recordComparison(
                 definition.field("reviewRating").orElseThrow(),
                 descriptor(EQUAL),
@@ -451,13 +456,13 @@ class SearchProtectionTest {
                 SearchProtectionException.class,
                 () -> new SearchProtectionContext(SearchPolicy.builder()
                         .paging(paging -> paging.slice(slice -> slice.enabled(false)))
-                        .build(), SearchCompilationMode.SLICE)
+                        .build(), SearchProtectionContext.Mode.SLICE)
                         .recordPaging(PageRequest.of(0, 10)));
         SearchProtectionException sliceSize = thrownBy(
                 SearchProtectionException.class,
                 () -> new SearchProtectionContext(SearchPolicy.builder()
                         .paging(paging -> paging.slice(slice -> slice.maxSize(5)))
-                        .build(), SearchCompilationMode.SLICE)
+                        .build(), SearchProtectionContext.Mode.SLICE)
                         .recordPaging(PageRequest.of(0, 10)));
         SearchProtectionException distinctCount = thrownBy(
                 SearchProtectionException.class,
@@ -678,7 +683,7 @@ class SearchProtectionTest {
     }
 
     private static SearchProtectionContext context(SearchPolicy policy) {
-        return new SearchProtectionContext(policy, SearchCompilationMode.PAGE);
+        return new SearchProtectionContext(policy, SearchProtectionContext.Mode.PAGE);
     }
 
     private static RsqlOperatorDescriptor descriptor(RsqlOperator operator) {

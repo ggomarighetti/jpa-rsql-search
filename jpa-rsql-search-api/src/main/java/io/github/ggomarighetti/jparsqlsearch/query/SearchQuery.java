@@ -1,7 +1,7 @@
 package io.github.ggomarighetti.jparsqlsearch.query;
 
-import io.github.ggomarighetti.jparsqlsearch.validation.HibernateRuleValidator;
 import io.github.ggomarighetti.jparsqlsearch.validation.RuleViolation;
+import io.github.ggomarighetti.jparsqlsearch.validation.RuleViolation.RuleValidator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,18 +15,18 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public final class SearchQuery<T> implements AutoCloseable {
     private static final SearchQuery<?> DISABLED =
-            new SearchQuery<>(false, HibernateRuleValidator.none(), false, null);
+            new SearchQuery<>(false, RuleValidator.none(), false, null);
 
     private final boolean enabled;
-    private final HibernateRuleValidator<String> validator;
+    private final RuleValidator<String> validator;
     private final boolean hasRules;
-    private final SearchQuerySpecification<T> specification;
+    private final SpecificationFactory<T> specification;
 
     private SearchQuery(
             boolean enabled,
-            HibernateRuleValidator<String> validator,
+            RuleValidator<String> validator,
             boolean hasRules,
-            SearchQuerySpecification<T> specification) {
+            SpecificationFactory<T> specification) {
         this.enabled = enabled;
         this.validator = Objects.requireNonNull(validator, "validator must not be null");
         this.hasRules = hasRules;
@@ -113,13 +113,29 @@ public final class SearchQuery<T> implements AutoCloseable {
     }
 
     /**
+     * Builds an entity specification from validated free-text input.
+     *
+     * @param <T> entity type
+     */
+    @FunctionalInterface
+    public interface SpecificationFactory<T> {
+        /**
+         * Converts query text into a JPA specification.
+         *
+         * @param query validated query text
+         * @return specification to execute
+         */
+        Specification<T> toSpecification(String query);
+    }
+
+    /**
      * Builder for an enabled query definition.
      *
      * @param <T> entity type
      */
     public static final class Builder<T> {
         private final List<ConstraintDef<?, ?>> rules = new ArrayList<>();
-        private SearchQuerySpecification<T> specification;
+        private SpecificationFactory<T> specification;
 
         private Builder() {
         }
@@ -142,7 +158,7 @@ public final class SearchQuery<T> implements AutoCloseable {
          * @return this builder
          * @throws IllegalArgumentException when a factory was already declared
          */
-        public Builder<T> specification(SearchQuerySpecification<T> specification) {
+        public Builder<T> specification(SpecificationFactory<T> specification) {
             if (this.specification != null) {
                 throw new IllegalArgumentException("query specification is already declared");
             }
@@ -162,7 +178,7 @@ public final class SearchQuery<T> implements AutoCloseable {
             }
             return new SearchQuery<>(
                     true,
-                    HibernateRuleValidator.forType(String.class, List.copyOf(rules)),
+                    RuleValidator.forType(String.class, List.copyOf(rules)),
                     !rules.isEmpty(),
                     specification);
         }

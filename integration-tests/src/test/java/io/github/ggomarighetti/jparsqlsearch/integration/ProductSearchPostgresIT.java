@@ -11,7 +11,7 @@ import io.github.ggomarighetti.jparsqlsearch.integration.bench.dao.ProductSeeder
 import io.github.ggomarighetti.jparsqlsearch.integration.bench.domain.Product;
 import io.github.ggomarighetti.jparsqlsearch.integration.postgres.PostgresTestEnvironment;
 import io.github.ggomarighetti.jparsqlsearch.jpa.JpaSearchDefinitionValidator;
-import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineCustomizer;
+import io.github.ggomarighetti.jparsqlsearch.autoconfigure.SearchRsqlEngineCustomizer;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
 import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.RsqlOperatorDescriptor;
 import java.util.List;

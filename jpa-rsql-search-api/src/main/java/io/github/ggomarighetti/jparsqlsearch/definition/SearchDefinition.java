@@ -206,6 +206,27 @@ public final class SearchDefinition<T> implements AutoCloseable {
         query.close();
     }
 
+    /**
+     * Creates definition builders with application-wide path limits.
+     *
+     * @param policy application-wide policy
+     */
+    public record Factory(SearchPolicy policy) {
+        /** Creates a factory. */
+        public Factory {
+            Objects.requireNonNull(policy, "policy must not be null");
+        }
+
+        /**
+         * Creates a definition builder.
+         *
+         * @return definition builder initialized with this factory's policy
+         */
+        public EntityStep builder() {
+            return SearchDefinition.builder(policy);
+        }
+    }
+
     /** First DSL step that requires the root entity type. */
     public static final class EntityStep {
         private final SearchPolicy policy;

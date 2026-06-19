@@ -94,13 +94,19 @@ The new JPA-specific contracts live under
 | `exception.SearchQueryValidationException` | `query.validation.SearchQueryValidationException` |
 | `rsql.SearchRsqlEngine` | `rsql.engine.SearchRsqlEngine` |
 | `rsql.SearchRsqlEngineBuilder` | `rsql.engine.SearchRsqlEngineBuilder` |
-| `rsql.SearchRsqlEngineCustomizer` | `rsql.engine.SearchRsqlEngineCustomizer` |
+| `rsql.SearchRsqlEngineCustomizer` | `autoconfigure.SearchRsqlEngineCustomizer` |
 | `rsql.backend.RsqlJpaPredicateContext` | `rsql.jpa.RsqlJpaPredicateContext` |
 | `rsql.backend.RsqlJpaPredicateFactory` | `rsql.jpa.RsqlJpaPredicateFactory` |
 | `rsql.operator.DefaultRsqlOperatorDescriptors` | `rsql.metadata.DefaultRsqlOperatorDescriptors` |
 | `rsql.operator.RsqlOperatorArity` | `rsql.metadata.RsqlOperatorArity` |
 | `rsql.operator.RsqlOperatorDescriptor` | `rsql.metadata.RsqlOperatorDescriptor` |
 | `rsql.operator.RsqlOperatorRegistry` | `rsql.metadata.RsqlOperatorRegistry` |
+| `definition.SearchDefinitionFactory` | `definition.SearchDefinition.Factory` |
+| `filter.DefaultFilterOperators` | `rsql.operator.RsqlOperators.defaultsFor(...)` |
+| `filter.FilterValidationError` | `filter.FilterValidationResult.Error` |
+| `query.SearchQuerySpecification` | `query.SearchQuery.SpecificationFactory` |
+| `validation.HibernateRuleValidator` | `validation.RuleViolation.RuleValidator` |
+| `rsql.parser.DefaultRsqlParserFactory` | `rsql.parser.RsqlParserFactory.defaults()` |
 
 The old types were deleted and are not deprecated aliases.
 
@@ -120,7 +126,7 @@ module is not public.
 
 ## Spring Boot
 
-The starter still auto-configures the compiler, definition factory, JPA
+The starter still auto-configures the compiler, `SearchDefinition.Factory`, JPA
 validator, Perplexhub backend, and RSQL engine. Existing
 `jpa.rsql.search.*` properties remain the configuration namespace.
 

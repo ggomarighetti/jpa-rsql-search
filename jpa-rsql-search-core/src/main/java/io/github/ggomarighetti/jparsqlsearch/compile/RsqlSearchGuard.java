@@ -77,7 +77,8 @@ final class RsqlSearchGuard {
     public <T> Specification<T> specification(String rsql, SearchDefinition<T> definition) {
         Objects.requireNonNull(definition, DEFINITION_MUST_NOT_BE_NULL);
         SearchPolicy effectivePolicy = effectivePolicy(definition);
-        SearchProtectionContext protection = new SearchProtectionContext(effectivePolicy, SearchCompilationMode.PAGE);
+        SearchProtectionContext protection =
+                new SearchProtectionContext(effectivePolicy, SearchProtectionContext.Mode.PAGE);
         return specification(rsql, definition, protection);
     }
 

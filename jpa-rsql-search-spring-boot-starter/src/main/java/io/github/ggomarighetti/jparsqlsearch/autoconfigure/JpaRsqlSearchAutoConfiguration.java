@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.autoconfigure;
 
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinitionFactory;
+import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler;
 import io.github.ggomarighetti.jparsqlsearch.jpa.JpaSearchDefinitionValidator;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
@@ -31,8 +31,8 @@ class JpaRsqlSearchAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public SearchDefinitionFactory searchDefinitionFactory(JpaRsqlSearchProperties properties) {
-        return new SearchDefinitionFactory(properties.toPolicy());
+    public SearchDefinition.Factory searchDefinitionFactory(JpaRsqlSearchProperties properties) {
+        return new SearchDefinition.Factory(properties.toPolicy());
     }
 
     /**

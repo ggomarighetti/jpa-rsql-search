@@ -113,7 +113,7 @@ Use `compileSlice(...)` when the endpoint does not need a count query.
 
 The starter contributes:
 
-- `SearchDefinitionFactory`
+- `SearchDefinition.Factory`
 - `JpaSearchDefinitionValidator` when JPA is available
 - a Perplexhub-backed `SearchRsqlEngine`
 - `SearchCompiler`
@@ -152,7 +152,7 @@ conditional auto-configuration:
 - `SearchRsqlEngine`
 - `ConversionService`
 - `SearchDefinitionValidator`
-- `SearchRsqlEngineCustomizer`
+- `autoconfigure.SearchRsqlEngineCustomizer`
 
 Set `jpa.rsql.search.rsql.enabled=false` when providing the engine yourself.
 

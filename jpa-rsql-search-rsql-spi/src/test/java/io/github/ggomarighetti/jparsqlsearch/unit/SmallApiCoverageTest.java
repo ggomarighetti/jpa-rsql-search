@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.unit;
 
-import io.github.ggomarighetti.jparsqlsearch.filter.FilterValidationError;
+import io.github.ggomarighetti.jparsqlsearch.filter.FilterValidationResult;
 import io.github.ggomarighetti.jparsqlsearch.page.SearchPaging;
 import io.github.ggomarighetti.jparsqlsearch.query.SearchQuery;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
@@ -130,9 +130,9 @@ class SmallApiCoverageTest {
     @Test
     void filterValidationErrorsExposeOptionalDetailsAndRejectInvalidShapes() {
         RuleViolation violation = new RuleViolation("value", "bad", "{bad}", "Constraint");
-        FilterValidationError conversion = FilterValidationError.conversionFailed(0, Integer.class);
-        FilterValidationError argument = FilterValidationError.argumentRule(1, violation);
-        FilterValidationError arguments = FilterValidationError.argumentsRule(violation);
+        FilterValidationResult.Error conversion = FilterValidationResult.Error.conversionFailed(0, Integer.class);
+        FilterValidationResult.Error argument = FilterValidationResult.Error.argumentRule(1, violation);
+        FilterValidationResult.Error arguments = FilterValidationResult.Error.argumentsRule(violation);
 
         assertEquals(0, conversion.optionalArgumentIndex().orElseThrow());
         assertEquals(Integer.class.getName(), conversion.optionalTargetType().orElseThrow());
@@ -141,12 +141,15 @@ class SmallApiCoverageTest {
         assertEquals(violation, argument.optionalViolation().orElseThrow());
         assertTrue(arguments.optionalArgumentIndex().isEmpty());
         thrownBy(IllegalArgumentException.class, () ->
-                new FilterValidationError(FilterValidationError.Code.ARGUMENT_RULE, -1, null, violation));
-        thrownBy(NullPointerException.class, () -> FilterValidationError.conversionFailed(0, null));
+                new FilterValidationResult.Error(
+                        FilterValidationResult.Error.Code.ARGUMENT_RULE, -1, null, violation));
+        thrownBy(NullPointerException.class, () -> FilterValidationResult.Error.conversionFailed(0, null));
         thrownBy(NullPointerException.class, () ->
-                new FilterValidationError(FilterValidationError.Code.CONVERSION_FAILED, null, null, null));
+                new FilterValidationResult.Error(
+                        FilterValidationResult.Error.Code.CONVERSION_FAILED, null, null, null));
         thrownBy(NullPointerException.class, () ->
-                new FilterValidationError(FilterValidationError.Code.ARGUMENTS_RULE, null, null, null));
+                new FilterValidationResult.Error(
+                        FilterValidationResult.Error.Code.ARGUMENTS_RULE, null, null, null));
     }
 
     @Test

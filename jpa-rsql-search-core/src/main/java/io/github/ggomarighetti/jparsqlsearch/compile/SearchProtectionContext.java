@@ -22,7 +22,7 @@ import org.springframework.data.domain.Sort;
  */
 final class SearchProtectionContext {
     private final SearchPolicy policy;
-    private final SearchCompilationMode mode;
+    private final Mode mode;
     private final SearchPolicy.Filter filterLimits;
     private final SearchPolicy.Sorting sortingLimits;
     private final SearchPolicy.Query queryLimits;
@@ -42,7 +42,7 @@ final class SearchProtectionContext {
     private boolean unpagedInput;
     private boolean paged;
 
-    public SearchProtectionContext(SearchPolicy policy, SearchCompilationMode mode) {
+    public SearchProtectionContext(SearchPolicy policy, Mode mode) {
         this.policy = Objects.requireNonNull(policy, "policy must not be null");
         this.mode = Objects.requireNonNull(mode, "mode must not be null");
         this.filterLimits = policy.filter();
@@ -54,7 +54,7 @@ final class SearchProtectionContext {
         return policy;
     }
 
-    public SearchCompilationMode mode() {
+    public Mode mode() {
         return mode;
     }
 
@@ -186,7 +186,7 @@ final class SearchProtectionContext {
             return;
         }
         paged = true;
-        if (mode == SearchCompilationMode.SLICE) {
+        if (mode == Mode.SLICE) {
             if (!policy.paging().slice().enabled()) {
                 throw exceeded("paging.slice.enabled", 1, 0);
             }
@@ -235,7 +235,7 @@ final class SearchProtectionContext {
     }
 
     private void validatePageRequest() {
-        if (mode != SearchCompilationMode.PAGE || !paged) {
+        if (mode != Mode.PAGE || !paged) {
             return;
         }
         SearchPolicy.Paging.Page pageLimits = policy.paging().page();
@@ -384,5 +384,10 @@ final class SearchProtectionContext {
 
     private static SearchProtectionException exceeded(String rule, long actual, long limit) {
         return new SearchProtectionException(rule, actual, limit);
+    }
+
+    enum Mode {
+        PAGE,
+        SLICE
     }
 }

@@ -6,7 +6,7 @@ import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.RsqlOperatorRegistry;
 import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.DefaultRsqlOperatorDescriptors;
-import io.github.ggomarighetti.jparsqlsearch.rsql.parser.DefaultRsqlParserFactory;
+import io.github.ggomarighetti.jparsqlsearch.rsql.parser.RsqlParserFactory;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,7 +37,7 @@ class RsqlAstTest {
     @Test
     void preservesLeftToRightComparisonOrder() {
         RsqlOperatorRegistry operators = new RsqlOperatorRegistry(DefaultRsqlOperatorDescriptors.all());
-        RsqlAst ast = new DefaultRsqlParserFactory()
+        RsqlAst ast = RsqlParserFactory.defaults()
                 .parse("email==a;name==b;taxId==c", operators);
 
         assertEquals(

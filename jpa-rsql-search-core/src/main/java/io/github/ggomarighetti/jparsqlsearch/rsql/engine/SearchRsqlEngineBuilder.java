@@ -8,7 +8,6 @@ import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.DefaultRsqlOperatorDe
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
 import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.RsqlOperatorDescriptor;
 import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.RsqlOperatorRegistry;
-import io.github.ggomarighetti.jparsqlsearch.rsql.parser.DefaultRsqlParserFactory;
 import io.github.ggomarighetti.jparsqlsearch.rsql.parser.RsqlParserFactory;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +20,7 @@ import org.springframework.format.support.DefaultFormattingConversionService;
 public final class SearchRsqlEngineBuilder {
     private final List<RsqlOperatorDescriptor> operators = new ArrayList<>();
     private final List<RsqlJpaOperatorBinding> jpaOperators = new ArrayList<>();
-    private RsqlParserFactory parserFactory = new DefaultRsqlParserFactory();
+    private RsqlParserFactory parserFactory = RsqlParserFactory.defaults();
     private RsqlBackendAdapter backend;
     private ConversionService conversionService = new DefaultFormattingConversionService();
 

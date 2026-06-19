@@ -54,8 +54,8 @@ class ArchitectureRulesTest {
                         .filter(path -> !path.getFileName().toString().contains("$"))
                         .count();
                 assertTrue(
-                        topLevelClasses <= 20,
-                        () -> module + " exceeds the 20-class architecture leaf budget: " + topLevelClasses);
+                        topLevelClasses <= 14,
+                        () -> module + " exceeds the 14-class architecture leaf budget: " + topLevelClasses);
             }
         }
     }

@@ -1,5 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
+import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler.SearchQueryGuard;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.query.validation.SearchQueryValidationException;

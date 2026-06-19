@@ -2,8 +2,8 @@ package io.github.ggomarighetti.jparsqlsearch.unit;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
-import io.github.ggomarighetti.jparsqlsearch.filter.DefaultFilterOperators;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
+import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperators;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
@@ -34,13 +34,13 @@ class DefaultFilterOperatorsTest {
         assertContains(char.class, EQUAL, NOT_EQUAL, IN);
         assertContains(LocalDate.class, EQUAL, IN, GREATER_THAN_OR_EQUAL, BETWEEN);
         assertContains(DataSize.class, EQUAL, IN, GREATER_THAN_OR_EQUAL, BETWEEN);
-        assertEquals(Set.of(EQUAL, NOT_EQUAL), DefaultFilterOperators.forType(Boolean.class));
+        assertEquals(Set.of(EQUAL, NOT_EQUAL), RsqlOperators.defaultsFor(Boolean.class));
         assertEquals(
                 Set.of(EQUAL, NOT_EQUAL, IN, io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperators.NOT_IN),
-                DefaultFilterOperators.forType(UUID.class));
+                RsqlOperators.defaultsFor(UUID.class));
         assertEquals(
                 Set.of(EQUAL, NOT_EQUAL, IN, io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperators.NOT_IN),
-                DefaultFilterOperators.forType(TestTypes.Status.class));
+                RsqlOperators.defaultsFor(TestTypes.Status.class));
     }
 
     @Test
@@ -53,7 +53,7 @@ class DefaultFilterOperatorsTest {
                 UUID.class,
                 TestTypes.Status.class,
                 DataSize.class)) {
-            Set<RsqlOperator> operators = DefaultFilterOperators.forType(type);
+            Set<RsqlOperator> operators = RsqlOperators.defaultsFor(type);
             assertFalse(operators.contains(IS_NULL), type.getName());
             assertFalse(operators.contains(NOT_NULL), type.getName());
         }
@@ -184,18 +184,18 @@ class DefaultFilterOperatorsTest {
 
     @Test
     void returnedProfilesAreImmutable() {
-        Set<RsqlOperator> operators = DefaultFilterOperators.forType(String.class);
+        Set<RsqlOperator> operators = RsqlOperators.defaultsFor(String.class);
 
         assertThrows(UnsupportedOperationException.class, operators::clear);
     }
 
     @Test
     void reportsWhetherDefaultProfilesExist() {
-        assertTrue(DefaultFilterOperators.supports(String.class));
-        assertFalse(DefaultFilterOperators.supports(TestTypes.Owner.class));
+        assertTrue(RsqlOperators.supportsDefaults(String.class));
+        assertFalse(RsqlOperators.supportsDefaults(TestTypes.Owner.class));
     }
 
     private static void assertContains(Class<?> type, RsqlOperator... expected) {
-        assertTrue(DefaultFilterOperators.forType(type).containsAll(Set.of(expected)), type.getName());
+        assertTrue(RsqlOperators.defaultsFor(type).containsAll(Set.of(expected)), type.getName());
     }
 }

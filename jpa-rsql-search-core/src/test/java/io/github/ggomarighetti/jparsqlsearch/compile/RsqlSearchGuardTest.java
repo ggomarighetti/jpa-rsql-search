@@ -734,7 +734,7 @@ class RsqlSearchGuardTest {
                 definition,
                 ApplicationConversionService.getSharedInstance(),
                 policy.rsql(),
-                new SearchProtectionContext(policy, SearchCompilationMode.PAGE),
+                new SearchProtectionContext(policy, SearchProtectionContext.Mode.PAGE),
                 new RsqlOperatorRegistry(List.of(descriptor)));
         RsqlAst comparison = astUnchecked(new ComparisonNode(
                 new ComparisonOperator("=pair=", true),
@@ -822,7 +822,8 @@ class RsqlSearchGuardTest {
                 definition,
                 ApplicationConversionService.getSharedInstance(),
                 SearchPolicy.defaults().rsql(),
-                new SearchProtectionContext(SearchPolicy.defaults(), SearchCompilationMode.PAGE),
+                new SearchProtectionContext(
+                        SearchPolicy.defaults(), SearchProtectionContext.Mode.PAGE),
                 operators);
     }
 

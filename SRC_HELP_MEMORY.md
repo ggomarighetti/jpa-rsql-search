@@ -25,6 +25,19 @@ Owners ejecutados en v2:
 | `jpa-rsql-search-spring-boot-starter` | auto-configuracion, properties y recurso Spring |
 | `integration-tests` | ArchUnit, inspeccion de jars, consumidores e ITs Postgres |
 
+Consolidaciones finales de ownership:
+
+- `SearchDefinition.Factory`, `SearchQuery.SpecificationFactory`,
+  `FilterValidationResult.Error` y `RuleViolation.RuleValidator` reemplazan
+  helpers top-level intermedios.
+- `RsqlOperators.defaultsFor(...)` posee los perfiles built-in.
+- `RsqlParserFactory.defaults()` posee el adapter parser predeterminado.
+- Los guards de query, pageable y sorting son internals anidados de
+  `SearchCompiler`.
+- El customizer de Spring Boot vive en
+  `autoconfigure.SearchRsqlEngineCustomizer`.
+- API, RSQL SPI y core tienen 14 clases top-level cada uno.
+
 Las rutas `src/...` del inventario secuencial son historicas. Sus archivos
 fueron distribuidos bajo `<artifactId>/src/...` en directorios de primer nivel;
 los movimientos publicos se documentan en `MIGRATION_V2.md`.

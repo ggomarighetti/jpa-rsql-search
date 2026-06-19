@@ -1,7 +1,7 @@
 package io.github.ggomarighetti.jparsqlsearch.filter;
 
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
-import io.github.ggomarighetti.jparsqlsearch.validation.HibernateRuleValidator;
+import io.github.ggomarighetti.jparsqlsearch.validation.RuleViolation.RuleValidator;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.List;
@@ -18,14 +18,14 @@ import org.springframework.core.convert.ConversionService;
 public final class FilterOperator<T> implements AutoCloseable {
     private final RsqlOperator operator;
     private final Class<T> argumentType;
-    private final HibernateRuleValidator<ArrayList<T>> args;
-    private final HibernateRuleValidator<T> each;
+    private final RuleValidator<ArrayList<T>> args;
+    private final RuleValidator<T> each;
 
     private FilterOperator(
             RsqlOperator operator,
             Class<T> argumentType,
-            HibernateRuleValidator<ArrayList<T>> args,
-            HibernateRuleValidator<T> each) {
+            RuleValidator<ArrayList<T>> args,
+            RuleValidator<T> each) {
         this.operator = Objects.requireNonNull(operator, "operator must not be null");
         this.argumentType = Objects.requireNonNull(argumentType, "argumentType must not be null");
         this.args = Objects.requireNonNull(args, "args must not be null");
@@ -58,22 +58,22 @@ public final class FilterOperator<T> implements AutoCloseable {
         Objects.requireNonNull(arguments, "arguments must not be null");
         Objects.requireNonNull(conversionService, "conversionService must not be null");
         List<T> values = new ArrayList<>();
-        List<FilterValidationError> errors = new ArrayList<>();
+        List<FilterValidationResult.Error> errors = new ArrayList<>();
         for (int index = 0; index < arguments.size(); index++) {
             String argument = arguments.get(index);
             T converted = convert(argument, conversionService);
             if (converted == null) {
-                errors.add(FilterValidationError.conversionFailed(index, argumentType));
+                errors.add(FilterValidationResult.Error.conversionFailed(index, argumentType));
                 continue;
             }
             values.add(converted);
             for (var violation : each.violations(converted)) {
-                errors.add(FilterValidationError.argumentRule(index, violation));
+                errors.add(FilterValidationResult.Error.argumentRule(index, violation));
             }
         }
         if (values.size() == arguments.size()) {
             for (var violation : args.violations(new ArrayList<>(values))) {
-                errors.add(FilterValidationError.argumentsRule(violation));
+                errors.add(FilterValidationResult.Error.argumentsRule(violation));
             }
         }
         return new FilterValidationResult(errors);
@@ -164,8 +164,8 @@ public final class FilterOperator<T> implements AutoCloseable {
             return new FilterOperator<>(
                     operator,
                     type,
-                    HibernateRuleValidator.forType(ArrayList.class, args.rules()),
-                    HibernateRuleValidator.forType(type, each.rules()));
+                    RuleValidator.forType(ArrayList.class, args.rules()),
+                    RuleValidator.forType(type, each.rules()));
         }
     }
 

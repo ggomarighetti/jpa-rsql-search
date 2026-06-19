@@ -4,6 +4,7 @@ import io.github.ggomarighetti.jparsqlsearch.path.SearchPath;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
+import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperators;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.function.Consumer;
@@ -325,7 +326,7 @@ public final class SearchFiltering<T> implements AutoCloseable {
         private Map<RsqlOperator, OperatorDeclaration<?>> resolveOperators(String selector, Class<T> type) {
             Map<RsqlOperator, OperatorDeclaration<?>> resolved = new LinkedHashMap<>();
             if (includeDefaults) {
-                Set<RsqlOperator> defaults = DefaultFilterOperators.forType(type);
+                Set<RsqlOperator> defaults = RsqlOperators.defaultsFor(type);
                 if (defaults.isEmpty()) {
                     throw new SearchDefinitionValidationException(
                             SearchDefinitionValidationException.DEFAULT_OPERATORS_UNSUPPORTED_TYPE,

@@ -3,7 +3,7 @@ package io.github.ggomarighetti.jparsqlsearch.autoconfigure;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinitionFactory;
+import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.unit.TestTypes;
@@ -72,7 +72,7 @@ class JpaRsqlSearchAutoConfigurationTest {
         contextRunner
                 .withPropertyValues("jpa.rsql.search.paths.max-depth=4")
                 .run(context -> {
-                    SearchDefinitionFactory factory = context.getBean(SearchDefinitionFactory.class);
+                    SearchDefinition.Factory factory = context.getBean(SearchDefinition.Factory.class);
 
                     SearchDefinition<TestTypes.Product> definition = factory.builder()
                             .entity(TestTypes.Product.class)
@@ -90,7 +90,7 @@ class JpaRsqlSearchAutoConfigurationTest {
         contextRunner
                 .withPropertyValues("jpa.rsql.search.filter.max-in-values=1")
                 .run(context -> {
-                    SearchDefinitionFactory factory = context.getBean(SearchDefinitionFactory.class);
+                    SearchDefinition.Factory factory = context.getBean(SearchDefinition.Factory.class);
                     SearchCompiler compiler = context.getBean(SearchCompiler.class);
                     SearchDefinition<TestTypes.Product> definition = factory.builder()
                             .entity(TestTypes.Product.class)
@@ -115,7 +115,7 @@ class JpaRsqlSearchAutoConfigurationTest {
     void doesNotRequireSearchDefinitionBeans() {
         contextRunner
                 .run(context -> {
-                    SearchDefinitionFactory factory = context.getBean(SearchDefinitionFactory.class);
+                    SearchDefinition.Factory factory = context.getBean(SearchDefinition.Factory.class);
                     SearchDefinition<TestTypes.Product> definition = factory.builder()
                             .entity(TestTypes.Product.class)
                             .fields(fields -> fields.add("name", String.class))

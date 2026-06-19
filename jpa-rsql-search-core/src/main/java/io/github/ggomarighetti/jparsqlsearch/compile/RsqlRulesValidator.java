@@ -8,7 +8,7 @@ import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
 import io.github.ggomarighetti.jparsqlsearch.rsql.validation.RsqlFilterValidationException;
 import io.github.ggomarighetti.jparsqlsearch.rsql.validation.RsqlValidationError;
-import io.github.ggomarighetti.jparsqlsearch.filter.FilterValidationError;
+import io.github.ggomarighetti.jparsqlsearch.filter.FilterValidationResult;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlAst;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
@@ -288,8 +288,8 @@ final class RsqlRulesValidator {
             String astPath) {
         var result = field.filtering().operators().get(operator).validate(arguments, conversionService);
         List<RsqlValidationError> errors = new ArrayList<>();
-        for (FilterValidationError error : result.errors()) {
-            if (error.code() == FilterValidationError.Code.CONVERSION_FAILED) {
+        for (FilterValidationResult.Error error : result.errors()) {
+            if (error.code() == FilterValidationResult.Error.Code.CONVERSION_FAILED) {
                 errors.add(new RsqlValidationError(
                         RsqlValidationError.ARGUMENT_CONVERSION_FAILED,
                         astPath + ".arguments[" + error.argumentIndex() + "]",
@@ -300,7 +300,7 @@ final class RsqlRulesValidator {
                         "Argument could not be converted to '%s'.".formatted(error.targetType()),
                         null,
                         null));
-            } else if (error.code() == FilterValidationError.Code.ARGUMENT_RULE) {
+            } else if (error.code() == FilterValidationResult.Error.Code.ARGUMENT_RULE) {
                 var violation = error.violation();
                 errors.add(new RsqlValidationError(
                         RsqlValidationError.ARGUMENT_RULE_VIOLATION,

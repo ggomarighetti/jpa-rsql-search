@@ -2092,11 +2092,19 @@ Implementacion completada el 19 de junio de 2026 en
 - metadata neutral en `rsql.metadata` y bindings JPA separados en `rsql.jpa`;
 - `SearchPath`, `SearchDefinitionValidator` y
   `SearchProtectionException` movidos a sus owners finales sin aliases;
+- API, RSQL SPI y core compactados a 14 clases top-level cada uno, por debajo
+  del umbral remoto de 15 hojas observado por SonarCloud;
+- helpers de validacion, query y filtering agrupados como tipos anidados de
+  sus contratos propietarios, sin artefactos adicionales;
+- guards de query/pageable/sorting agrupados como internals de
+  `SearchCompiler`;
+- customizer Spring movido a
+  `autoconfigure.SearchRsqlEngineCustomizer`, dentro del starter;
 - cero packages o clases duplicadas entre los jars;
 - reglas ArchUnit para ciclos y dependencias prohibidas;
 - consumidores Maven del starter y de modulos selectivos;
 - 288 tests ejecutados sin fallos;
-- JaCoCo agregado sobre 112 clases, 2.895 lineas y 826 ramas, todo cubierto;
+- JaCoCo agregado sobre 110 clases, 2.895 lineas y 826 ramas, todo cubierto;
 - staging local con parent, jars, sources y Javadocs;
 - ausencia verificada de `jpa-rsql-search:2.x` y del modulo de integracion en
   el staging;
@@ -2113,12 +2121,13 @@ Estado local de los seis findings:
 | Finding original | Evidencia de cierre |
 |---|---|
 | Tangle RSQL | backend SPI no depende de engine; engine/core no depende de Perplexhub |
-| Oversized | presupuesto maximo de 20 clases top-level por modulo |
+| Oversized | presupuesto maximo de 14 clases top-level por modulo |
 | Weak tangle principal | `path` y `definition.validation` tienen owner unico y DAG protegido |
 | Weak tangle operadores/backend | descriptor neutral y registry JPA separado |
 | Split `exception` | errores runtime distribuidos entre `rsql.validation`, `page.validation`, `query.validation` y `protection` |
 | Split `validation` | SPI movido a `definition.validation` dentro de core |
 
-La confirmacion remota autoritativa se realiza en el analisis SonarCloud del PR
-de v2; el gate local impide reintroducir las dependencias que originaron los
-seis hallazgos.
+El analisis remoto de `daed1f3` dejo tangles, weak tangles y splits en cero y
+detecto tres contenedores oversized con 20, 19 y 15 hojas. El gate local fue
+ajustado al umbral autoritativo de 14; la siguiente ejecucion SonarCloud del PR
+confirma el cierre remoto.

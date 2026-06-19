@@ -1,5 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
+import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler.SearchSpecificationSorting;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.unit.TestTypes;
 import jakarta.persistence.criteria.CriteriaBuilder;

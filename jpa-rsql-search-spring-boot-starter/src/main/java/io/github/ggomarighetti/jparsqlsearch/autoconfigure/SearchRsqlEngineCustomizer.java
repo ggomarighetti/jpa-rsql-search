@@ -1,6 +1,8 @@
-package io.github.ggomarighetti.jparsqlsearch.rsql.engine;
+package io.github.ggomarighetti.jparsqlsearch.autoconfigure;
 
-/** Customizes the auto-configured RSQL engine builder. */
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
+
+/** Customizes the Spring Boot auto-configured RSQL engine builder. */
 @FunctionalInterface
 public interface SearchRsqlEngineCustomizer {
     /**
