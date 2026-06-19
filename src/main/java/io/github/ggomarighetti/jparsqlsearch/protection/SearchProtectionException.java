@@ -1,4 +1,4 @@
-package io.github.ggomarighetti.jparsqlsearch.exception;
+package io.github.ggomarighetti.jparsqlsearch.protection;
 
 import java.util.Objects;
 

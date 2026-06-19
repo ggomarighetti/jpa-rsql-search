@@ -2,9 +2,9 @@ package io.github.ggomarighetti.jparsqlsearch.jpa;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchPath;
+import io.github.ggomarighetti.jparsqlsearch.path.SearchPath;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
-import io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator;
+import io.github.ggomarighetti.jparsqlsearch.definition.validation.SearchDefinitionValidator;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.metamodel.Attribute;
 import jakarta.persistence.metamodel.ManagedType;

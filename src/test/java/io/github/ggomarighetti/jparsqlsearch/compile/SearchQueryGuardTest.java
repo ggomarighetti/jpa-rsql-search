@@ -1,7 +1,7 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
-import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
+import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchQueryValidationException;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.unit.TestTypes;

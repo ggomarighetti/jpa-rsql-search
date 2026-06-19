@@ -9,6 +9,7 @@ import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -54,5 +55,21 @@ class PublicApiSurfaceTest {
                 SearchRsqlEngineBuilder.class.getMethod("withoutDefaultOperators").getModifiers()));
         assertTrue(Modifier.isPublic(
                 SearchPolicy.Builder.class.getMethod("buildOverlay").getModifiers()));
+        assertFalse(Arrays.stream(SearchRsqlEngine.class.getDeclaredMethods())
+                .anyMatch(method -> Modifier.isStatic(method.getModifiers())
+                        && ("builder".equals(method.getName()) || "defaults".equals(method.getName()))));
+    }
+
+    @Test
+    void legacyV1PackagesAreRemoved() {
+        for (String type : List.of(
+                "io.github.ggomarighetti.jparsqlsearch.definition.SearchPath",
+                "io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator",
+                "io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException",
+                "io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine",
+                "io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlJpaPredicateFactory",
+                "io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlJpaPredicateContext")) {
+            assertThrows(ClassNotFoundException.class, () -> Class.forName(type), type);
+        }
     }
 }

@@ -11,7 +11,7 @@ import static io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperators.
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.exception.RsqlFilterValidationException;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchPageableValidationException;
-import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
+import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.integration.bench.domain.Product;
 import io.github.ggomarighetti.jparsqlsearch.integration.bench.domain.Status;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;

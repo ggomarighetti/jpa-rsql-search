@@ -1,6 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.sort;
 
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchPath;
+import io.github.ggomarighetti.jparsqlsearch.path.SearchPath;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import java.util.Collections;
 import java.util.EnumSet;

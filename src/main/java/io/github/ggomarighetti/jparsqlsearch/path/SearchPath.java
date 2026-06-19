@@ -1,4 +1,4 @@
-package io.github.ggomarighetti.jparsqlsearch.definition;
+package io.github.ggomarighetti.jparsqlsearch.path;
 
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;

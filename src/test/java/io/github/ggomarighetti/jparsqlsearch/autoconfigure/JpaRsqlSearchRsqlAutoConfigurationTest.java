@@ -14,7 +14,7 @@ import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineCustomizer;
-import io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator;
+import io.github.ggomarighetti.jparsqlsearch.definition.validation.SearchDefinitionValidator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.Arrays;

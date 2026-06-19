@@ -4,7 +4,7 @@ import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubR
 import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinitionFactory;
-import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
+import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.unit.TestTypes;
 import java.io.IOException;

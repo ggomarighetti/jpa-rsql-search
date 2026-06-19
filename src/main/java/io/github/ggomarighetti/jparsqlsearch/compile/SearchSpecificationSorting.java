@@ -2,7 +2,7 @@ package io.github.ggomarighetti.jparsqlsearch.compile;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchPath;
+import io.github.ggomarighetti.jparsqlsearch.path.SearchPath;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.From;

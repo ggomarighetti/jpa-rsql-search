@@ -2,9 +2,9 @@ package io.github.ggomarighetti.jparsqlsearch.compile;
 
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
-import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
+import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchQueryValidationException;
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchPath;
+import io.github.ggomarighetti.jparsqlsearch.path.SearchPath;
 import io.github.ggomarighetti.jparsqlsearch.integration.bench.domain.Product;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.DefaultRsqlOperatorDescriptors;

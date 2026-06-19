@@ -3,7 +3,7 @@ package io.github.ggomarighetti.jparsqlsearch.compile;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
-import io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator;
+import io.github.ggomarighetti.jparsqlsearch.definition.validation.SearchDefinitionValidator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

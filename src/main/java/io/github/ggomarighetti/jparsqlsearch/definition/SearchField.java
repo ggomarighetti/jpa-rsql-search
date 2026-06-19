@@ -1,5 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.definition;
 
+import io.github.ggomarighetti.jparsqlsearch.path.SearchPath;
 import io.github.ggomarighetti.jparsqlsearch.filter.SearchFiltering;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.sort.SearchSorting;

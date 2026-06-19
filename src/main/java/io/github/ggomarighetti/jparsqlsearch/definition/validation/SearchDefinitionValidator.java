@@ -1,4 +1,4 @@
-package io.github.ggomarighetti.jparsqlsearch.validation;
+package io.github.ggomarighetti.jparsqlsearch.definition.validation;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 

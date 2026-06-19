@@ -10,7 +10,7 @@ import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.exception.RsqlFilterValidationException;
 import io.github.ggomarighetti.jparsqlsearch.exception.RsqlValidationError;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
-import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
+import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.filter.FilterOperator;
 import io.github.ggomarighetti.jparsqlsearch.integration.bench.domain.Product;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;

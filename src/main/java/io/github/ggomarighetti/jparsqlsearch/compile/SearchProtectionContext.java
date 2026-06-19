@@ -1,8 +1,8 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchPath;
-import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
+import io.github.ggomarighetti.jparsqlsearch.path.SearchPath;
+import io.github.ggomarighetti.jparsqlsearch.protection.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorDescriptor;
