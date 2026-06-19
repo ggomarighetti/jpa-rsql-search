@@ -7,37 +7,37 @@
       "qualifiers": "namespace",
       "groups": [
         {
-          "label": "API",
+          "label": "jpa-rsql-search-api",
           "patterns": [
             "jpa-rsql-search-api:**"
           ]
         },
         {
-          "label": "RSQL SPI",
+          "label": "jpa-rsql-search-rsql-spi",
           "patterns": [
             "jpa-rsql-search-rsql-spi:**"
           ]
         },
         {
-          "label": "Core",
+          "label": "jpa-rsql-search-core",
           "patterns": [
             "jpa-rsql-search-core:**"
           ]
         },
         {
-          "label": "JPA validation",
+          "label": "jpa-rsql-search-jpa-validation",
           "patterns": [
             "jpa-rsql-search-jpa-validation:**"
           ]
         },
         {
-          "label": "Perplexhub",
+          "label": "jpa-rsql-search-perplexhub",
           "patterns": [
             "jpa-rsql-search-perplexhub:**"
           ]
         },
         {
-          "label": "Spring Boot starter",
+          "label": "jpa-rsql-search-spring-boot-starter",
           "patterns": [
             "jpa-rsql-search-spring-boot-starter:**"
           ]

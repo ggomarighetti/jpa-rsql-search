@@ -49,11 +49,15 @@ class ArchitectureRulesTest {
         JsonNode model = new ObjectMapper()
                 .readTree(Files.readString(root.resolve(".sonar/architecture-model.json")));
         Set<String> mappedPatterns = new HashSet<>();
+        Set<String> mappedLabels = new HashSet<>();
         model.path("perspectives")
                 .path(0)
                 .path("groups")
-                .forEach(group -> group.path("patterns")
-                        .forEach(pattern -> mappedPatterns.add(pattern.asText())));
+                .forEach(group -> {
+                    mappedLabels.add(group.path("label").asText());
+                    group.path("patterns")
+                            .forEach(pattern -> mappedPatterns.add(pattern.asText()));
+                });
 
         Set<String> expectedPatterns = new HashSet<>();
         PRODUCT_MODULES.forEach(module -> expectedPatterns.add(module + ":**"));
@@ -61,6 +65,10 @@ class ArchitectureRulesTest {
                 mappedPatterns.equals(expectedPatterns),
                 () -> "Sonar architecture patterns differ from the product modules: "
                         + mappedPatterns);
+        assertTrue(
+                mappedLabels.equals(new HashSet<>(PRODUCT_MODULES)),
+                () -> "Sonar architecture labels must match the Maven artifactIds: "
+                        + mappedLabels);
     }
 
     @Test
