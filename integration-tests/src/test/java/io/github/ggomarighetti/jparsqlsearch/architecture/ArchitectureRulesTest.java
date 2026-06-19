@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
@@ -26,17 +25,6 @@ class ArchitectureRulesTest {
             "jpa-rsql-search-jpa-validation",
             "jpa-rsql-search-perplexhub",
             "jpa-rsql-search-spring-boot-starter");
-    private static final Map<String, Set<String>> ALLOWED_SONAR_CONSUMERS = Map.of(
-            "API",
-            Set.of("RSQL SPI", "Core", "JPA validation", "Perplexhub", "Spring Boot starter"),
-            "RSQL SPI",
-            Set.of("Core", "Perplexhub", "Spring Boot starter"),
-            "Core",
-            Set.of("JPA validation", "Perplexhub", "Spring Boot starter"),
-            "JPA validation",
-            Set.of("Spring Boot starter"),
-            "Perplexhub",
-            Set.of("Spring Boot starter"));
 
     private final JavaClasses classes =
             new ClassFileImporter()
@@ -73,32 +61,6 @@ class ArchitectureRulesTest {
                 mappedPatterns.equals(expectedPatterns),
                 () -> "Sonar architecture patterns differ from the product modules: "
                         + mappedPatterns);
-    }
-
-    @Test
-    void sonarIntendedArchitectureUsesExclusiveAllowedConsumers() throws IOException {
-        Path root = Path.of(System.getProperty("workspace.root"));
-        JsonNode model = new ObjectMapper()
-                .readTree(Files.readString(root.resolve(".sonar/architecture-model.json")));
-        Map<String, Set<String>> actualConsumers = new java.util.HashMap<>();
-        model.path("perspectives")
-                .path(0)
-                .path("constraints")
-                .forEach(constraint -> {
-                    assertTrue(
-                            "exclusive-allow".equals(constraint.path("relation").asText()),
-                            () -> "Sonar architecture constraints must be exclusive allow: "
-                                    + constraint);
-                    Set<String> from = new HashSet<>();
-                    constraint.path("from").forEach(value -> from.add(value.asText()));
-                    String target = constraint.path("to").path(0).asText();
-                    actualConsumers.put(target, from);
-                });
-
-        assertTrue(
-                actualConsumers.equals(ALLOWED_SONAR_CONSUMERS),
-                () -> "Sonar architecture constraints differ from the intended DAG: "
-                        + actualConsumers);
     }
 
     @Test

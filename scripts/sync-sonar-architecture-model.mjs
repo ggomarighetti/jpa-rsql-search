@@ -115,24 +115,9 @@ function validateModel(candidate) {
   ) {
     throw new Error("The architecture declaration must map every public Maven module once.");
   }
-  const groupLabels = new Set(perspective.groups.map((group) => group.label));
-  for (const constraint of perspective.constraints ?? []) {
-    if (constraint.relation !== "exclusive-allow") {
-      throw new Error(
-        `Architecture constraints must use exclusive-allow: ${JSON.stringify(constraint)}`,
-      );
-    }
-    const from = Array.isArray(constraint.from) ? constraint.from : [];
-    const to = Array.isArray(constraint.to) ? constraint.to : [];
-    if (
-      from.length === 0 ||
-      to.length !== 1 ||
-      from.some((label) => !groupLabels.has(label)) ||
-      !groupLabels.has(to[0])
-    ) {
-      throw new Error(
-        `Unknown architecture constraint: ${JSON.stringify(constraint)}`,
-      );
-    }
+  if ((perspective.constraints ?? []).length > 0) {
+    throw new Error(
+      "Sonar intended architecture constraints are intentionally kept out of the synchronized model; Maven and ArchUnit enforce the DAG.",
+    );
   }
 }

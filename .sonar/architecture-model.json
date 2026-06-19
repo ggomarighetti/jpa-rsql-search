@@ -42,61 +42,6 @@
             "jpa-rsql-search-spring-boot-starter:**"
           ]
         }
-      ],
-      "constraints": [
-        {
-          "relation": "exclusive-allow",
-          "from": [
-            "RSQL SPI",
-            "Core",
-            "JPA validation",
-            "Perplexhub",
-            "Spring Boot starter"
-          ],
-          "to": [
-            "API"
-          ]
-        },
-        {
-          "relation": "exclusive-allow",
-          "from": [
-            "Core",
-            "Perplexhub",
-            "Spring Boot starter"
-          ],
-          "to": [
-            "RSQL SPI"
-          ]
-        },
-        {
-          "relation": "exclusive-allow",
-          "from": [
-            "JPA validation",
-            "Perplexhub",
-            "Spring Boot starter"
-          ],
-          "to": [
-            "Core"
-          ]
-        },
-        {
-          "relation": "exclusive-allow",
-          "from": [
-            "Spring Boot starter"
-          ],
-          "to": [
-            "JPA validation"
-          ]
-        },
-        {
-          "relation": "exclusive-allow",
-          "from": [
-            "Spring Boot starter"
-          ],
-          "to": [
-            "Perplexhub"
-          ]
-        }
       ]
     }
   ]
