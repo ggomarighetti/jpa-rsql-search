@@ -221,6 +221,7 @@ class SmallApiCoverageTest {
         assertTrue(jpaRegistry.predicate(custom).isPresent());
         assertFalse(jpaRegistry.predicate(other).isPresent());
         assertEquals(descriptor, registry.require(custom));
+        assertEquals(List.of(descriptor), List.copyOf(registry.descriptors()));
         assertTrue(registry.descriptor(descriptor.comparisonOperator()).isPresent());
         assertTrue(registry.descriptor(other).isEmpty());
         thrownBy(IllegalArgumentException.class, () -> registry.require(other));

@@ -208,6 +208,28 @@ class RsqlEngineCoverageTest {
         assertEquals(SearchDefinitionValidationException.RSQL_OPERATOR_TYPE_MISMATCH, exception.code());
     }
 
+    @Test
+    void perplexhubRequiresJpaBindingsForCustomOperators() {
+        RsqlOperatorDescriptor descriptor = RsqlOperatorDescriptor.builder(CUSTOM)
+                .symbol("=custom=")
+                .argumentType(String.class)
+                .build();
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
+                .operator(descriptor)
+                .backend(new NoOpBackend())
+                .build();
+
+        SearchDefinitionValidationException exception = thrownBy(
+                SearchDefinitionValidationException.class,
+                () -> new PerplexhubRsqlBackendAdapter().validate(new RsqlBackendValidationContext(
+                        definition(CUSTOM, String.class),
+                        engine.operators(),
+                        engine.jpaOperators(),
+                        engine.conversionService())));
+
+        assertEquals(SearchDefinitionValidationException.RSQL_OPERATOR_NOT_EXECUTABLE, exception.code());
+    }
+
     private static <A> SearchDefinition<TestTypes.Product> definition(RsqlOperator operator, Class<A> argumentType) {
         return SearchDefinition.builder()
                 .entity(TestTypes.Product.class)
