@@ -258,7 +258,9 @@ fields.add("birthDate", LocalDate.class)
 ```
 
 Definition paths are checked against Java properties while the DSL is built and,
-in JPA applications, against the JPA metamodel when first compiled.
+in JPA applications, against the JPA metamodel when first compiled. Collection
+element types can be resolved from concrete generic supertypes and bounded type
+variables, such as `List<T extends Line>`.
 
 ### Filtering
 

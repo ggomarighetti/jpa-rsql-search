@@ -23,7 +23,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static io.github.ggomarighetti.jparsqlsearch.unit.ExceptionAssertions.thrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,6 +78,27 @@ class SearchPathTest {
     }
 
     @Test
+    void resolvesCollectionElementTypesFromGenericBoundsAndConcreteSupertypes() {
+        SearchPath.Metadata bounded = SearchPath.metadata(
+                GenericRoot.class,
+                "sku",
+                "genericLines.sku",
+                String.class,
+                DEEP_PATHS);
+        SearchPath.Metadata concrete = SearchPath.metadata(
+                ConcreteGenericRoot.class,
+                "sku",
+                "concreteLines.sku",
+                String.class,
+                DEEP_PATHS);
+
+        assertEquals(String.class, bounded.type());
+        assertTrue(bounded.traversesCollection());
+        assertEquals(String.class, concrete.type());
+        assertTrue(concrete.traversesCollection());
+    }
+
+    @Test
     void reportsTerminalCollectionMetadataWithoutTraversingThroughIt() {
         SearchPath.Metadata array = SearchPath.metadata(
                 CollectionRoot.class,
@@ -103,9 +123,6 @@ class SearchPathTest {
 
     @Test
     void rejectsCollectionPathsWhenElementTypeCannotResolveToAPropertyOwner() {
-        assertNotNull(thrownBy(
-                IllegalArgumentException.class,
-                () -> SearchPath.metadata(GenericRoot.class, "sku", "genericLines.sku", String.class, DEEP_PATHS)));
         thrownBy(
                 IllegalArgumentException.class,
                 () -> SearchPath.metadata(GenericRoot.class, "sku", "nestedLines.sku", String.class, DEEP_PATHS));
@@ -222,7 +239,7 @@ class SearchPathTest {
         assertNull(genericArgumentFromClass.invoke(null, Object.class, Iterable.class, 0));
         assertEquals(String[].class, classFromType.invoke(null, genericArray(String.class)));
         assertNull(classFromType.invoke(null, wildcardWithoutUpperBounds()));
-        assertNull(classFromType.invoke(null, GenericRoot.class.getTypeParameters()[0]));
+        assertEquals(Line.class, classFromType.invoke(null, GenericRoot.class.getTypeParameters()[0]));
         assertNull(classFromType.invoke(null, new UnknownType()));
         assertEquals(List.class, rawClass.invoke(null, parameterized(List.class, String.class)));
     }
@@ -378,7 +395,19 @@ class SearchPathTest {
         }
     }
 
-    private static final class Line {
+    private static class GenericBase<T extends Line> {
+        public List<T> getConcreteLines() {
+            return List.of();
+        }
+    }
+
+    private static final class ConcreteGenericRoot extends GenericBase<SpecialLine> {
+    }
+
+    private static final class SpecialLine extends Line {
+    }
+
+    private static class Line {
         public String getSku() {
             return null;
         }
