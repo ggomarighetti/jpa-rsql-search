@@ -9,6 +9,11 @@ const checkOnly = process.argv.includes("--check");
 const modelPath = resolve(".sonar", "architecture-model.json");
 const perspectiveLabel = "V2 Maven modules";
 const perspectiveDescription = "Direct modular boundaries for jpa-rsql-search v2.";
+const allowAllPerspectiveConstraint = {
+  from: ["**"],
+  to: ["**"],
+  relation: "exclusive-allow",
+};
 const productModules = [
   "jpa-rsql-search-api",
   "jpa-rsql-search-rsql-spi",
@@ -115,18 +120,23 @@ async function buildExpectedModel() {
     language: "java",
     qualifiers: "namespace",
     groups: [],
+    constraints: [allowAllPerspectiveConstraint],
   };
   for (const moduleName of productModules) {
     const sourceRoot = resolve(moduleName, "src", "main", "java");
     const files = await collectJavaFiles(sourceRoot);
-    const moduleGroup = architectureGroup(moduleName, `${moduleName}:**`);
+    const moduleGroup = architectureGroup(moduleName);
+    const packageNames = new Set();
     for (const file of files) {
       const className = relative(sourceRoot, file)
         .replace(/[\\/]/g, ".")
         .replace(/\.java$/, "");
-      addNamespacePath(moduleGroup, moduleName, className);
+      packageNames.add(className.split(".").slice(0, -1).join("."));
     }
-    sortGroups(moduleGroup.groups);
+    for (const packageName of [...packageNames].sort()) {
+      addPackagePath(moduleGroup, packageName);
+    }
+    assignPatterns(moduleGroup, moduleName, "");
     perspective.groups.push(moduleGroup);
   }
   return { perspectives: [perspective] };
@@ -146,34 +156,32 @@ async function collectJavaFiles(directory) {
   return files.flat().sort();
 }
 
-function architectureGroup(label, pattern) {
-  return { label, patterns: [pattern] };
+function architectureGroup(label) {
+  return { label, patterns: [] };
 }
 
-function addNamespacePath(moduleGroup, moduleName, className) {
+function addPackagePath(moduleGroup, packageName) {
   let current = moduleGroup;
-  const segments = className.split(".");
-  const namespacePrefix = [];
-  for (const [index, segment] of segments.entries()) {
-    namespacePrefix.push(segment);
+  for (const segment of packageName.split(".")) {
     current.groups ??= [];
     let child = current.groups.find((candidate) => candidate.label === segment);
     if (!child) {
-      const namespace = namespacePrefix.join(".");
-      const pattern =
-        index === segments.length - 1
-          ? `${moduleName}:${namespace}`
-          : `${moduleName}:${namespace}.**`;
-      child = architectureGroup(segment, pattern);
+      child = architectureGroup(segment);
       current.groups.push(child);
     }
     current = child;
   }
 }
 
-function sortGroups(groups = []) {
-  groups.sort((left, right) => left.label.localeCompare(right.label));
-  for (const group of groups) {
-    sortGroups(group.groups);
+function assignPatterns(group, moduleName, namespace) {
+  group.groups?.sort((left, right) => left.label.localeCompare(right.label));
+  group.patterns = [
+    namespace
+      ? `${moduleName}:${namespace}${group.groups?.length ? ".**" : ".*"}`
+      : `${moduleName}:**`,
+  ];
+  for (const child of group.groups ?? []) {
+    const childNamespace = namespace ? `${namespace}.${child.label}` : child.label;
+    assignPatterns(child, moduleName, childNamespace);
   }
 }

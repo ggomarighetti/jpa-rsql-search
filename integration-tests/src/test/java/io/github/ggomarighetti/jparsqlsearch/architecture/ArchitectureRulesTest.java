@@ -45,21 +45,26 @@ class ArchitectureRulesTest {
     }
 
     @Test
-    void sonarIntendedArchitectureMapsEveryProductionType() throws IOException {
+    void sonarIntendedArchitectureMapsEveryProductionPackage() throws IOException {
         Path root = Path.of(System.getProperty("workspace.root"));
         JsonNode model = new ObjectMapper()
                 .readTree(Files.readString(root.resolve(".sonar/architecture-model.json")));
         Set<String> mappedPatterns = new HashSet<>();
-        model.path("perspectives")
-                .path(0)
+        JsonNode perspective = model.path("perspectives").path(0);
+        assertEquals(
+                "exclusive-allow",
+                perspective.path("constraints").path(0).path("relation").asText(),
+                "Sonar documents the namespace tree; Maven and ArchUnit enforce the dependency DAG.");
+        Set<String> sourcePackageKeys = productionPackageKeys(root);
+        perspective
                 .path("groups")
-                .forEach(group -> collectArchitectureTypePatterns(group, null, "", mappedPatterns));
+                .forEach(group -> collectArchitecturePackagePatterns(group, null, "", sourcePackageKeys, mappedPatterns));
 
-        Set<String> expectedPatterns = expectedSonarTypePatterns(root);
+        Set<String> expectedPatterns = expectedSonarPackagePatterns(root);
         assertEquals(
                 expectedPatterns,
                 mappedPatterns,
-                () -> "Sonar architecture patterns differ from production Java types: " + mappedPatterns);
+                () -> "Sonar architecture patterns differ from production Java packages: " + mappedPatterns);
     }
 
     @Test
@@ -96,36 +101,57 @@ class ArchitectureRulesTest {
                 .check(classes);
     }
 
-    private static Set<String> expectedSonarTypePatterns(Path root) throws IOException {
+    private static Set<String> expectedSonarPackagePatterns(Path root) throws IOException {
         Set<String> patterns = new HashSet<>();
         for (String module : PRODUCT_MODULES) {
-            Path sourceRoot = root.resolve(module).resolve("src/main/java");
-            try (Stream<Path> files = Files.walk(sourceRoot)) {
-                files.filter(Files::isRegularFile)
-                        .filter(path -> path.getFileName().toString().endsWith(".java"))
-                        .map(sourceRoot::relativize)
-                        .map(Path::toString)
-                        .map(path -> path.replace('\\', '.').replace('/', '.'))
-                        .map(path -> module + ":" + path.replaceAll("\\.java$", ""))
-                        .forEach(patterns::add);
+            Set<String> packageNames = productionPackageNames(root, module);
+            for (String packageName : packageNames) {
+                boolean hasSubpackages = packageNames.stream()
+                        .anyMatch(candidate -> candidate.startsWith(packageName + "."));
+                patterns.add(module + ":" + packageName + (hasSubpackages ? ".**" : ".*"));
             }
         }
         return patterns;
     }
 
-    private static void collectArchitectureTypePatterns(
+    private static Set<String> productionPackageKeys(Path root) throws IOException {
+        Set<String> keys = new HashSet<>();
+        for (String module : PRODUCT_MODULES) {
+            productionPackageNames(root, module).forEach(packageName -> keys.add(module + ":" + packageName));
+        }
+        return keys;
+    }
+
+    private static Set<String> productionPackageNames(Path root, String module) throws IOException {
+        Set<String> packageNames = new HashSet<>();
+        Path sourceRoot = root.resolve(module).resolve("src/main/java");
+        try (Stream<Path> files = Files.walk(sourceRoot)) {
+            files.filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().endsWith(".java"))
+                    .map(sourceRoot::relativize)
+                    .map(Path::toString)
+                    .map(path -> path.replace('\\', '.').replace('/', '.'))
+                    .map(path -> path.substring(0, path.lastIndexOf('.')))
+                    .map(path -> path.substring(0, path.lastIndexOf('.')))
+                    .forEach(packageNames::add);
+        }
+        return packageNames;
+    }
+
+    private static void collectArchitecturePackagePatterns(
             JsonNode group,
             String module,
             String namespace,
+            Set<String> sourcePackageKeys,
             Set<String> mappedPatterns) {
         String label = group.path("label").asText();
         String currentModule = module == null ? label : module;
         String currentNamespace = module == null ? "" : namespace.isBlank() ? label : namespace + "." + label;
         JsonNode children = group.path("groups");
-        boolean leaf = !children.isArray() || children.isEmpty();
+        boolean hasChildren = children.isArray() && !children.isEmpty();
         String expectedPattern = module == null
                 ? currentModule + ":**"
-                : currentModule + ":" + currentNamespace + (leaf ? "" : ".**");
+                : currentModule + ":" + currentNamespace + (hasChildren ? ".**" : ".*");
 
         assertEquals(
                 1,
@@ -136,10 +162,10 @@ class ArchitectureRulesTest {
                 group.path("patterns").path(0).asText(),
                 () -> "Sonar architecture group pattern does not match its namespace path: " + label);
 
-        if (leaf) {
+        if (sourcePackageKeys.contains(currentModule + ":" + currentNamespace)) {
             mappedPatterns.add(expectedPattern);
-            return;
         }
-        children.forEach(child -> collectArchitectureTypePatterns(child, currentModule, currentNamespace, mappedPatterns));
+        children.forEach(child ->
+                collectArchitecturePackagePatterns(child, currentModule, currentNamespace, sourcePackageKeys, mappedPatterns));
     }
 }
