@@ -1,10 +1,10 @@
 package io.github.ggomarighetti.jparsqlsearch.rsql.validation;
 
+import io.github.ggomarighetti.jparsqlsearch.failure.SearchValidationException;
 import java.util.List;
-import java.util.Objects;
 
 /** Reports RSQL parse, policy, conversion, or semantic validation failures. */
-public final class RsqlFilterValidationException extends RuntimeException {
+public final class RsqlFilterValidationException extends SearchValidationException {
     private static final long serialVersionUID = 1L;
 
     /** The filter could not be parsed. */
@@ -13,11 +13,6 @@ public final class RsqlFilterValidationException extends RuntimeException {
     public static final String RULES_FORBIDDEN = "RSQL_RULES_FORBIDDEN";
     /** The filter exceeded a configured syntactic limit. */
     public static final String LIMIT_EXCEEDED = "RSQL_LIMIT_EXCEEDED";
-
-    /** Stable machine-readable error code. */
-    private final String code;
-    /** Immutable validation error details. */
-    private final List<RsqlValidationError> errors;
 
     /**
      * Creates an exception without detailed errors or cause.
@@ -67,18 +62,7 @@ public final class RsqlFilterValidationException extends RuntimeException {
             String message,
             List<RsqlValidationError> errors,
             Throwable cause) {
-        super(message, cause);
-        this.code = requireCode(code);
-        this.errors = List.copyOf(Objects.requireNonNull(errors, "errors must not be null"));
-    }
-
-    /**
-     * Returns the error code.
-     *
-     * @return stable machine-readable error code
-     */
-    public String code() {
-        return code;
+        super(code, message, errors, cause);
     }
 
     /**
@@ -87,13 +71,6 @@ public final class RsqlFilterValidationException extends RuntimeException {
      * @return immutable semantic error list
      */
     public List<RsqlValidationError> errors() {
-        return errors;
-    }
-
-    private static String requireCode(String code) {
-        if (Objects.requireNonNull(code, "code must not be null").isBlank()) {
-            throw new IllegalArgumentException("code must not be blank");
-        }
-        return code;
+        return details();
     }
 }

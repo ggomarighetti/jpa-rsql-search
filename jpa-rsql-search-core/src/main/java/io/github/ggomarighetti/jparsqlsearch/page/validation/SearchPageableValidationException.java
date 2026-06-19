@@ -1,11 +1,11 @@
 package io.github.ggomarighetti.jparsqlsearch.page.validation;
 
+import io.github.ggomarighetti.jparsqlsearch.failure.SearchValidationException;
 import io.github.ggomarighetti.jparsqlsearch.validation.RuleViolation;
 import java.util.List;
-import java.util.Objects;
 
 /** Reports pageable or sorting input rejected by definition or policy rules. */
-public final class SearchPageableValidationException extends RuntimeException {
+public final class SearchPageableValidationException extends SearchValidationException {
     private static final long serialVersionUID = 1L;
 
     /** Sort selector or direction is not declared. */
@@ -16,11 +16,6 @@ public final class SearchPageableValidationException extends RuntimeException {
     public static final String SORT_LIMIT_EXCEEDED = "SORT_LIMIT_EXCEEDED";
     /** Page, size, offset, or unpaged mode exceeds protection limits. */
     public static final String PAGE_LIMIT_EXCEEDED = "PAGE_LIMIT_EXCEEDED";
-
-    /** Stable machine-readable error code. */
-    private final String code;
-    /** Immutable request validation violations. */
-    private final List<RuleViolation> violations;
 
     /**
      * Creates an exception without Bean Validation details.
@@ -43,18 +38,7 @@ public final class SearchPageableValidationException extends RuntimeException {
             String code,
             String message,
             List<RuleViolation> violations) {
-        super(message);
-        this.code = requireCode(code);
-        this.violations = List.copyOf(Objects.requireNonNull(violations, "violations must not be null"));
-    }
-
-    /**
-     * Returns the error code.
-     *
-     * @return stable machine-readable error code
-     */
-    public String code() {
-        return code;
+        super(code, message, violations);
     }
 
     /**
@@ -63,13 +47,6 @@ public final class SearchPageableValidationException extends RuntimeException {
      * @return immutable safe violation list
      */
     public List<RuleViolation> violations() {
-        return violations;
-    }
-
-    private static String requireCode(String code) {
-        if (Objects.requireNonNull(code, "code must not be null").isBlank()) {
-            throw new IllegalArgumentException("code must not be blank");
-        }
-        return code;
+        return details();
     }
 }

@@ -1,20 +1,15 @@
 package io.github.ggomarighetti.jparsqlsearch.query.validation;
 
+import io.github.ggomarighetti.jparsqlsearch.failure.SearchValidationException;
 import io.github.ggomarighetti.jparsqlsearch.validation.RuleViolation;
 import java.util.List;
-import java.util.Objects;
 
 /** Indicates that free-text query validation failed. */
-public final class SearchQueryValidationException extends RuntimeException {
+public final class SearchQueryValidationException extends SearchValidationException {
     private static final long serialVersionUID = 1L;
 
     /** Error code used when a query is attempted without permitted validation rules. */
     public static final String QUERY_RULES_FORBIDDEN = "QUERY_RULES_FORBIDDEN";
-
-    /** Stable machine-readable error code. */
-    private final String code;
-    /** Immutable query validation violations. */
-    private final List<RuleViolation> violations;
 
     /**
      * Creates an exception without rule violations or a cause.
@@ -64,18 +59,7 @@ public final class SearchQueryValidationException extends RuntimeException {
             String message,
             List<RuleViolation> violations,
             Throwable cause) {
-        super(message, cause);
-        this.code = requireCode(code);
-        this.violations = List.copyOf(Objects.requireNonNull(violations, "violations must not be null"));
-    }
-
-    /**
-     * Returns the stable error code.
-     *
-     * @return error code
-     */
-    public String code() {
-        return code;
+        super(code, message, violations, cause);
     }
 
     /**
@@ -84,13 +68,6 @@ public final class SearchQueryValidationException extends RuntimeException {
      * @return immutable violation list
      */
     public List<RuleViolation> violations() {
-        return violations;
-    }
-
-    private static String requireCode(String code) {
-        if (Objects.requireNonNull(code, "code must not be null").isBlank()) {
-            throw new IllegalArgumentException("code must not be blank");
-        }
-        return code;
+        return details();
     }
 }

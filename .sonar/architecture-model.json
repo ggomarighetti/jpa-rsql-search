@@ -107,6 +107,12 @@
           ]
         },
         {
+          "label": "jpa-rsql-search-core-failure",
+          "patterns": [
+            "jpa-rsql-search-core/src/main/java/io/github/ggomarighetti/jparsqlsearch/failure/*.java"
+          ]
+        },
+        {
           "label": "jpa-rsql-search-core-page-validation",
           "patterns": [
             "jpa-rsql-search-core/src/main/java/io/github/ggomarighetti/jparsqlsearch/page/validation/*.java"
