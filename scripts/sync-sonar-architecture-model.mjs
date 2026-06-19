@@ -7,8 +7,9 @@ const organizationId =
 const token = process.env.SONAR_TOKEN;
 const checkOnly = process.argv.includes("--check");
 const modelPath = resolve(".sonar", "architecture-model.json");
-const perspectiveLabel = "V2 Maven modules";
-const perspectiveDescription = "Direct modular boundaries for jpa-rsql-search v2.";
+const perspectiveLabel = "V2 Maven package leaves";
+const perspectiveDescription =
+  "Direct modular boundaries for jpa-rsql-search v2 at production package granularity.";
 const allowAllPerspectiveConstraint = {
   from: ["**"],
   to: ["**"],
@@ -108,7 +109,7 @@ async function sonarRequest(url, options) {
 function validateModel(candidate) {
   if (JSON.stringify(candidate) !== JSON.stringify(expectedModel)) {
     throw new Error(
-      "The architecture declaration must mirror the Maven module namespace tree derived from production Java sources.",
+      "The architecture declaration must map every production Java package with file-path patterns.",
     );
   }
 }
@@ -117,15 +118,12 @@ async function buildExpectedModel() {
   const perspective = {
     label: perspectiveLabel,
     description: perspectiveDescription,
-    language: "java",
-    qualifiers: "namespace",
     groups: [],
     constraints: [allowAllPerspectiveConstraint],
   };
   for (const moduleName of productModules) {
     const sourceRoot = resolve(moduleName, "src", "main", "java");
     const files = await collectJavaFiles(sourceRoot);
-    const moduleGroup = architectureGroup(moduleName);
     const packageNames = new Set();
     for (const file of files) {
       const className = relative(sourceRoot, file)
@@ -134,10 +132,13 @@ async function buildExpectedModel() {
       packageNames.add(className.split(".").slice(0, -1).join("."));
     }
     for (const packageName of [...packageNames].sort()) {
-      addPackagePath(moduleGroup, packageName);
+      perspective.groups.push({
+        label: `${moduleName}:${packageName}`,
+        patterns: [
+          `${moduleName}/src/main/java/${packageName.replaceAll(".", "/")}/*.java`,
+        ],
+      });
     }
-    assignPatterns(moduleGroup, moduleName, "");
-    perspective.groups.push(moduleGroup);
   }
   return { perspectives: [perspective] };
 }
@@ -154,34 +155,4 @@ async function collectJavaFiles(directory) {
     }),
   );
   return files.flat().sort();
-}
-
-function architectureGroup(label) {
-  return { label, patterns: [] };
-}
-
-function addPackagePath(moduleGroup, packageName) {
-  let current = moduleGroup;
-  for (const segment of packageName.split(".")) {
-    current.groups ??= [];
-    let child = current.groups.find((candidate) => candidate.label === segment);
-    if (!child) {
-      child = architectureGroup(segment);
-      current.groups.push(child);
-    }
-    current = child;
-  }
-}
-
-function assignPatterns(group, moduleName, namespace) {
-  group.groups?.sort((left, right) => left.label.localeCompare(right.label));
-  group.patterns = [
-    namespace
-      ? `${moduleName}:${namespace}${group.groups?.length ? ".**" : ".*"}`
-      : `${moduleName}:**`,
-  ];
-  for (const child of group.groups ?? []) {
-    const childNamespace = namespace ? `${namespace}.${child.label}` : child.label;
-    assignPatterns(child, moduleName, childNamespace);
-  }
 }

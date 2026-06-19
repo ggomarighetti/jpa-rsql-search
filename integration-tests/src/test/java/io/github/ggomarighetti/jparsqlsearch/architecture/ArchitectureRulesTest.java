@@ -54,11 +54,21 @@ class ArchitectureRulesTest {
         assertEquals(
                 "exclusive-allow",
                 perspective.path("constraints").path(0).path("relation").asText(),
-                "Sonar documents the namespace tree; Maven and ArchUnit enforce the dependency DAG.");
-        Set<String> sourcePackageKeys = productionPackageKeys(root);
+                "Sonar documents production packages; Maven and ArchUnit enforce the dependency DAG.");
         perspective
                 .path("groups")
-                .forEach(group -> collectArchitecturePackagePatterns(group, null, "", sourcePackageKeys, mappedPatterns));
+                .forEach(group -> {
+                    assertEquals(
+                            0,
+                            group.path("groups").size(),
+                            () -> "Sonar architecture package groups must stay flat: " + group.path("label").asText());
+                    assertEquals(
+                            1,
+                            group.path("patterns").size(),
+                            () -> "Every Sonar architecture package group must declare exactly one pattern: "
+                                    + group.path("label").asText());
+                    mappedPatterns.add(group.path("patterns").path(0).asText());
+                });
 
         Set<String> expectedPatterns = expectedSonarPackagePatterns(root);
         assertEquals(
@@ -105,21 +115,10 @@ class ArchitectureRulesTest {
         Set<String> patterns = new HashSet<>();
         for (String module : PRODUCT_MODULES) {
             Set<String> packageNames = productionPackageNames(root, module);
-            for (String packageName : packageNames) {
-                boolean hasSubpackages = packageNames.stream()
-                        .anyMatch(candidate -> candidate.startsWith(packageName + "."));
-                patterns.add(module + ":" + packageName + (hasSubpackages ? ".**" : ".*"));
-            }
+            packageNames.forEach(packageName -> patterns.add(
+                    module + "/src/main/java/" + packageName.replace('.', '/') + "/*.java"));
         }
         return patterns;
-    }
-
-    private static Set<String> productionPackageKeys(Path root) throws IOException {
-        Set<String> keys = new HashSet<>();
-        for (String module : PRODUCT_MODULES) {
-            productionPackageNames(root, module).forEach(packageName -> keys.add(module + ":" + packageName));
-        }
-        return keys;
     }
 
     private static Set<String> productionPackageNames(Path root, String module) throws IOException {
@@ -136,36 +135,5 @@ class ArchitectureRulesTest {
                     .forEach(packageNames::add);
         }
         return packageNames;
-    }
-
-    private static void collectArchitecturePackagePatterns(
-            JsonNode group,
-            String module,
-            String namespace,
-            Set<String> sourcePackageKeys,
-            Set<String> mappedPatterns) {
-        String label = group.path("label").asText();
-        String currentModule = module == null ? label : module;
-        String currentNamespace = module == null ? "" : namespace.isBlank() ? label : namespace + "." + label;
-        JsonNode children = group.path("groups");
-        boolean hasChildren = children.isArray() && !children.isEmpty();
-        String expectedPattern = module == null
-                ? currentModule + ":**"
-                : currentModule + ":" + currentNamespace + (hasChildren ? ".**" : ".*");
-
-        assertEquals(
-                1,
-                group.path("patterns").size(),
-                () -> "Every Sonar architecture group must declare exactly one pattern: " + label);
-        assertEquals(
-                expectedPattern,
-                group.path("patterns").path(0).asText(),
-                () -> "Sonar architecture group pattern does not match its namespace path: " + label);
-
-        if (sourcePackageKeys.contains(currentModule + ":" + currentNamespace)) {
-            mappedPatterns.add(expectedPattern);
-        }
-        children.forEach(child ->
-                collectArchitecturePackagePatterns(child, currentModule, currentNamespace, sourcePackageKeys, mappedPatterns));
     }
 }
