@@ -2136,8 +2136,7 @@ ese numero: `.sonar/architecture-model.json` declara los seis modulos Maven
 como arquitectura intencional y el workflow la sincroniza antes del analisis
 cuando dispone del mismo `SONAR_TOKEN` usado por SonarCloud. Ese token debe
 pertenecer a un usuario con permisos suficientes para administrar el modelo de
-arquitectura y ejecutar el analisis. El analisis SonarCloud
-`88bf658a-57ee-4f61-b803-2d64c46ea5fc` del PR #26 confirma
+arquitectura y ejecutar el analisis. El analisis SonarCloud del PR #26 confirma
 `architectureCoverage = 100`, `numStructuralIssues = 0`, `Misplaced = 0`,
 `Disallowed = 0`, `Tangles = 0`, `Weak tangles = 0` y `Split responsibilities =
 0`. Sonar conserva `numOversizeNodes = 3` como metrica estadistica dinamica del
