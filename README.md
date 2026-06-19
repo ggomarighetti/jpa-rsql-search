@@ -527,6 +527,12 @@ of 100 with a 5000-row offset cap, unpaged requests are disabled, sort orders
 are capped at 3, to-many sorting is rejected, slice compilation is enabled, and
 definition paths are capped at 3 segments.
 
+Setting `jpa.rsql.search.rsql.enabled=false` disables the built-in RSQL engine,
+Perplexhub backend, and related RSQL infrastructure. In that mode the
+auto-configuration still creates `SearchDefinitionFactory`, but it creates
+`SearchCompiler` only when the application provides its own `SearchRsqlEngine`
+bean.
+
 Per-use case `.limits(...)` overlays remain useful when one endpoint needs a
 tighter profile than the global defaults:
 

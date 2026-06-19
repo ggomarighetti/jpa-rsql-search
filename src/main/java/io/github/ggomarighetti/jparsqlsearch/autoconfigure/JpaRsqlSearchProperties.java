@@ -116,7 +116,11 @@ class JpaRsqlSearchProperties {
 
     /** RSQL parser and backend settings. */
     public static class Rsql {
-        /** Whether RSQL support and its auto-configuration are enabled. */
+        /**
+         * Whether the built-in RSQL engine and backend auto-configuration are enabled.
+         * When disabled, a SearchCompiler is auto-configured only if the application
+         * provides its own SearchRsqlEngine bean.
+         */
         private boolean enabled = true;
         /** Settings for the bundled Perplexhub JPA backend. */
         private final Perplexhub perplexhub = new Perplexhub();
