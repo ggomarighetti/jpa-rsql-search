@@ -1,5 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.compile;
 
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchQueryValidationException;
@@ -42,7 +43,10 @@ class SearchProtectionTest {
                 .filter(filter -> filter.maxToManyPaths(0))
                 .build();
         RsqlSearchGuard guard = new RsqlSearchGuard(
-                org.springframework.boot.convert.ApplicationConversionService.getSharedInstance(),
+                PerplexhubRsqlEngines.builder()
+                        .conversionService(
+                                org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
+                        .build(),
                 policy);
         SearchDefinition<TestTypes.Product> definition = SearchDefinition.builder(policy)
                 .entity(TestTypes.Product.class)
@@ -64,7 +68,10 @@ class SearchProtectionTest {
                 .filter(filter -> filter.maxInValues(1))
                 .build();
         RsqlSearchGuard guard = new RsqlSearchGuard(
-                org.springframework.boot.convert.ApplicationConversionService.getSharedInstance(),
+                PerplexhubRsqlEngines.builder()
+                        .conversionService(
+                                org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
+                        .build(),
                 policy);
         SearchDefinition<TestTypes.Product> definition = SearchDefinition.builder(policy)
                 .entity(TestTypes.Product.class)
@@ -86,7 +93,10 @@ class SearchProtectionTest {
                 .filter(filter -> filter.maxOrJoinRoots(1))
                 .build();
         RsqlSearchGuard guard = new RsqlSearchGuard(
-                org.springframework.boot.convert.ApplicationConversionService.getSharedInstance(),
+                PerplexhubRsqlEngines.builder()
+                        .conversionService(
+                                org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
+                        .build(),
                 policy);
         SearchDefinition<Product> definition = SearchDefinition.builder(policy)
                 .entity(Product.class)
@@ -660,7 +670,7 @@ class SearchProtectionTest {
 
     private static SearchCompiler compiler(SearchPolicy policy) {
         return new SearchCompiler(
-                io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine.builder()
+                PerplexhubRsqlEngines.builder()
                         .conversionService(
                                 org.springframework.boot.convert.ApplicationConversionService.getSharedInstance())
                         .build(),

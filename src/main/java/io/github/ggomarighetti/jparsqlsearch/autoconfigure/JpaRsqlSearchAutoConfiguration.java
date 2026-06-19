@@ -3,7 +3,7 @@ package io.github.ggomarighetti.jparsqlsearch.autoconfigure;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinitionFactory;
 import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler;
 import io.github.ggomarighetti.jparsqlsearch.jpa.JpaSearchDefinitionValidator;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.ObjectProvider;

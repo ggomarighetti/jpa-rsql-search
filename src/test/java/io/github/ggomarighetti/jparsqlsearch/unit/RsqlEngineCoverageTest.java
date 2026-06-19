@@ -1,11 +1,13 @@
 package io.github.ggomarighetti.jparsqlsearch.unit;
 
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import cz.jirutka.rsql.parser.RSQLParser;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendAdapter;
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendValidationContext;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlBackendAdapter;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlBackendOptions;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
@@ -31,7 +33,7 @@ class RsqlEngineCoverageTest {
     void builderAcceptsBulkOperatorsParserFactoryBackendAndConversionService() {
         RsqlOperatorDescriptor descriptor = RsqlOperatorDescriptor.of(CUSTOM, "=custom=");
         RsqlBackendAdapter backend = new NoOpBackend();
-        SearchRsqlEngine engine = SearchRsqlEngine.builder()
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
                 .operators(List.of(descriptor))
                 .parserFactory(operators -> new RSQLParser(operators.parserOperators()))
                 .backend(backend)
@@ -40,13 +42,13 @@ class RsqlEngineCoverageTest {
 
         assertTrue(engine.operators().descriptor(CUSTOM).isPresent());
         assertNotNull(engine.parse("email==value"));
-        thrownBy(NullPointerException.class, () -> SearchRsqlEngine.builder().operators(null));
-        thrownBy(NullPointerException.class, () -> SearchRsqlEngine.builder().parserFactory(null));
+        thrownBy(NullPointerException.class, () -> PerplexhubRsqlEngines.builder().operators(null));
+        thrownBy(NullPointerException.class, () -> PerplexhubRsqlEngines.builder().parserFactory(null));
     }
 
     @Test
     void builderCanStartWithoutDefaultOperators() {
-        SearchRsqlEngine engine = SearchRsqlEngine.builder()
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
                 .withoutDefaultOperators()
                 .operator(RsqlOperatorDescriptor.of(CUSTOM, "=custom="))
                 .backend(new NoOpBackend())
@@ -59,7 +61,7 @@ class RsqlEngineCoverageTest {
 
     @Test
     void parsedAstExposesNormalizedComparisonsForLogicalExpressions() {
-        var ast = SearchRsqlEngine.defaults().parse("email==a;name==b");
+        var ast = PerplexhubRsqlEngines.defaults().parse("email==a;name==b");
 
         assertEquals(2, ast.comparisons().size());
         assertEquals(EQUAL, ast.comparisons().get(0).operator());
@@ -71,7 +73,7 @@ class RsqlEngineCoverageTest {
     void validateRejectsUnregisteredOperatorsAndTypeMismatches() {
         SearchDefinition<TestTypes.Product> unregistered = definition(CUSTOM, String.class);
         SearchDefinition<TestTypes.Product> mismatch = definition(CUSTOM, Integer.class);
-        SearchRsqlEngine mismatchEngine = SearchRsqlEngine.builder()
+        SearchRsqlEngine mismatchEngine = PerplexhubRsqlEngines.builder()
                 .operator(RsqlOperatorDescriptor.builder(CUSTOM)
                         .symbol("=custom=")
                         .argumentType(String.class)
@@ -81,7 +83,7 @@ class RsqlEngineCoverageTest {
 
         SearchDefinitionValidationException missing = thrownBy(
                 SearchDefinitionValidationException.class,
-                () -> SearchRsqlEngine.defaults().validate(unregistered));
+                () -> PerplexhubRsqlEngines.defaults().validate(unregistered));
         SearchDefinitionValidationException typeMismatch = thrownBy(
                 SearchDefinitionValidationException.class,
                 () -> mismatchEngine.validate(mismatch));
@@ -93,7 +95,7 @@ class RsqlEngineCoverageTest {
     @Test
     void validateRejectsOperatorsThatCannotBeConvertedFromString() {
         SearchDefinition<TestTypes.Product> definition = definition(CUSTOM, NoConversion.class);
-        SearchRsqlEngine engine = SearchRsqlEngine.builder()
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
                 .operator(RsqlOperatorDescriptor.builder(CUSTOM)
                         .symbol("=custom=")
                         .argumentType(NoConversion.class)
@@ -113,7 +115,7 @@ class RsqlEngineCoverageTest {
         ApplicationConversionService conversionService = new ApplicationConversionService();
         conversionService.addConverter(String.class, Token.class, Token::new);
         SearchDefinition<TestTypes.Product> definition = definition(CUSTOM, Token.class);
-        SearchRsqlEngine engine = SearchRsqlEngine.builder()
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
                 .withoutDefaultOperators()
                 .operator(RsqlOperatorDescriptor.builder(CUSTOM)
                         .symbol("=token=")
@@ -129,7 +131,7 @@ class RsqlEngineCoverageTest {
     @Test
     void validateAllowsStringArgumentTypesWithoutRegisteredStringConverter() {
         SearchDefinition<TestTypes.Product> definition = definition(CUSTOM, String.class);
-        SearchRsqlEngine engine = SearchRsqlEngine.builder()
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
                 .operator(RsqlOperatorDescriptor.builder(CUSTOM)
                         .symbol("=custom=")
                         .argumentType(String.class)
@@ -152,7 +154,7 @@ class RsqlEngineCoverageTest {
                 .symbol("=custom=")
                 .jpaPredicate(context -> null)
                 .build();
-        SearchRsqlEngine engine = SearchRsqlEngine.builder()
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
                 .operator(descriptor)
                 .backend(new NoOpBackend())
                 .build();
@@ -164,7 +166,10 @@ class RsqlEngineCoverageTest {
 
         SearchDefinitionValidationException exception = thrownBy(
                 SearchDefinitionValidationException.class,
-                () -> new PerplexhubRsqlBackendAdapter(options).validate(engine, definition));
+                () -> new PerplexhubRsqlBackendAdapter(options).validate(new RsqlBackendValidationContext(
+                        definition,
+                        engine.operators(),
+                        engine.conversionService())));
 
         assertEquals(SearchDefinitionValidationException.RSQL_OPERATOR_TYPE_MISMATCH, exception.code());
     }
@@ -176,7 +181,7 @@ class RsqlEngineCoverageTest {
                 .argumentType(Token.class)
                 .jpaPredicate(context -> null)
                 .build();
-        SearchRsqlEngine engine = SearchRsqlEngine.builder()
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.builder()
                 .operator(descriptor)
                 .backend(new NoOpBackend())
                 .build();
@@ -184,7 +189,10 @@ class RsqlEngineCoverageTest {
 
         SearchDefinitionValidationException exception = thrownBy(
                 SearchDefinitionValidationException.class,
-                () -> new PerplexhubRsqlBackendAdapter().validate(engine, definition));
+                () -> new PerplexhubRsqlBackendAdapter().validate(new RsqlBackendValidationContext(
+                        definition,
+                        engine.operators(),
+                        engine.conversionService())));
 
         assertEquals(SearchDefinitionValidationException.RSQL_OPERATOR_TYPE_MISMATCH, exception.code());
     }

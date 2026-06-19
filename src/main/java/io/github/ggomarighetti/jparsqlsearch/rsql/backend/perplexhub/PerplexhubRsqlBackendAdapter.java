@@ -4,17 +4,16 @@ import cz.jirutka.rsql.parser.ast.AndNode;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.OrNode;
-import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendAdapter;
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendValidationContext;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlJpaPredicateContext;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlJpaPredicateFactory;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorDescriptor;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorRegistry;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
 import io.github.perplexhub.rsql.JsonbConfiguration;
 import io.github.perplexhub.rsql.RSQLCustomPredicate;
 import io.github.perplexhub.rsql.RSQLCustomPredicateInput;
@@ -61,9 +60,9 @@ public final class PerplexhubRsqlBackendAdapter implements RsqlBackendAdapter {
     }
 
     @Override
-    public void validate(SearchRsqlEngine engine, SearchDefinition<?> definition) {
-        for (RsqlOperator operator : definition.filteringOperators()) {
-            RsqlOperatorDescriptor descriptor = engine.operators().require(operator);
+    public void validate(RsqlBackendValidationContext context) {
+        for (RsqlOperator operator : context.definition().filteringOperators()) {
+            RsqlOperatorDescriptor descriptor = context.operators().require(operator);
             if (!descriptor.defaultJpaSupported() && descriptor.jpaPredicateFactory().isEmpty()) {
                 throw new SearchDefinitionValidationException(
                         SearchDefinitionValidationException.RSQL_OPERATOR_NOT_EXECUTABLE,

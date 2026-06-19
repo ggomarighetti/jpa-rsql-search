@@ -1,6 +1,5 @@
-package io.github.ggomarighetti.jparsqlsearch.rsql;
+package io.github.ggomarighetti.jparsqlsearch.rsql.engine;
 
-import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlBackendAdapter;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendAdapter;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.DefaultRsqlOperatorDescriptors;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorDescriptor;
@@ -18,10 +17,11 @@ import org.springframework.core.convert.ConversionService;
 public final class SearchRsqlEngineBuilder {
     private final List<RsqlOperatorDescriptor> operators = new ArrayList<>();
     private RsqlParserFactory parserFactory = new DefaultRsqlParserFactory();
-    private RsqlBackendAdapter backend = new PerplexhubRsqlBackendAdapter();
+    private RsqlBackendAdapter backend;
     private ConversionService conversionService = ApplicationConversionService.getSharedInstance();
 
-    SearchRsqlEngineBuilder() {
+    SearchRsqlEngineBuilder(RsqlBackendAdapter backend) {
+        this.backend = Objects.requireNonNull(backend, "backend must not be null");
         operators.addAll(DefaultRsqlOperatorDescriptors.all());
     }
 
@@ -71,7 +71,7 @@ public final class SearchRsqlEngineBuilder {
     }
 
     /**
-     * Replaces the backend adapter.
+     * Replaces the explicitly selected backend.
      *
      * @param backend backend adapter
      * @return this builder

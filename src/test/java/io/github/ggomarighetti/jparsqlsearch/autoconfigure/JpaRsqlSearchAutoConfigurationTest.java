@@ -1,10 +1,11 @@
 package io.github.ggomarighetti.jparsqlsearch.autoconfigure;
 
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinitionFactory;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchProtectionException;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.unit.TestTypes;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +43,7 @@ class JpaRsqlSearchAutoConfigurationTest {
 
     @Test
     void createsCompilerWithUserProvidedEngineWhenDefaultRsqlEngineIsDisabled() {
-        SearchRsqlEngine engine = SearchRsqlEngine.defaults();
+        SearchRsqlEngine engine = PerplexhubRsqlEngines.defaults();
 
         contextRunner
                 .withPropertyValues("jpa.rsql.search.rsql.enabled=false")

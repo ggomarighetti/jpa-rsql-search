@@ -2,7 +2,7 @@ package io.github.ggomarighetti.jparsqlsearch.compile;
 
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,20 +24,6 @@ public final class SearchCompiler {
     private final SearchQueryGuard searchQueryGuard;
     private final SearchPageableGuard searchPageableGuard;
     private final SearchPolicy policy;
-
-    /** Creates a compiler with the default engine and policy. */
-    public SearchCompiler() {
-        this(SearchRsqlEngine.defaults(), SearchPolicy.defaults());
-    }
-
-    /**
-     * Creates a compiler with the default engine and an explicit policy.
-     *
-     * @param policy global protection policy
-     */
-    public SearchCompiler(SearchPolicy policy) {
-        this(SearchRsqlEngine.defaults(), policy);
-    }
 
     /**
      * Creates a compiler with an explicit engine and policy.

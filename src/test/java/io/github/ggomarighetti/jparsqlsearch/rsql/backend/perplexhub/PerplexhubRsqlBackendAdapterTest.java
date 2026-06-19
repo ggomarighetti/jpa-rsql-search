@@ -1,11 +1,12 @@
 package io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub;
 
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlAst;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.unit.TestTypes;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PerplexhubRsqlBackendAdapterTest {
     private final PerplexhubRsqlBackendAdapter adapter = new PerplexhubRsqlBackendAdapter();
-    private final SearchRsqlEngine engine = SearchRsqlEngine.defaults();
+    private final SearchRsqlEngine engine = PerplexhubRsqlEngines.defaults();
 
     @Test
     void rejectsValidatedComparisonWhenSelectorIsMissingFromDefinition() {

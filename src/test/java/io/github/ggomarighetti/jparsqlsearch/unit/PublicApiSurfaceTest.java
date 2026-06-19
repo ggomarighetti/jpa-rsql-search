@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngineBuilder;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import org.junit.jupiter.api.Test;

@@ -13,7 +13,7 @@ import io.github.ggomarighetti.jparsqlsearch.filter.SearchFiltering;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlAst;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
 import io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -33,22 +33,6 @@ final class RsqlSearchGuard {
     private final List<SearchDefinitionValidator> definitionValidators;
     private final Map<SearchDefinition<?>, Boolean> validatedDefinitions =
             Collections.synchronizedMap(new WeakHashMap<>());
-
-    public RsqlSearchGuard() {
-        this(SearchRsqlEngine.defaults(), SearchPolicy.defaults());
-    }
-
-    public RsqlSearchGuard(ConversionService conversionService) {
-        this(SearchRsqlEngine.builder()
-                .conversionService(conversionService)
-                .build(), SearchPolicy.defaults());
-    }
-
-    public RsqlSearchGuard(ConversionService conversionService, SearchPolicy policy) {
-        this(SearchRsqlEngine.builder()
-                .conversionService(conversionService)
-                .build(), policy);
-    }
 
     public RsqlSearchGuard(SearchRsqlEngine engine) {
         this(engine, SearchPolicy.defaults());

@@ -20,7 +20,7 @@ public final class RsqlAst {
         this.comparisons = List.copyOf(Objects.requireNonNull(comparisons, "comparisons must not be null"));
     }
 
-    static RsqlAst from(Node node, RsqlOperatorRegistry operators) {
+    public static RsqlAst from(Node node, RsqlOperatorRegistry operators) {
         Objects.requireNonNull(operators, "operators must not be null");
         List<RsqlComparison> comparisons = new ArrayList<>();
         ArrayDeque<Node> stack = new ArrayDeque<>();

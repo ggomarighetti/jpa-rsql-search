@@ -3,9 +3,10 @@ package io.github.ggomarighetti.jparsqlsearch.autoconfigure;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlBackendAdapter;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlBackendOptions;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendAdapter;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngineBuilder;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngineCustomizer;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineCustomizer;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngines;
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -65,9 +66,8 @@ class JpaRsqlSearchRsqlAutoConfiguration {
         if (conversionService == null) {
             conversionService = applicationConversionService(beanFactory);
         }
-        SearchRsqlEngineBuilder builder = SearchRsqlEngine.builder()
-                .conversionService(conversionService)
-                .backend(backend);
+        SearchRsqlEngineBuilder builder = SearchRsqlEngines.builder(backend)
+                .conversionService(conversionService);
         customizers.orderedStream().forEach(customizer -> customizer.customize(builder));
         return builder.build();
     }

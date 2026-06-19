@@ -1,5 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.autoconfigure;
 
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import io.github.ggomarighetti.jparsqlsearch.compile.RsqlSearchGuardTestAccess;
 import io.github.ggomarighetti.jparsqlsearch.compile.SearchCompiler;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
@@ -10,9 +11,9 @@ import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorArity;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorDescriptor;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngine;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngineBuilder;
-import io.github.ggomarighetti.jparsqlsearch.rsql.SearchRsqlEngineCustomizer;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngine;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineBuilder;
+import io.github.ggomarighetti.jparsqlsearch.rsql.engine.SearchRsqlEngineCustomizer;
 import io.github.ggomarighetti.jparsqlsearch.validation.SearchDefinitionValidator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -108,7 +109,7 @@ class JpaRsqlSearchRsqlAutoConfigurationTest {
     @Test
     void userProvidedEngineReplacesDefaultAndDoesNotReceiveCustomizers() {
         RsqlOperator ignored = RsqlOperator.of("IGNORED");
-        SearchRsqlEngine userEngine = SearchRsqlEngine.defaults();
+        SearchRsqlEngine userEngine = PerplexhubRsqlEngines.defaults();
 
         contextRunner
                 .withBean(SearchRsqlEngine.class, () -> userEngine)

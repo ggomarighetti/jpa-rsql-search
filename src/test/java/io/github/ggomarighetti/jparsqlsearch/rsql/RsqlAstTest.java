@@ -1,5 +1,6 @@
 package io.github.ggomarighetti.jparsqlsearch.rsql;
 
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.perplexhub.PerplexhubRsqlEngines;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import cz.jirutka.rsql.parser.ast.Node;
@@ -34,7 +35,7 @@ class RsqlAstTest {
 
     @Test
     void preservesLeftToRightComparisonOrder() {
-        RsqlAst ast = SearchRsqlEngine.defaults().parse("email==a;name==b;taxId==c");
+        RsqlAst ast = PerplexhubRsqlEngines.defaults().parse("email==a;name==b;taxId==c");
 
         assertEquals(
                 List.of("email", "name", "taxId"),

@@ -1,4 +1,4 @@
-package io.github.ggomarighetti.jparsqlsearch.rsql;
+package io.github.ggomarighetti.jparsqlsearch.rsql.engine;
 
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.RSQLParserException;
@@ -7,7 +7,10 @@ import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
 import io.github.ggomarighetti.jparsqlsearch.exception.RsqlFilterValidationException;
 import io.github.ggomarighetti.jparsqlsearch.exception.SearchDefinitionValidationException;
 import io.github.ggomarighetti.jparsqlsearch.filter.FilterOperator;
+import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlAst;
+import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlCompilationRequest;
 import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendAdapter;
+import io.github.ggomarighetti.jparsqlsearch.rsql.backend.RsqlBackendValidationContext;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorDescriptor;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperatorRegistry;
@@ -37,24 +40,6 @@ public final class SearchRsqlEngine {
         this.parserFactory = Objects.requireNonNull(parserFactory, "parserFactory must not be null");
         this.backend = Objects.requireNonNull(backend, "backend must not be null");
         this.conversionService = Objects.requireNonNull(conversionService, "conversionService must not be null");
-    }
-
-    /**
-     * Creates an engine builder with the default operators, parser and backend.
-     *
-     * @return new builder
-     */
-    public static SearchRsqlEngineBuilder builder() {
-        return new SearchRsqlEngineBuilder();
-    }
-
-    /**
-     * Creates an engine with default configuration.
-     *
-     * @return default engine
-     */
-    public static SearchRsqlEngine defaults() {
-        return builder().build();
     }
 
     /**
@@ -119,7 +104,7 @@ public final class SearchRsqlEngine {
             }
             field.filtering().operators().keySet().forEach(operator -> validateOperator(field, operator));
         }
-        backend.validate(this, definition);
+        backend.validate(new RsqlBackendValidationContext(definition, operators, conversionService));
     }
 
     private void validateOperator(SearchField<?> field, RsqlOperator operator) {

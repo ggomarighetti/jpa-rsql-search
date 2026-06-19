@@ -1,4 +1,4 @@
-package io.github.ggomarighetti.jparsqlsearch.rsql;
+package io.github.ggomarighetti.jparsqlsearch.rsql.engine;
 
 /** Customizes the auto-configured RSQL engine builder. */
 @FunctionalInterface
