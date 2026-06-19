@@ -482,11 +482,11 @@ class JpaRsqlSearchProperties {
         private int maxSize = SearchPolicy.defaults().paging().maxSize();
         /** Maximum accepted row offset. */
         private long maxOffset = SearchPolicy.defaults().paging().maxOffset();
-        /** Whether unpaged requests are allowed. */
+        /** Whether unpaged requests are accepted and converted to a bounded first page. */
         private boolean allowUnpaged = SearchPolicy.defaults().paging().allowUnpaged();
-        /** Size used to bound an accepted unpaged request. */
+        /** Page size used when an accepted unpaged request is converted to a bounded first page. */
         private int defaultUnpagedSize = SearchPolicy.defaults().paging().defaultUnpagedSize();
-        /** Maximum size accepted for an unpaged request. */
+        /** Maximum configured size accepted for converted unpaged requests. */
         private int maxUnpagedSize = SearchPolicy.defaults().paging().maxUnpagedSize();
 
         public Page getPage() {

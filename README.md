@@ -527,6 +527,13 @@ of 100 with a 5000-row offset cap, unpaged requests are disabled, sort orders
 are capped at 3, to-many sorting is rejected, slice compilation is enabled, and
 definition paths are capped at 3 segments.
 
+When unpaged requests are enabled with `jpa.rsql.search.paging.allow-unpaged`
+or a per-definition limit override, the compiler still does not return an
+unbounded `Pageable`. It records the original unpaged input for protection
+checks, translates allowed sort aliases, and returns `PageRequest.of(0,
+defaultUnpagedSize, translatedSort)`. Use
+`jpa.rsql.search.paging.default-unpaged-size` to choose that bounded page size.
+
 Setting `jpa.rsql.search.rsql.enabled=false` disables the built-in RSQL engine,
 Perplexhub backend, and related RSQL infrastructure. In that mode the
 auto-configuration still creates `SearchDefinitionFactory`, but it creates
