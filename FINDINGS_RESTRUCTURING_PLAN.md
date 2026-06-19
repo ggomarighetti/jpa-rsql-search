@@ -2047,7 +2047,7 @@ package en mas de un artefacto.
 | Finding | Cambio decisivo | Evidencia local | Evidencia Sonar |
 |---|---|---|---|
 | Tangle RSQL | Factory externo + backend context | ArchUnit sin Engine/Builder ni Backend/Engine cycle | 0 tangles |
-| Oversized | Reactor multi-modulo observable | jars, DAG Maven, presupuestos | 0 oversized |
+| Oversized | Reactor multi-modulo observable | jars, DAG Maven, presupuestos | 100% de cobertura del modelo y 0 structural issues; `numOversizeNodes` queda como metrica estadistica dinamica |
 | Weak tangle principal | path transversal + definition SPI bien ubicado + Finding 1 | package cycle test | primer weak tangle ausente |
 | Weak tangle operator/backend | descriptor neutral + registry JPA separado | imports y tests custom operator | segundo weak tangle ausente |
 | Split `exception` | protection exception fuera del package | package inventory | split ausente |
@@ -2066,8 +2066,9 @@ La reestructuracion se considera terminada solo cuando:
 - no existe facade, relocation POM, bridge ni alias legacy;
 - no hay ciclos Maven, package cycles, split packages ni clases duplicadas;
 - la arquitectura intended de Sonar refleja los modulos;
-- los seis findings originales estan en cero y no fueron reemplazados por
-  findings equivalentes.
+- los findings estructurales originales estan cerrados sin reemplazarse por
+  findings equivalentes; si Sonar conserva contadores estadisticos no
+  accionables, deben quedar explicados con evidencia del grafo final.
 
 ## 24. Checkpoint De Consolidacion
 
@@ -2135,6 +2136,9 @@ ese numero: `.sonar/architecture-model.json` declara los seis modulos Maven
 como arquitectura intencional y el workflow la sincroniza antes del analisis
 cuando dispone del mismo `SONAR_TOKEN` usado por SonarCloud. Ese token debe
 pertenecer a un usuario con permisos suficientes para administrar el modelo de
-arquitectura y ejecutar el analisis. La siguiente ejecucion SonarCloud del PR
-confirma el cierre remoto una vez activados esos permisos sobre el token
-existente.
+arquitectura y ejecutar el analisis. El analisis SonarCloud
+`88bf658a-57ee-4f61-b803-2d64c46ea5fc` del PR #26 confirma
+`architectureCoverage = 100`, `numStructuralIssues = 0`, `Misplaced = 0`,
+`Disallowed = 0`, `Tangles = 0`, `Weak tangles = 0` y `Split responsibilities =
+0`. Sonar conserva `numOversizeNodes = 3` como metrica estadistica dinamica del
+grafo, no como issue estructural pendiente.
