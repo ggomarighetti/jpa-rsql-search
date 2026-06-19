@@ -15,6 +15,7 @@ import org.hibernate.validator.cfg.defs.SizeDef;
 import org.junit.jupiter.api.Test;
 import static io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperators.EQUAL;
 import static io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperators.IN;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -491,6 +492,22 @@ class SearchDefinitionTest {
         assertTrue(definition.query().accepts("abc"));
         assertTrue(definition.paging().accepts(0, 100));
         assertFalse(definition.paging().accepts(0, 101));
+    }
+
+    @Test
+    void closesRuleValidatorsIdempotentlyForDynamicDefinitions() {
+        SearchDefinition<TestTypes.Product> definition = SearchDefinition.builder().entity(TestTypes.Product.class)
+                .fields(fields -> fields.add("email", String.class)
+                        .filterable(filter -> filter.allow(EQUAL, operator -> operator
+                                .each(each -> each.rule(new SizeDef().min(3))))))
+                .query(query -> query
+                        .rule(new SizeDef().min(3))
+                        .specification(term -> (root, criteria, builder) -> builder.conjunction()))
+                .paging(paging -> paging.size(size -> size.rule(new MaxDef().value(100))))
+                .build();
+
+        assertDoesNotThrow(definition::close);
+        assertDoesNotThrow(definition::close);
     }
 
     @Test

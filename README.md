@@ -202,6 +202,13 @@ SearchDefinition<Product> definition = searchDefinitionFactory.builder()
         .build();
 ```
 
+Definitions are designed to be reused. Prefer static fields, singleton beans, or
+other long-lived holders instead of rebuilding the same definition for every
+request. Definitions that are built dynamically and then discarded implement
+`AutoCloseable`; call `close()` after the last use to release Hibernate
+Validator factories deterministically. Long-lived definitions can simply stay
+open for the lifetime of the application.
+
 Declare public fields inside `.fields(...)`. A field starts as metadata only;
 filtering and sorting are disabled until enabled explicitly.
 
