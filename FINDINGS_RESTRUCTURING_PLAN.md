@@ -2023,13 +2023,12 @@ package en mas de un artefacto.
 
 | Riesgo | Mitigacion |
 |---|---|
-| Ruptura binaria accidental adicional | japicmp y matriz explicita de cambios |
-| Doble ejecucion de validators durante 1.x | normalizacion por identidad de bean y test dedicado |
-| Auto-configuracion no descubierta desde facade | consumer test con jar empaquetado |
+| Ruptura publica no documentada | inventario explicito en `MIGRATION_V2.md` y tests de superficie |
+| Auto-configuracion no descubierta desde el starter | consumer test con jar empaquetado |
 | Clases duplicadas entre modulos | inspeccion de jars en verify |
-| Coverage fragmentada | reporte JaCoCo agregado en parent |
+| Coverage fragmentada | reporte JaCoCo agregado desde `integration-tests` |
 | Sonar colapsa modulos | ajustar scanner/intended architecture antes del cierre |
-| Backend custom pierde compatibilidad | adapter legacy y tests de SPI |
+| Backend custom queda acoplado al engine | `RsqlBackendValidationContext` y reglas ArchUnit |
 | Custom operator queda registrado sin binding | validacion temprana del backend context |
 | Diferencia de conversion entre guard y backend | un unico ConversionService en context/request |
 | Property tests pierden acceso package-private | mantenerlos en el modulo/package del core |
@@ -2067,7 +2066,7 @@ La reestructuracion se considera terminada solo cuando:
 - los tipos nuevos tienen owner unico;
 - README y Javadocs describen la API final;
 - unit, property, integration, release y consumer tests pasan;
-- japicmp solo reporta las rupturas aprobadas;
+- no existe facade, relocation POM, bridge ni alias legacy;
 - no hay ciclos Maven, package cycles, split packages ni clases duplicadas;
 - la arquitectura intended de Sonar refleja los modulos;
 - los seis findings originales estan en cero y no fueron reemplazados por
@@ -2078,3 +2077,48 @@ La reestructuracion se considera terminada solo cuando:
 Estado guardado: arquitectura final, ownership de los 56 archivos, tipos
 nuevos, cambios de API, secuencia de implementacion, migracion de tests, reglas
 arquitectonicas, riesgos y criterios de cierre completos.
+
+## 25. Cierre De Ejecucion V2
+
+Implementacion completada el 19 de junio de 2026 en
+`codex/v2-modular-architecture`:
+
+- parent publicable `jpa-rsql-search-parent`;
+- seis jars publicables con version comun `2.0.0-SNAPSHOT`;
+- `integration-tests` excluido de deploy;
+- starter combinado con auto-configuracion y metadata Spring;
+- engine en `rsql.engine` y construccion generica mediante
+  `SearchRsqlEngines.builder(backend)`;
+- composicion Perplexhub mediante `PerplexhubRsqlEngines`;
+- metadata neutral y bindings JPA separados en `rsql.jpa`;
+- `SearchPath`, `SearchDefinitionValidator` y
+  `SearchProtectionException` movidos a sus owners finales sin aliases;
+- cero packages o clases duplicadas entre los jars;
+- reglas ArchUnit para ciclos y dependencias prohibidas;
+- consumidores Maven del starter y de modulos selectivos;
+- JaCoCo agregado sobre 112 clases, 2.887 lineas y 820 ramas, todo cubierto;
+- staging local con parent, jars, sources y Javadocs;
+- ausencia verificada de `jpa-rsql-search:2.x` y del modulo de integracion en
+  el staging;
+- Release Please y JReleaser configurados para una version comun y ejecucion
+  desde el parent;
+- README v2 y `MIGRATION_V2.md` como inventario de rupturas.
+
+Las menciones posteriores a facade, compatibilidad 1.x, bridges o `japicmp`
+quedan conservadas unicamente como registro historico del diagnostico original
+y no forman parte de la implementacion ejecutada.
+
+Estado local de los seis findings:
+
+| Finding original | Evidencia de cierre |
+|---|---|
+| Tangle RSQL | backend SPI no depende de engine; engine/core no depende de Perplexhub |
+| Oversized | reactor con ownership fisico por modulo |
+| Weak tangle principal | `path` y `definition.validation` tienen owner unico y DAG protegido |
+| Weak tangle operadores/backend | descriptor neutral y registry JPA separado |
+| Split `exception` | proteccion movida a `protection` |
+| Split `validation` | SPI movido a `definition.validation` |
+
+La confirmacion remota autoritativa se realiza en el analisis SonarCloud del PR
+de v2; el gate local impide reintroducir las dependencias que originaron los
+seis hallazgos.

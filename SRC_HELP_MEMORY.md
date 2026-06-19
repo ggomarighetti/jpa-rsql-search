@@ -6,12 +6,28 @@ Base de trabajo:
 - Branch de diagnostico: `codex/src-documentation`
 - Branch de ejecucion v2: `codex/v2-modular-architecture`
 - Fuente sincronizada: `origin/master` en `e7c236a`
-- Modulo Maven: `io.github.ggomarighetti:jpa-rsql-search:1.0.1`
+- Parent Maven v2: `io.github.ggomarighetti:jpa-rsql-search-parent:2.0.0-SNAPSHOT`
 - Java: 17
 - Stack principal: Spring Boot 4.1, Spring Data JPA, Hibernate Validator, nstdio RSQL parser, Perplexhub RSQL JPA.
 
 La ejecucion v2 usa este inventario como baseline, pero reemplaza el modulo
 monolitico por el reactor descrito en `FINDINGS_RESTRUCTURING_PLAN.md`.
+
+Owners ejecutados en v2:
+
+| Modulo | Ownership |
+|---|---|
+| `jpa-rsql-search-api` | definiciones, policy, path, filter, page, query, sort, errores y metadata de operadores |
+| `jpa-rsql-search-rsql-spi` | AST, parser, backend contracts y bindings JPA |
+| `jpa-rsql-search-core` | engine y compilacion protegida |
+| `jpa-rsql-search-jpa-validation` | validacion contra metamodelo JPA |
+| `jpa-rsql-search-perplexhub` | adapter y composition root Perplexhub |
+| `jpa-rsql-search-spring-boot-starter` | auto-configuracion, properties y recurso Spring |
+| `integration-tests` | ArchUnit, inspeccion de jars, consumidores e ITs Postgres |
+
+Las rutas `src/...` del inventario secuencial son historicas. Sus archivos
+fueron distribuidos bajo `modules/<owner>/src/...`; los movimientos publicos se
+documentan en `MIGRATION_V2.md`.
 
 ## Formato De Ficha
 

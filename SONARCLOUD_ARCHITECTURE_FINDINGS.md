@@ -36,6 +36,27 @@ SonarCloud distingue:
 | 5 | Smell / Split responsibility | Paquete `exception` | 7 clases, 2 fragmentos |
 | 6 | Smell / Split responsibility | Paquete `validation` | 3 clases, 2 fragmentos |
 
+## Estado De Resolucion V2
+
+La rama `codex/v2-modular-architecture` reemplaza el monolito diagnosticado por
+un reactor con ownership fisico. El cierre local es:
+
+| Hallazgo | Resolucion implementada | Gate |
+|---|---|---|
+| Tangle RSQL | engine en `rsql.engine`, backend context estrecho y Perplexhub fuera de core | ArchUnit prohibe backend SPI -> engine y core -> Perplexhub |
+| Oversized | parent, seis modulos publicables e integracion no publicable | inspeccion de jars y DAG Maven |
+| Weak tangle principal | `path` transversal y SPI en `definition.validation` | ciclos por modulo y dependencias prohibidas |
+| Weak tangle operadores/backend | descriptor neutral y bindings en `rsql.jpa` | test de operadores custom y regla anti-JPA en metadata |
+| Split `exception` | `SearchProtectionException` en `protection` | test de ausencia del FQCN legacy |
+| Split `validation` | `SearchDefinitionValidator` en `definition.validation` | test de ausencia del FQCN legacy |
+
+El reporte JaCoCo agregado cubre 112 clases, 2.887 lineas y 820 ramas al 100%.
+Los consumer tests compilan tanto el starter como una seleccion de modulos.
+
+La confirmacion autoritativa de los contadores Architecture se obtiene del
+analisis SonarCloud del PR de v2. Hasta que ese analisis exista, este documento
+distingue deliberadamente entre evidencia estructural local y estado remoto.
+
 ## 1. Flaw: Tangle RSQL
 
 SonarCloud identifica exactamente estas clases:
