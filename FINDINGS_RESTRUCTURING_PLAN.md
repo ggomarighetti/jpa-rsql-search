@@ -2096,7 +2096,8 @@ Implementacion completada el 19 de junio de 2026 en
 - cero packages o clases duplicadas entre los jars;
 - reglas ArchUnit para ciclos y dependencias prohibidas;
 - consumidores Maven del starter y de modulos selectivos;
-- JaCoCo agregado sobre 112 clases, 2.887 lineas y 820 ramas, todo cubierto;
+- 287 tests ejecutados sin fallos;
+- JaCoCo agregado sobre 112 clases, 2.888 lineas y 820 ramas, todo cubierto;
 - staging local con parent, jars, sources y Javadocs;
 - ausencia verificada de `jpa-rsql-search:2.x` y del modulo de integracion en
   el staging;

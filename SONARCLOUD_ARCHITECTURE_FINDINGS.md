@@ -50,7 +50,7 @@ un reactor con ownership fisico. El cierre local es:
 | Split `exception` | `SearchProtectionException` en `protection` | test de ausencia del FQCN legacy |
 | Split `validation` | `SearchDefinitionValidator` en `definition.validation` | test de ausencia del FQCN legacy |
 
-El reporte JaCoCo agregado cubre 112 clases, 2.887 lineas y 820 ramas al 100%.
+El reporte JaCoCo agregado cubre 112 clases, 2.888 lineas y 820 ramas al 100%.
 Los consumer tests compilan tanto el starter como una seleccion de modulos.
 
 La confirmacion autoritativa de los contadores Architecture se obtiene del
