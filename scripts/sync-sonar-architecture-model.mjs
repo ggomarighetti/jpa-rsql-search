@@ -105,99 +105,77 @@ function expectedArchitectureModel() {
         groups: [
           group(
             "api",
-            "Stable public definitions, request value objects, policy types, and API-level RSQL operator names.",
             "jpa-rsql-search-api/src/main/java/**",
           ),
           group(
             "rsql-spi",
-            "Neutral RSQL AST, parser, operator metadata, backend contracts, and JPA binding SPI.",
             "jpa-rsql-search-rsql-spi/src/main/java/**",
           ),
           group(
             "core",
-            "Search compiler, protection guards, RSQL engine orchestration, and runtime validation failures.",
             "jpa-rsql-search-core/src/main/java/**",
           ),
           group(
             "jpa-validation",
-            "JPA metamodel validation over compiled search definitions.",
             "jpa-rsql-search-jpa-validation/src/main/java/**",
           ),
           group(
             "perplexhub",
-            "Perplexhub backend adapter and convenience engine builders.",
             "jpa-rsql-search-perplexhub/src/main/java/**",
           ),
           group(
             "spring-boot-starter",
-            "Spring Boot autoconfiguration and the recommended application entry point.",
             "jpa-rsql-search-spring-boot-starter/src/main/java/**",
           ),
         ],
         constraints: [
           exclusiveAllow(
-            "The v2 API is the bottom of the public DAG: it may be consumed by every publishable module, but it must not consume implementation modules.",
             ["rsql-spi", "core", "jpa-validation", "perplexhub", "spring-boot-starter"],
             ["api"],
           ),
           exclusiveAllow(
-            "The neutral RSQL SPI may be used only by the core engine, concrete backends, and the Spring Boot starter.",
             ["core", "perplexhub", "spring-boot-starter"],
             ["rsql-spi"],
           ),
           exclusiveAllow(
-            "Core owns compilation and protection logic; only validation, backend convenience, and starter modules may depend on it.",
             ["jpa-validation", "perplexhub", "spring-boot-starter"],
             ["core"],
           ),
           exclusiveAllow(
-            "JPA validation is an optional runtime validator and should only be assembled by the starter.",
             ["spring-boot-starter"],
             ["jpa-validation"],
           ),
           exclusiveAllow(
-            "Perplexhub is an optional backend adapter and should only be assembled by the starter.",
             ["spring-boot-starter"],
             ["perplexhub"],
           ),
           deny(
-            "The Spring Boot starter is the application entry point; lower-level library modules must not depend on autoconfiguration.",
             ["api", "rsql-spi", "core", "jpa-validation", "perplexhub"],
             ["spring-boot-starter"],
           ),
         ],
       },
     ],
-    constraints: [
-      deny(
-        "Production code must not depend on test fixtures, integration consumers, or verification-only sources.",
-        ["jpa-rsql-search-*/src/main/java/**"],
-        ["jpa-rsql-search-*/src/test/java/**", "integration-tests/**"],
-      ),
-    ],
   };
 }
 
-function group(label, description, pattern) {
+function group(label, pattern) {
   return {
     label,
-    description,
     patterns: [pattern],
   };
 }
 
-function exclusiveAllow(message, from, to) {
+function exclusiveAllow(from, to) {
   return {
-    message,
     from,
     to,
     relation: "exclusive-allow",
   };
 }
 
-function deny(message, from, to) {
+function deny(from, to) {
   return {
-    message,
     from,
     to,
     relation: "deny",

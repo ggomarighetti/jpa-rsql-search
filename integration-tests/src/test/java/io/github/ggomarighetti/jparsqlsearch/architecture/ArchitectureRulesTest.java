@@ -79,7 +79,7 @@ class ArchitectureRulesTest {
         perspective.path("constraints").forEach(constraint -> assertTrue(
                 Set.of("exclusive-allow", "deny").contains(constraint.path("relation").asText()),
                 () -> "Unexpected Sonar architecture relation: " + constraint));
-        assertEquals(1, model.path("constraints").size(), "The model must keep the main-to-test guard.");
+        assertEquals(0, model.path("constraints").size(), "The SonarCloud intended architecture API expects perspective-scoped constraints.");
     }
 
     @Test

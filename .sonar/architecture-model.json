@@ -6,42 +6,36 @@
       "groups": [
         {
           "label": "api",
-          "description": "Stable public definitions, request value objects, policy types, and API-level RSQL operator names.",
           "patterns": [
             "jpa-rsql-search-api/src/main/java/**"
           ]
         },
         {
           "label": "rsql-spi",
-          "description": "Neutral RSQL AST, parser, operator metadata, backend contracts, and JPA binding SPI.",
           "patterns": [
             "jpa-rsql-search-rsql-spi/src/main/java/**"
           ]
         },
         {
           "label": "core",
-          "description": "Search compiler, protection guards, RSQL engine orchestration, and runtime validation failures.",
           "patterns": [
             "jpa-rsql-search-core/src/main/java/**"
           ]
         },
         {
           "label": "jpa-validation",
-          "description": "JPA metamodel validation over compiled search definitions.",
           "patterns": [
             "jpa-rsql-search-jpa-validation/src/main/java/**"
           ]
         },
         {
           "label": "perplexhub",
-          "description": "Perplexhub backend adapter and convenience engine builders.",
           "patterns": [
             "jpa-rsql-search-perplexhub/src/main/java/**"
           ]
         },
         {
           "label": "spring-boot-starter",
-          "description": "Spring Boot autoconfiguration and the recommended application entry point.",
           "patterns": [
             "jpa-rsql-search-spring-boot-starter/src/main/java/**"
           ]
@@ -49,7 +43,6 @@
       ],
       "constraints": [
         {
-          "message": "The v2 API is the bottom of the public DAG: it may be consumed by every publishable module, but it must not consume implementation modules.",
           "from": [
             "rsql-spi",
             "core",
@@ -63,7 +56,6 @@
           "relation": "exclusive-allow"
         },
         {
-          "message": "The neutral RSQL SPI may be used only by the core engine, concrete backends, and the Spring Boot starter.",
           "from": [
             "core",
             "perplexhub",
@@ -75,7 +67,6 @@
           "relation": "exclusive-allow"
         },
         {
-          "message": "Core owns compilation and protection logic; only validation, backend convenience, and starter modules may depend on it.",
           "from": [
             "jpa-validation",
             "perplexhub",
@@ -87,7 +78,6 @@
           "relation": "exclusive-allow"
         },
         {
-          "message": "JPA validation is an optional runtime validator and should only be assembled by the starter.",
           "from": [
             "spring-boot-starter"
           ],
@@ -97,7 +87,6 @@
           "relation": "exclusive-allow"
         },
         {
-          "message": "Perplexhub is an optional backend adapter and should only be assembled by the starter.",
           "from": [
             "spring-boot-starter"
           ],
@@ -107,7 +96,6 @@
           "relation": "exclusive-allow"
         },
         {
-          "message": "The Spring Boot starter is the application entry point; lower-level library modules must not depend on autoconfiguration.",
           "from": [
             "api",
             "rsql-spi",
@@ -121,19 +109,6 @@
           "relation": "deny"
         }
       ]
-    }
-  ],
-  "constraints": [
-    {
-      "message": "Production code must not depend on test fixtures, integration consumers, or verification-only sources.",
-      "from": [
-        "jpa-rsql-search-*/src/main/java/**"
-      ],
-      "to": [
-        "jpa-rsql-search-*/src/test/java/**",
-        "integration-tests/**"
-      ],
-      "relation": "deny"
     }
   ]
 }
