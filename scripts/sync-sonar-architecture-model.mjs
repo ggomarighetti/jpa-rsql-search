@@ -21,42 +21,72 @@ if (!token) {
   throw new Error("SONAR_TOKEN is required to synchronize the architecture model.");
 }
 
-const projectId = projectKey;
 const authorization = `Basic ${Buffer.from(`${token}:`).toString("base64")}`;
 const commonHeaders = {
   accept: "application/json",
   authorization,
   "content-type": "application/json",
 };
-const models = await sonarRequest(
-  `https://api.sonarcloud.io/architecture/models?projectId=${encodeURIComponent(projectId)}`,
-  { headers: commonHeaders },
-);
 
-if (models.length === 0) {
-  await sonarRequest("https://api.sonarcloud.io/architecture/models", {
-    method: "POST",
-    headers: commonHeaders,
-    body: JSON.stringify({
-      projectId,
-      organizationId,
-      model,
-    }),
-  });
-  console.log(`Created the Sonar intended architecture for ${projectKey}.`);
-} else {
-  await sonarRequest(
-    `https://api.sonarcloud.io/architecture/models/${encodeURIComponent(models[0].id)}`,
-    {
-      method: "PATCH",
-      headers: {
-        ...commonHeaders,
-        "content-type": "merge-patch+json",
-      },
-      body: JSON.stringify({ model }),
-    },
+try {
+  await syncArchitectureModel();
+} catch (error) {
+  console.warn(
+    `Sonar intended architecture sync was skipped: ${error instanceof Error ? error.message : String(error)}`,
   );
-  console.log(`Updated the Sonar intended architecture for ${projectKey}.`);
+  console.warn(
+    "The local declaration remains validated; Sonar Architecture analysis still runs through sonar.architecture.enable=true.",
+  );
+}
+
+async function syncArchitectureModel() {
+  const projectId = await findMainBranchId();
+  const models = await sonarRequest(
+    `https://api.sonarcloud.io/architecture/models?projectId=${encodeURIComponent(projectId)}`,
+    { headers: commonHeaders },
+  );
+
+  if (models.length === 0) {
+    await sonarRequest("https://api.sonarcloud.io/architecture/models", {
+      method: "POST",
+      headers: commonHeaders,
+      body: JSON.stringify({
+        projectId,
+        organizationId,
+        model,
+      }),
+    });
+    console.log(`Created the Sonar intended architecture for ${projectKey}.`);
+  } else {
+    await sonarRequest(
+      `https://api.sonarcloud.io/architecture/models/${encodeURIComponent(models[0].id)}`,
+      {
+        method: "PATCH",
+        headers: {
+          ...commonHeaders,
+          "content-type": "merge-patch+json",
+        },
+        body: JSON.stringify({ model }),
+      },
+    );
+    console.log(`Updated the Sonar intended architecture for ${projectKey}.`);
+  }
+}
+
+async function findMainBranchId() {
+  const response = await fetch(
+    `https://sonarcloud.io/api/project_branches/list?project=${encodeURIComponent(projectKey)}`,
+    { headers: { accept: "application/json" } },
+  );
+  if (!response.ok) {
+    throw new Error(`Unable to list Sonar branches: HTTP ${response.status}`);
+  }
+  const payload = await response.json();
+  const mainBranch = payload.branches?.find((branch) => branch.isMain);
+  if (!mainBranch?.branchId) {
+    throw new Error(`Unable to resolve the main Sonar branch for ${projectKey}.`);
+  }
+  return mainBranch.branchId;
 }
 
 async function sonarRequest(url, options) {
