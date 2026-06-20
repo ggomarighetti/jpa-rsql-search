@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
@@ -77,10 +76,7 @@ class ArchitectureRulesTest {
         assertEquals(expectedGroups, actualGroups);
         assertEquals("java", perspective.path("language").asText(), "The SonarCloud model must target Java.");
         assertEquals("namespace", perspective.path("qualifiers").asText(), "The SonarCloud model maps Maven modules as namespace containers.");
-        assertEquals(5, perspective.path("constraints").size(), "The intended architecture must encode the v2 DAG.");
-        perspective.path("constraints").forEach(constraint -> assertTrue(
-                Set.of("exclusive-allow").contains(constraint.path("relation").asText()),
-                () -> "Unexpected Sonar architecture relation: " + constraint));
+        assertEquals(0, perspective.path("constraints").size(), "The SonarCloud models API currently accepts the intended module structure only.");
         assertEquals(0, model.path("constraints").size(), "The SonarCloud intended architecture API expects perspective-scoped constraints.");
     }
 

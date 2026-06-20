@@ -130,28 +130,6 @@ function expectedArchitectureModel() {
             "jpa-rsql-search-spring-boot-starter:**",
           ),
         ],
-        constraints: [
-          exclusiveAllow(
-            ["RSQL SPI", "Core", "JPA validation", "Perplexhub", "Spring Boot starter"],
-            ["API"],
-          ),
-          exclusiveAllow(
-            ["Core", "Perplexhub", "Spring Boot starter"],
-            ["RSQL SPI"],
-          ),
-          exclusiveAllow(
-            ["JPA validation", "Perplexhub", "Spring Boot starter"],
-            ["Core"],
-          ),
-          exclusiveAllow(
-            ["Spring Boot starter"],
-            ["JPA validation"],
-          ),
-          exclusiveAllow(
-            ["Spring Boot starter"],
-            ["Perplexhub"],
-          ),
-        ],
       },
     ],
   };
@@ -161,13 +139,5 @@ function group(label, pattern) {
   return {
     label,
     patterns: [pattern],
-  };
-}
-
-function exclusiveAllow(from, to) {
-  return {
-    relation: "exclusive-allow",
-    from,
-    to,
   };
 }
