@@ -59,12 +59,14 @@ class ArchitectureRulesTest {
         Map<String, String> expectedGroups = new LinkedHashMap<>();
         assertEquals("java", perspective.path("language").asText());
         assertEquals("namespace", perspective.path("qualifiers").asText());
-        expectedGroups.put("API", "jpa-rsql-search-api:**");
-        expectedGroups.put("RSQL SPI", "jpa-rsql-search-rsql-spi:**");
-        expectedGroups.put("Core", "jpa-rsql-search-core:**");
-        expectedGroups.put("JPA validation", "jpa-rsql-search-jpa-validation:**");
-        expectedGroups.put("Perplexhub", "jpa-rsql-search-perplexhub:**");
-        expectedGroups.put("Spring Boot starter", "jpa-rsql-search-spring-boot-starter:**");
+        expectedGroups.put("jpa-rsql-search-api", "jpa-rsql-search-api:**");
+        expectedGroups.put("jpa-rsql-search-rsql-spi", "jpa-rsql-search-rsql-spi:**");
+        expectedGroups.put("jpa-rsql-search-core", "jpa-rsql-search-core:**");
+        expectedGroups.put("jpa-rsql-search-jpa-validation", "jpa-rsql-search-jpa-validation:**");
+        expectedGroups.put("jpa-rsql-search-perplexhub", "jpa-rsql-search-perplexhub:**");
+        expectedGroups.put(
+                "jpa-rsql-search-spring-boot-starter",
+                "jpa-rsql-search-spring-boot-starter:**");
         Map<String, String> actualGroups = new LinkedHashMap<>();
         perspective
                 .path("groups")
@@ -79,19 +81,19 @@ class ArchitectureRulesTest {
                 });
         assertEquals(expectedGroups, actualGroups);
         Set<String> expectedConstraints = Set.of(
-                "RSQL SPI -> API",
-                "Core -> API",
-                "Core -> RSQL SPI",
-                "JPA validation -> API",
-                "JPA validation -> Core",
-                "Perplexhub -> API",
-                "Perplexhub -> RSQL SPI",
-                "Perplexhub -> Core",
-                "Spring Boot starter -> API",
-                "Spring Boot starter -> RSQL SPI",
-                "Spring Boot starter -> Core",
-                "Spring Boot starter -> JPA validation",
-                "Spring Boot starter -> Perplexhub");
+                "jpa-rsql-search-rsql-spi -> jpa-rsql-search-api",
+                "jpa-rsql-search-core -> jpa-rsql-search-api",
+                "jpa-rsql-search-core -> jpa-rsql-search-rsql-spi",
+                "jpa-rsql-search-jpa-validation -> jpa-rsql-search-api",
+                "jpa-rsql-search-jpa-validation -> jpa-rsql-search-core",
+                "jpa-rsql-search-perplexhub -> jpa-rsql-search-api",
+                "jpa-rsql-search-perplexhub -> jpa-rsql-search-rsql-spi",
+                "jpa-rsql-search-perplexhub -> jpa-rsql-search-core",
+                "jpa-rsql-search-spring-boot-starter -> jpa-rsql-search-api",
+                "jpa-rsql-search-spring-boot-starter -> jpa-rsql-search-rsql-spi",
+                "jpa-rsql-search-spring-boot-starter -> jpa-rsql-search-core",
+                "jpa-rsql-search-spring-boot-starter -> jpa-rsql-search-jpa-validation",
+                "jpa-rsql-search-spring-boot-starter -> jpa-rsql-search-perplexhub");
         Set<String> actualConstraints = new LinkedHashSet<>();
         perspective.path("constraints").forEach(constraint -> {
             assertTrue(constraint.path("from").isTextual());

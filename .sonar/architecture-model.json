@@ -7,37 +7,37 @@
       "qualifiers": "namespace",
       "groups": [
         {
-          "label": "API",
+          "label": "jpa-rsql-search-api",
           "patterns": [
             "jpa-rsql-search-api:**"
           ]
         },
         {
-          "label": "RSQL SPI",
+          "label": "jpa-rsql-search-rsql-spi",
           "patterns": [
             "jpa-rsql-search-rsql-spi:**"
           ]
         },
         {
-          "label": "Core",
+          "label": "jpa-rsql-search-core",
           "patterns": [
             "jpa-rsql-search-core:**"
           ]
         },
         {
-          "label": "JPA validation",
+          "label": "jpa-rsql-search-jpa-validation",
           "patterns": [
             "jpa-rsql-search-jpa-validation:**"
           ]
         },
         {
-          "label": "Perplexhub",
+          "label": "jpa-rsql-search-perplexhub",
           "patterns": [
             "jpa-rsql-search-perplexhub:**"
           ]
         },
         {
-          "label": "Spring Boot starter",
+          "label": "jpa-rsql-search-spring-boot-starter",
           "patterns": [
             "jpa-rsql-search-spring-boot-starter:**"
           ]
@@ -45,56 +45,56 @@
       ],
       "constraints": [
         {
-          "from": "RSQL SPI",
-          "to": "API"
+          "from": "jpa-rsql-search-rsql-spi",
+          "to": "jpa-rsql-search-api"
         },
         {
-          "from": "Core",
-          "to": "API"
+          "from": "jpa-rsql-search-core",
+          "to": "jpa-rsql-search-api"
         },
         {
-          "from": "Core",
-          "to": "RSQL SPI"
+          "from": "jpa-rsql-search-core",
+          "to": "jpa-rsql-search-rsql-spi"
         },
         {
-          "from": "JPA validation",
-          "to": "API"
+          "from": "jpa-rsql-search-jpa-validation",
+          "to": "jpa-rsql-search-api"
         },
         {
-          "from": "JPA validation",
-          "to": "Core"
+          "from": "jpa-rsql-search-jpa-validation",
+          "to": "jpa-rsql-search-core"
         },
         {
-          "from": "Perplexhub",
-          "to": "API"
+          "from": "jpa-rsql-search-perplexhub",
+          "to": "jpa-rsql-search-api"
         },
         {
-          "from": "Perplexhub",
-          "to": "RSQL SPI"
+          "from": "jpa-rsql-search-perplexhub",
+          "to": "jpa-rsql-search-rsql-spi"
         },
         {
-          "from": "Perplexhub",
-          "to": "Core"
+          "from": "jpa-rsql-search-perplexhub",
+          "to": "jpa-rsql-search-core"
         },
         {
-          "from": "Spring Boot starter",
-          "to": "API"
+          "from": "jpa-rsql-search-spring-boot-starter",
+          "to": "jpa-rsql-search-api"
         },
         {
-          "from": "Spring Boot starter",
-          "to": "RSQL SPI"
+          "from": "jpa-rsql-search-spring-boot-starter",
+          "to": "jpa-rsql-search-rsql-spi"
         },
         {
-          "from": "Spring Boot starter",
-          "to": "Core"
+          "from": "jpa-rsql-search-spring-boot-starter",
+          "to": "jpa-rsql-search-core"
         },
         {
-          "from": "Spring Boot starter",
-          "to": "JPA validation"
+          "from": "jpa-rsql-search-spring-boot-starter",
+          "to": "jpa-rsql-search-jpa-validation"
         },
         {
-          "from": "Spring Boot starter",
-          "to": "Perplexhub"
+          "from": "jpa-rsql-search-spring-boot-starter",
+          "to": "jpa-rsql-search-perplexhub"
         }
       ]
     }
