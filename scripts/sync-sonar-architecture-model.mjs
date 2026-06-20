@@ -1,31 +1,13 @@
-import { readdir, readFile } from "node:fs/promises";
-import { relative, resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 const projectKey = process.env.SONAR_PROJECT_KEY ?? "ggomarighetti_jpa-rsql-search";
 const organizationId =
   process.env.SONAR_ORGANIZATION_ID ?? "df8bd268-70a4-4338-a093-2cfebc6ad4ff";
 const token = process.env.SONAR_TOKEN;
 const checkOnly = process.argv.includes("--check");
-const deleteOnly = process.argv.includes("--delete");
 const modelPath = resolve(".sonar", "architecture-model.json");
-const perspectiveLabel = "V2 Maven package leaves";
-const perspectiveDescription =
-  "Direct modular boundaries for jpa-rsql-search v2 at production package granularity.";
-const basePackage = "io.github.ggomarighetti.jparsqlsearch";
-const allowAllPerspectiveConstraint = {
-  from: ["**"],
-  to: ["**"],
-  relation: "exclusive-allow",
-};
-const productModules = [
-  "jpa-rsql-search-api",
-  "jpa-rsql-search-rsql-spi",
-  "jpa-rsql-search-core",
-  "jpa-rsql-search-jpa-validation",
-  "jpa-rsql-search-perplexhub",
-  "jpa-rsql-search-spring-boot-starter",
-];
-const expectedModel = await buildExpectedModel();
+const expectedModel = expectedArchitectureModel();
 
 const model = JSON.parse(await readFile(modelPath, "utf8"));
 validateModel(model);
@@ -36,9 +18,7 @@ if (checkOnly) {
 }
 
 if (!token) {
-  throw new Error(
-    "SONAR_TOKEN is required to synchronize the architecture model.",
-  );
+  throw new Error("SONAR_TOKEN is required to synchronize the architecture model.");
 }
 
 const mainBranchId = await findMainBranchId();
@@ -52,24 +32,6 @@ const models = await sonarRequest(
   `https://api.sonarcloud.io/architecture/models?projectId=${encodeURIComponent(mainBranchId)}`,
   { headers: commonHeaders },
 );
-
-if (deleteOnly) {
-  if (models.length === 0) {
-    console.log(`No Sonar intended architecture model exists for ${projectKey}.`);
-    process.exit(0);
-  }
-  for (const existingModel of models) {
-    await sonarRequest(
-      `https://api.sonarcloud.io/architecture/models/${encodeURIComponent(existingModel.id)}`,
-      {
-        method: "DELETE",
-        headers: commonHeaders,
-      },
-    );
-  }
-  console.log(`Deleted ${models.length} Sonar intended architecture model(s) for ${projectKey}.`);
-  process.exit(0);
-}
 
 if (models.length === 0) {
   await sonarRequest("https://api.sonarcloud.io/architecture/models", {
@@ -129,57 +91,115 @@ async function sonarRequest(url, options) {
 function validateModel(candidate) {
   if (JSON.stringify(candidate) !== JSON.stringify(expectedModel)) {
     throw new Error(
-      "The architecture declaration must map every production Java package with file-path patterns.",
+      "The architecture declaration must describe the v2 Maven module DAG and its Sonar constraints.",
     );
   }
 }
 
-async function buildExpectedModel() {
-  const perspective = {
-    label: perspectiveLabel,
-    description: perspectiveDescription,
-    groups: [],
-    constraints: [allowAllPerspectiveConstraint],
-  };
-  for (const moduleName of productModules) {
-    const sourceRoot = resolve(moduleName, "src", "main", "java");
-    const files = await collectJavaFiles(sourceRoot);
-    const packageNames = new Set();
-    for (const file of files) {
-      const className = relative(sourceRoot, file)
-        .replace(/[\\/]/g, ".")
-        .replace(/\.java$/, "");
-      packageNames.add(className.split(".").slice(0, -1).join("."));
-    }
-    for (const packageName of [...packageNames].sort()) {
-      perspective.groups.push({
-        label: architectureLabel(moduleName, packageName),
-        patterns: [
-          `${moduleName}/src/main/java/${packageName.replaceAll(".", "/")}/*.java`,
+function expectedArchitectureModel() {
+  return {
+    perspectives: [
+      {
+        label: "v2-maven-reactor",
+        description: "Direct v2 module DAG for the publishable jpa-rsql-search reactor.",
+        groups: [
+          group(
+            "api",
+            "Stable public definitions, request value objects, policy types, and API-level RSQL operator names.",
+            "jpa-rsql-search-api/src/main/java/**",
+          ),
+          group(
+            "rsql-spi",
+            "Neutral RSQL AST, parser, operator metadata, backend contracts, and JPA binding SPI.",
+            "jpa-rsql-search-rsql-spi/src/main/java/**",
+          ),
+          group(
+            "core",
+            "Search compiler, protection guards, RSQL engine orchestration, and runtime validation failures.",
+            "jpa-rsql-search-core/src/main/java/**",
+          ),
+          group(
+            "jpa-validation",
+            "JPA metamodel validation over compiled search definitions.",
+            "jpa-rsql-search-jpa-validation/src/main/java/**",
+          ),
+          group(
+            "perplexhub",
+            "Perplexhub backend adapter and convenience engine builders.",
+            "jpa-rsql-search-perplexhub/src/main/java/**",
+          ),
+          group(
+            "spring-boot-starter",
+            "Spring Boot autoconfiguration and the recommended application entry point.",
+            "jpa-rsql-search-spring-boot-starter/src/main/java/**",
+          ),
         ],
-      });
-    }
-  }
-  return { perspectives: [perspective] };
+        constraints: [
+          exclusiveAllow(
+            "The v2 API is the bottom of the public DAG: it may be consumed by every publishable module, but it must not consume implementation modules.",
+            ["rsql-spi", "core", "jpa-validation", "perplexhub", "spring-boot-starter"],
+            ["api"],
+          ),
+          exclusiveAllow(
+            "The neutral RSQL SPI may be used only by the core engine, concrete backends, and the Spring Boot starter.",
+            ["core", "perplexhub", "spring-boot-starter"],
+            ["rsql-spi"],
+          ),
+          exclusiveAllow(
+            "Core owns compilation and protection logic; only validation, backend convenience, and starter modules may depend on it.",
+            ["jpa-validation", "perplexhub", "spring-boot-starter"],
+            ["core"],
+          ),
+          exclusiveAllow(
+            "JPA validation is an optional runtime validator and should only be assembled by the starter.",
+            ["spring-boot-starter"],
+            ["jpa-validation"],
+          ),
+          exclusiveAllow(
+            "Perplexhub is an optional backend adapter and should only be assembled by the starter.",
+            ["spring-boot-starter"],
+            ["perplexhub"],
+          ),
+          deny(
+            "The Spring Boot starter is the application entry point; lower-level library modules must not depend on autoconfiguration.",
+            ["api", "rsql-spi", "core", "jpa-validation", "perplexhub"],
+            ["spring-boot-starter"],
+          ),
+        ],
+      },
+    ],
+    constraints: [
+      deny(
+        "Production code must not depend on test fixtures, integration consumers, or verification-only sources.",
+        ["jpa-rsql-search-*/src/main/java/**"],
+        ["jpa-rsql-search-*/src/test/java/**", "integration-tests/**"],
+      ),
+    ],
+  };
 }
 
-async function collectJavaFiles(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const files = await Promise.all(
-    entries.map(async (entry) => {
-      const path = resolve(directory, entry.name);
-      if (entry.isDirectory()) {
-        return collectJavaFiles(path);
-      }
-      return entry.isFile() && entry.name.endsWith(".java") ? [path] : [];
-    }),
-  );
-  return files.flat().sort();
+function group(label, description, pattern) {
+  return {
+    label,
+    description,
+    patterns: [pattern],
+  };
 }
 
-function architectureLabel(moduleName, packageName) {
-  const relativePackage = packageName.startsWith(`${basePackage}.`)
-    ? packageName.slice(basePackage.length + 1)
-    : packageName;
-  return `${moduleName}-${relativePackage.replaceAll(".", "-")}`;
+function exclusiveAllow(message, from, to) {
+  return {
+    message,
+    from,
+    to,
+    relation: "exclusive-allow",
+  };
+}
+
+function deny(message, from, to) {
+  return {
+    message,
+    from,
+    to,
+    relation: "deny",
+  };
 }

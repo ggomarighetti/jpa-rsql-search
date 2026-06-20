@@ -8,16 +8,15 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ArchitectureRulesTest {
@@ -47,45 +46,40 @@ class ArchitectureRulesTest {
     }
 
     @Test
-    void sonarIntendedArchitectureMapsEveryProductionPackage() throws IOException {
+    void sonarIntendedArchitectureModelsTheV2MavenReactor() throws IOException {
         Path root = Path.of(System.getProperty("workspace.root"));
         JsonNode model = new ObjectMapper()
                 .readTree(Files.readString(root.resolve(".sonar/architecture-model.json")));
-        Set<String> mappedPatterns = new HashSet<>();
         JsonNode perspective = model.path("perspectives").path(0);
         assertEquals(
-                "exclusive-allow",
-                perspective.path("constraints").path(0).path("relation").asText(),
-                "Sonar documents production packages; Maven and ArchUnit enforce the dependency DAG.");
-        Set<String> mappedLabels = new HashSet<>();
+                "v2-maven-reactor",
+                perspective.path("label").asText(),
+                "Sonar should display the publishable v2 Maven reactor as the intended architecture.");
+        Map<String, String> expectedGroups = new LinkedHashMap<>();
+        expectedGroups.put("api", "jpa-rsql-search-api/src/main/java/**");
+        expectedGroups.put("rsql-spi", "jpa-rsql-search-rsql-spi/src/main/java/**");
+        expectedGroups.put("core", "jpa-rsql-search-core/src/main/java/**");
+        expectedGroups.put("jpa-validation", "jpa-rsql-search-jpa-validation/src/main/java/**");
+        expectedGroups.put("perplexhub", "jpa-rsql-search-perplexhub/src/main/java/**");
+        expectedGroups.put("spring-boot-starter", "jpa-rsql-search-spring-boot-starter/src/main/java/**");
+        Map<String, String> actualGroups = new LinkedHashMap<>();
         perspective
                 .path("groups")
                 .forEach(group -> {
                     String label = group.path("label").asText();
-                    assertTrue(mappedLabels.add(label), () -> "Sonar architecture labels must be unique: " + label);
-                    assertFalse(
-                            label.contains(".")
-                                    || label.contains(":")
-                                    || label.contains("/")
-                                    || label.contains("\\"),
-                            () -> "Sonar architecture labels must stay conceptual, not namespace-like: " + label);
-                    assertEquals(
-                            0,
-                            group.path("groups").size(),
-                            () -> "Sonar architecture package groups must stay flat: " + label);
                     assertEquals(
                             1,
                             group.path("patterns").size(),
-                            () -> "Every Sonar architecture package group must declare exactly one pattern: "
+                            () -> "Every Sonar architecture module group must declare exactly one source root: "
                                     + label);
-                    mappedPatterns.add(group.path("patterns").path(0).asText());
+                    actualGroups.put(label, group.path("patterns").path(0).asText());
                 });
-
-        Set<String> expectedPatterns = expectedSonarPackagePatterns(root);
-        assertEquals(
-                expectedPatterns,
-                mappedPatterns,
-                () -> "Sonar architecture patterns differ from production Java packages: " + mappedPatterns);
+        assertEquals(expectedGroups, actualGroups);
+        assertEquals(6, perspective.path("constraints").size(), "The intended architecture must encode the v2 DAG.");
+        perspective.path("constraints").forEach(constraint -> assertTrue(
+                Set.of("exclusive-allow", "deny").contains(constraint.path("relation").asText()),
+                () -> "Unexpected Sonar architecture relation: " + constraint));
+        assertEquals(1, model.path("constraints").size(), "The model must keep the main-to-test guard.");
     }
 
     @Test
@@ -120,31 +114,5 @@ class ArchitectureRulesTest {
         noClasses().that().resideInAPackage("..rsql.metadata..")
                 .should().dependOnClassesThat().resideInAPackage("..rsql.jpa..")
                 .check(classes);
-    }
-
-    private static Set<String> expectedSonarPackagePatterns(Path root) throws IOException {
-        Set<String> patterns = new HashSet<>();
-        for (String module : PRODUCT_MODULES) {
-            Set<String> packageNames = productionPackageNames(root, module);
-            packageNames.forEach(packageName -> patterns.add(
-                    module + "/src/main/java/" + packageName.replace('.', '/') + "/*.java"));
-        }
-        return patterns;
-    }
-
-    private static Set<String> productionPackageNames(Path root, String module) throws IOException {
-        Set<String> packageNames = new HashSet<>();
-        Path sourceRoot = root.resolve(module).resolve("src/main/java");
-        try (Stream<Path> files = Files.walk(sourceRoot)) {
-            files.filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().endsWith(".java"))
-                    .map(sourceRoot::relativize)
-                    .map(Path::toString)
-                    .map(path -> path.replace('\\', '.').replace('/', '.'))
-                    .map(path -> path.substring(0, path.lastIndexOf('.')))
-                    .map(path -> path.substring(0, path.lastIndexOf('.')))
-                    .forEach(packageNames::add);
-        }
-        return packageNames;
     }
 }
