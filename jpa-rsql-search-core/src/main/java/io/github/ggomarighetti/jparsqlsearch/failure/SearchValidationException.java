@@ -8,7 +8,9 @@ import java.util.Objects;
 public abstract class SearchValidationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
+    /** Stable machine-readable validation error code. */
     private final String code;
+    /** Immutable subtype-specific validation details. */
     private final List<? extends Serializable> details;
 
     /**
