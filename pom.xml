@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.ggomarighetti</groupId>
-  <artifactId>jpa-rsql-search</artifactId>
-  <version>1.0.1</version>
-  <packaging>jar</packaging>
+  <artifactId>jpa-rsql-search-parent</artifactId>
+  <version>2.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-  <name>jpa-rsql-search</name>
-  <description>Search helpers for Spring applications, starting with guarded RSQL to JPA Specifications.</description>
+  <name>jpa-rsql-search parent</name>
+  <description>Modular RSQL search infrastructure for Spring Data JPA.</description>
   <url>https://github.com/ggomarighetti/jpa-rsql-search</url>
   <inceptionYear>2026</inceptionYear>
+
+  <modules>
+    <module>jpa-rsql-search-api</module>
+    <module>jpa-rsql-search-rsql-spi</module>
+    <module>jpa-rsql-search-core</module>
+    <module>jpa-rsql-search-jpa-validation</module>
+    <module>jpa-rsql-search-perplexhub</module>
+    <module>jpa-rsql-search-spring-boot-starter</module>
+    <module>integration-tests</module>
+  </modules>
 
   <licenses>
     <license>
@@ -45,22 +55,25 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
     <spring.boot.version>4.1.0</spring.boot.version>
+    <rsql.parser.version>2.4.0</rsql.parser.version>
     <perplexhub.rsql.version>7.0.2</perplexhub.rsql.version>
     <datasource-proxy.version>1.11.0</datasource-proxy.version>
     <expressly.version>6.0.0</expressly.version>
     <jacoco.version>0.8.15</jacoco.version>
+    <archunit.version>1.4.1</archunit.version>
     <sonar.maven.plugin.version>5.7.0.6970</sonar.maven.plugin.version>
     <maven.deploy.plugin.version>3.1.4</maven.deploy.plugin.version>
     <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
     <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
     <jreleaser.maven.plugin.version>1.24.0</jreleaser.maven.plugin.version>
-    <versions.maven.plugin.version>2.21.0</versions.maven.plugin.version>
     <sonar.projectKey>ggomarighetti_jpa-rsql-search</sonar.projectKey>
     <sonar.projectName>jpa-rsql-search</sonar.projectName>
     <sonar.organization>ggomarighetti</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-    <sonar.junit.reportPaths>target/surefire-reports,target/failsafe-reports</sonar.junit.reportPaths>
+    <sonar.architecture.enable>true</sonar.architecture.enable>
+    <sonar.architecture.configpath>${maven.multiModuleProjectDirectory}/.sonar/architecture-model.json</sonar.architecture.configpath>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/integration-tests/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.junit.reportPaths>**/target/surefire-reports,**/target/failsafe-reports</sonar.junit.reportPaths>
   </properties>
 
   <dependencyManagement>
@@ -79,156 +92,91 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jpa-rsql-search-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jpa-rsql-search-rsql-spi</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jpa-rsql-search-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jpa-rsql-search-jpa-validation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>jpa-rsql-search-perplexhub</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
-  <dependencies>
-    <dependency>
-      <groupId>io.github.nstdio</groupId>
-      <artifactId>rsql-parser</artifactId>
-      <version>2.4.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-configuration-processor</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.github.perplexhub</groupId>
-      <artifactId>rsql-jpa</artifactId>
-      <version>${perplexhub.rsql.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.persistence</groupId>
-      <artifactId>jakarta.persistence-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-test-autoconfigure</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-jpa-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-data-jpa-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.expressly</groupId>
-      <artifactId>expressly</artifactId>
-      <version>${expressly.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers-postgresql</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.ttddyy</groupId>
-      <artifactId>datasource-proxy</artifactId>
-      <version>${datasource-proxy.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.5.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.15.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.5.6</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.5.6</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.5.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.6.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.5.0</version>
-      </plugin>
-      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.15.0</version>
-        <configuration>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>org.springframework.boot</groupId>
-              <artifactId>spring-boot-configuration-processor</artifactId>
-              <version>${spring.boot.version}</version>
-            </path>
-          </annotationProcessorPaths>
-        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.6</version>
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>true</reuseForks>
           <includes>
             <include>**/*Test.java</include>
           </includes>
+          <systemPropertyVariables>
+            <workspace.root>${maven.multiModuleProjectDirectory}</workspace.root>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.5.6</version>
         <configuration>
           <forkCount>1</forkCount>
           <reuseForks>true</reuseForks>
           <includes>
             <include>**/*IT.java</include>
           </includes>
+          <systemPropertyVariables>
+            <workspace.root>${maven.multiModuleProjectDirectory}</workspace.root>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
@@ -250,7 +198,7 @@
         <version>${jreleaser.maven.plugin.version}</version>
         <inherited>false</inherited>
         <configuration>
-          <configFile>${project.basedir}/jreleaser.yml</configFile>
+          <configFile>${maven.multiModuleProjectDirectory}/jreleaser.yml</configFile>
         </configuration>
       </plugin>
     </plugins>
@@ -271,10 +219,6 @@
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
-                <configuration>
-                  <append>true</append>
-                  <destFile>${project.build.directory}/jacoco.exec</destFile>
-                </configuration>
               </execution>
               <execution>
                 <id>report</id>
@@ -283,7 +227,6 @@
                   <goal>report</goal>
                 </goals>
                 <configuration>
-                  <dataFile>${project.build.directory}/jacoco.exec</dataFile>
                   <formats>
                     <format>XML</format>
                     <format>HTML</format>
@@ -325,7 +268,7 @@
     <profile>
       <id>publication</id>
       <properties>
-        <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+        <altDeploymentRepository>staging::file:${maven.multiModuleProjectDirectory}/target/staging-deploy</altDeploymentRepository>
       </properties>
       <build>
         <plugins>
