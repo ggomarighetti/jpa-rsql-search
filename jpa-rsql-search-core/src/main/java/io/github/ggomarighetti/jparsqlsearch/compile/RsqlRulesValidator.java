@@ -8,7 +8,6 @@ import io.github.ggomarighetti.jparsqlsearch.definition.SearchDefinition;
 import io.github.ggomarighetti.jparsqlsearch.definition.SearchField;
 import io.github.ggomarighetti.jparsqlsearch.rsql.validation.RsqlFilterValidationException;
 import io.github.ggomarighetti.jparsqlsearch.rsql.validation.RsqlValidationError;
-import io.github.ggomarighetti.jparsqlsearch.filter.FilterValidationResult;
 import io.github.ggomarighetti.jparsqlsearch.policy.SearchPolicy;
 import io.github.ggomarighetti.jparsqlsearch.rsql.RsqlAst;
 import io.github.ggomarighetti.jparsqlsearch.rsql.operator.RsqlOperator;
@@ -16,17 +15,16 @@ import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.RsqlOperatorDescripto
 import io.github.ggomarighetti.jparsqlsearch.rsql.metadata.RsqlOperatorRegistry;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import org.springframework.core.convert.ConversionService;
 
 final class RsqlRulesValidator {
     private final SearchDefinition<?> definition;
-    private final ConversionService conversionService;
     private final SearchPolicy.Rsql limits;
     private final SearchProtectionContext protection;
     private final RsqlOperatorRegistry operators;
+    private final RsqlArgumentValidator argumentValidator;
+    private final RsqlOrAnalyzer orAnalyzer;
 
     public RsqlRulesValidator(
             SearchDefinition<?> definition,
@@ -35,10 +33,11 @@ final class RsqlRulesValidator {
             SearchProtectionContext protection,
             RsqlOperatorRegistry operators) {
         this.definition = definition;
-        this.conversionService = conversionService;
         this.limits = limits;
         this.protection = protection;
         this.operators = operators;
+        this.argumentValidator = new RsqlArgumentValidator(conversionService);
+        this.orAnalyzer = new RsqlOrAnalyzer(definition);
     }
 
     public List<RsqlValidationError> validate(RsqlAst ast) {
@@ -103,7 +102,7 @@ final class RsqlRulesValidator {
         }
 
         if (arityAccepted) {
-            errors.addAll(validateArguments(field, descriptor.operator(), arguments, path));
+            errors.addAll(argumentValidator.validate(field, descriptor.operator(), arguments, path));
         }
     }
 
@@ -113,7 +112,7 @@ final class RsqlRulesValidator {
             List<RsqlValidationError> errors) {
         RsqlOperatorDescriptor descriptor = operators.descriptor(comparison.getOperator()).orElse(null);
         if (descriptor == null) {
-            errors.add(unregisteredOperator(comparison, path));
+            errors.add(RsqlValidationErrors.unregisteredOperator(comparison, path));
         }
         return descriptor;
     }
@@ -127,7 +126,7 @@ final class RsqlRulesValidator {
         if (descriptor.arity().accepts(arguments.size())) {
             return true;
         }
-        errors.add(invalidArity(comparison, descriptor, arguments.size(), path));
+        errors.add(RsqlValidationErrors.invalidArity(comparison, descriptor, arguments.size(), path));
         return false;
     }
 
@@ -138,7 +137,7 @@ final class RsqlRulesValidator {
             List<RsqlValidationError> errors) {
         SearchField<?> field = definition.field(comparison.getSelector()).orElse(null);
         if (field == null) {
-            errors.add(undeclaredSelector(comparison, descriptor, path));
+            errors.add(RsqlValidationErrors.undeclaredSelector(comparison, descriptor, path));
         }
         return field;
     }
@@ -150,11 +149,11 @@ final class RsqlRulesValidator {
             String path,
             List<RsqlValidationError> errors) {
         if (!field.filtering().enabled()) {
-            errors.add(filteringDisabled(comparison, descriptor, path));
+            errors.add(RsqlValidationErrors.filteringDisabled(comparison, descriptor, path));
             return false;
         }
         if (!field.filtering().allows(descriptor.operator())) {
-            errors.add(disallowedOperator(comparison, descriptor, path));
+            errors.add(RsqlValidationErrors.disallowedOperator(comparison, descriptor, path));
             return false;
         }
         return true;
@@ -165,104 +164,13 @@ final class RsqlRulesValidator {
             Entry entry,
             ArrayDeque<Entry> stack) {
         List<Node> children = orNode.getChildren();
-        OrMetadata metadata = orMetadata(orNode);
+        RsqlOrAnalyzer.Metadata metadata = orMetadata(orNode);
         protection.recordOr(children.size(), metadata.selectors().size(), metadata.joinRoots().size());
         pushChildren(stack, children, entry.depth(), entry.path());
     }
 
-    private RsqlValidationError unregisteredOperator(ComparisonNode comparison, String path) {
-        return new RsqlValidationError(
-                RsqlValidationError.OPERATOR_NOT_ALLOWED,
-                path + ".operator",
-                comparison.getSelector(),
-                comparison.getOperator().toString(),
-                null,
-                null,
-                "Operator is not registered.",
-                null,
-                null);
-    }
-
-    private RsqlValidationError invalidArity(
-            ComparisonNode comparison,
-            RsqlOperatorDescriptor descriptor,
-            int argumentCount,
-            String path) {
-        return new RsqlValidationError(
-                RsqlValidationError.OPERATOR_INVALID_ARITY,
-                path + ".arguments",
-                comparison.getSelector(),
-                descriptor.operator().name(),
-                null,
-                null,
-                "Operator expects between %d and %d arguments but received %d."
-                        .formatted(
-                                descriptor.arity().min(),
-                                descriptor.arity().max(),
-                                argumentCount),
-                null,
-                null);
-    }
-
-    private RsqlValidationError undeclaredSelector(
-            ComparisonNode comparison,
-            RsqlOperatorDescriptor descriptor,
-            String path) {
-        return new RsqlValidationError(
-                RsqlValidationError.FIELD_NOT_ALLOWED,
-                path + ".selector",
-                comparison.getSelector(),
-                descriptor.operator().name(),
-                null,
-                null,
-                "Selector is not declared by the search definition.",
-                null,
-                null);
-    }
-
-    private RsqlValidationError filteringDisabled(
-            ComparisonNode comparison,
-            RsqlOperatorDescriptor descriptor,
-            String path) {
-        return new RsqlValidationError(
-                RsqlValidationError.FILTERING_DISABLED,
-                path + ".selector",
-                comparison.getSelector(),
-                descriptor.operator().name(),
-                null,
-                null,
-                "Selector is declared but filtering is disabled.",
-                null,
-                null);
-    }
-
-    private RsqlValidationError disallowedOperator(
-            ComparisonNode comparison,
-            RsqlOperatorDescriptor descriptor,
-            String path) {
-        return new RsqlValidationError(
-                RsqlValidationError.OPERATOR_NOT_ALLOWED,
-                path + ".operator",
-                comparison.getSelector(),
-                descriptor.operator().name(),
-                null,
-                null,
-                "Operator is not allowed for this selector.",
-                null,
-                null);
-    }
-
     private RsqlValidationError unsupportedNode(String path) {
-        return new RsqlValidationError(
-                RsqlValidationError.FIELD_NOT_ALLOWED,
-                path,
-                null,
-                null,
-                null,
-                null,
-                "AST node type is not supported.",
-                null,
-                null);
+        return RsqlValidationErrors.unsupportedNode(path);
     }
 
     private void pushChildren(
@@ -281,80 +189,12 @@ final class RsqlRulesValidator {
         }
     }
 
-    private List<RsqlValidationError> validateArguments(
-            SearchField<?> field,
-            RsqlOperator operator,
-            List<String> arguments,
-            String astPath) {
-        var result = field.filtering().operators().get(operator).validate(arguments, conversionService);
-        List<RsqlValidationError> errors = new ArrayList<>();
-        for (FilterValidationResult.Error error : result.errors()) {
-            if (error.code() == FilterValidationResult.Error.Code.CONVERSION_FAILED) {
-                errors.add(new RsqlValidationError(
-                        RsqlValidationError.ARGUMENT_CONVERSION_FAILED,
-                        astPath + ".arguments[" + error.argumentIndex() + "]",
-                        field.selector(),
-                        operator.name(),
-                        error.argumentIndex(),
-                        null,
-                        "Argument could not be converted to '%s'.".formatted(error.targetType()),
-                        null,
-                        null));
-            } else if (error.code() == FilterValidationResult.Error.Code.ARGUMENT_RULE) {
-                var violation = error.violation();
-                errors.add(new RsqlValidationError(
-                        RsqlValidationError.ARGUMENT_RULE_VIOLATION,
-                        astPath + ".arguments[" + error.argumentIndex() + "]",
-                        field.selector(),
-                        operator.name(),
-                        error.argumentIndex(),
-                        violation.path(),
-                        violation.message(),
-                        violation.messageTemplate(),
-                        violation.constraint()));
-            } else {
-                var violation = error.violation();
-                errors.add(new RsqlValidationError(
-                        RsqlValidationError.ARGUMENTS_RULE_VIOLATION,
-                        astPath + ".arguments",
-                        field.selector(),
-                        operator.name(),
-                        null,
-                        violation.path(),
-                        violation.message(),
-                        violation.messageTemplate(),
-                        violation.constraint()));
-            }
-        }
-        return errors;
-    }
-
-    private OrMetadata orMetadata(OrNode root) {
-        Set<String> selectors = new LinkedHashSet<>();
-        Set<String> joinRoots = new LinkedHashSet<>();
-        ArrayDeque<Node> stack = new ArrayDeque<>();
-        stack.push(root);
-        while (!stack.isEmpty()) {
-            Node node = stack.pop();
-            if (node instanceof ComparisonNode comparison) {
-                selectors.add(comparison.getSelector());
-                definition.field(comparison.getSelector())
-                        .map(SearchField::filtering)
-                        .ifPresent(filtering -> filtering.topology().joinedPaths().stream()
-                                .map(RsqlRulesValidator::rootPath)
-                                .forEach(joinRoots::add));
-            } else if (node instanceof cz.jirutka.rsql.parser.ast.LogicalNode logical) {
-                for (Node child : logical.getChildren()) {
-                    stack.push(child);
-                }
-            }
-        }
-        return new OrMetadata(selectors, joinRoots);
+    private RsqlOrAnalyzer.Metadata orMetadata(OrNode root) {
+        return orAnalyzer.metadata(root);
     }
 
     private static String rootPath(String path) {
-        int separator = path.indexOf('.');
-        return separator < 0 ? path : path.substring(0, separator);
+        return RsqlOrAnalyzer.rootPath(path);
     }
 
     private RsqlFilterValidationException limitExceeded() {
@@ -366,6 +206,4 @@ final class RsqlRulesValidator {
     private record Entry(Node node, int depth, String path) {
     }
 
-    private record OrMetadata(Set<String> selectors, Set<String> joinRoots) {
-    }
 }
