@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         Do not report security vulnerabilities here. Use private vulnerability
-        reporting from SECURITY.md.
+        reporting from docs/SECURITY.md.
   - type: input
     id: version
     attributes:
