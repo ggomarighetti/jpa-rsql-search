@@ -242,18 +242,18 @@ class SearchPathTest {
 
     @Test
     void privateGenericHelpersHandleGenericArgumentFallbacks() throws ReflectiveOperationException {
-        Method collectionElementType = privateMethod(
+        Method collectionElementType = genericResolverMethod(
                 "collectionElementType",
                 Class.class,
                 Type.class,
                 Map.class);
-        Method genericArgument = privateMethod(
+        Method genericArgument = genericResolverMethod(
                 "genericArgument",
                 Type.class,
                 Class.class,
                 int.class,
                 Map.class);
-        Method genericArgumentClass = privateMethod(
+        Method genericArgumentClass = genericResolverMethod(
                 "genericArgument",
                 Class.class,
                 Class.class,
@@ -273,10 +273,10 @@ class SearchPathTest {
 
     @Test
     void privateGenericHelpersHandleUnresolvedReflectiveTypes() throws ReflectiveOperationException {
-        Method classFromType = privateMethod("classFromType", Type.class, Map.class);
-        Method typeVariables = privateMethod("typeVariables", Class.class, Class.class);
-        Method resolveTypeVariables = privateMethod("resolveTypeVariables", Type.class, Class.class, Map.class);
-        Method recordTypeVariables = privateMethod("recordTypeVariables", Type.class, Class.class, Map.class);
+        Method classFromType = genericResolverMethod("classFromType", Type.class, Map.class);
+        Method typeVariables = genericResolverMethod("typeVariables", Class.class, Class.class);
+        Method resolveTypeVariables = genericResolverMethod("resolveTypeVariables", Type.class, Class.class, Map.class);
+        Method recordTypeVariables = genericResolverMethod("recordTypeVariables", Type.class, Class.class, Map.class);
 
         assertNull(classFromType.invoke(null, new UnknownType(), Map.of()));
         assertNull(classFromType.invoke(null, genericArray(new UnknownType()), Map.of()));
@@ -300,9 +300,9 @@ class SearchPathTest {
 
     @Test
     void privateGenericHelpersSubstituteMappedReflectiveTypes() throws ReflectiveOperationException {
-        Method classFromType = privateMethod("classFromType", Type.class, Map.class);
-        Method substituteType = privateMethod("substituteType", Type.class, Map.class);
-        Method rawClass = privateMethod("rawClass", Type.class);
+        Method classFromType = genericResolverMethod("classFromType", Type.class, Map.class);
+        Method substituteType = genericResolverMethod("substituteType", Type.class, Map.class);
+        Method rawClass = genericResolverMethod("rawClass", Type.class);
         TypeVariable<Class<GenericRoot>> variable = GenericRoot.class.getTypeParameters()[0];
         Map<TypeVariable<?>, Type> stringMapping = Map.of(variable, String.class);
 
@@ -339,8 +339,10 @@ class SearchPathTest {
         assertEquals(toManyPaths, topology.toManyPaths());
     }
 
-    private static Method privateMethod(String name, Class<?>... parameterTypes) throws ReflectiveOperationException {
-        Method method = SearchPath.class.getDeclaredMethod(name, parameterTypes);
+    private static Method genericResolverMethod(String name, Class<?>... parameterTypes)
+            throws ReflectiveOperationException {
+        Class<?> resolver = Class.forName("io.github.ggomarighetti.jparsqlsearch.path.GenericTypeResolver");
+        Method method = resolver.getDeclaredMethod(name, parameterTypes);
         method.setAccessible(true);
         return method;
     }
