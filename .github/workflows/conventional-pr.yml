@@ -8,13 +8,14 @@ on:
       - reopened
       - synchronize
 
-permissions:
-  pull-requests: read
+permissions: read-all
 
 jobs:
   title:
     name: Validate PR title
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     steps:
       - name: Validate title
         env:

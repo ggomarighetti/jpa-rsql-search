@@ -53,6 +53,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.outputTimestamp>2026-06-15T17:29:14Z</project.build.outputTimestamp>
     <maven.compiler.release>17</maven.compiler.release>
     <spring.boot.version>4.1.0</spring.boot.version>
     <rsql.parser.version>2.4.0</rsql.parser.version>
@@ -66,6 +67,9 @@
     <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
     <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
     <jreleaser.maven.plugin.version>1.24.0</jreleaser.maven.plugin.version>
+    <cyclonedx.maven.plugin.version>2.9.2</cyclonedx.maven.plugin.version>
+    <maven.artifact.plugin.version>3.6.1</maven.artifact.plugin.version>
+    <jazzer.version>0.30.0</jazzer.version>
     <sonar.projectKey>ggomarighetti_jpa-rsql-search</sonar.projectKey>
     <sonar.projectName>jpa-rsql-search</sonar.projectName>
     <sonar.organization>ggomarighetti</sonar.organization>
@@ -152,6 +156,51 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-build-environment</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[17,)</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.9.0,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-project-license</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${maven.multiModuleProjectDirectory}</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>LICENSE</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -249,6 +298,7 @@
             <configuration>
               <doclint>all</doclint>
               <failOnWarnings>true</failOnWarnings>
+              <notimestamp>true</notimestamp>
               <show>public</show>
             </configuration>
             <executions>
@@ -258,6 +308,81 @@
                 <goals>
                   <goal>javadoc</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>sbom</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+            <version>${cyclonedx.maven.plugin.version}</version>
+            <configuration>
+              <projectType>library</projectType>
+              <schemaVersion>1.6</schemaVersion>
+              <includeBomSerialNumber>false</includeBomSerialNumber>
+              <includeCompileScope>true</includeCompileScope>
+              <includeProvidedScope>true</includeProvidedScope>
+              <includeRuntimeScope>true</includeRuntimeScope>
+              <includeSystemScope>false</includeSystemScope>
+              <includeTestScope>false</includeTestScope>
+              <includeLicenseText>false</includeLicenseText>
+              <outputReactorProjects>true</outputReactorProjects>
+              <outputFormat>json</outputFormat>
+              <outputName>bom</outputName>
+              <skipNotDeployed>true</skipNotDeployed>
+            </configuration>
+            <executions>
+              <execution>
+                <id>generate-cyclonedx-sboms</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>makeAggregateBom</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>reproducible</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-artifact-plugin</artifactId>
+            <version>${maven.artifact.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>check-reproducible-build-plan</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>check-buildplan</goal>
+                </goals>
+                <configuration>
+                  <diagnose>true</diagnose>
+                  <tasks>
+                    <task>deploy</task>
+                  </tasks>
+                </configuration>
+              </execution>
+              <execution>
+                <id>generate-buildinfo</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>buildinfo</goal>
+                </goals>
+                <configuration>
+                  <reproducible>true</reproducible>
+                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -294,6 +419,7 @@
             <configuration>
               <doclint>all</doclint>
               <failOnWarnings>true</failOnWarnings>
+              <notimestamp>true</notimestamp>
               <show>public</show>
             </configuration>
             <executions>

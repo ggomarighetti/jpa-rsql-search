@@ -11,8 +11,7 @@ on:
   schedule:
     - cron: "0 6 * * 1"
 
-permissions:
-  contents: read
+permissions: read-all
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
@@ -35,12 +34,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Java 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
           distribution: temurin
           java-version: "25"
@@ -48,18 +48,20 @@ jobs:
 
       - name: Verify
         if: github.event_name != 'workflow_dispatch' && github.event_name != 'schedule'
-        run: ./mvnw $MAVEN_ARGS -Pcoverage verify
+        run: ./mvnw $MAVEN_ARGS -Pcoverage,sbom verify
 
       - name: Verify release profile
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
-        run: ./mvnw $MAVEN_ARGS -Pcoverage,release verify
+        run: ./mvnw $MAVEN_ARGS -Pcoverage,release,sbom,reproducible verify
 
       - name: Upload test and coverage artifacts
         if: ${{ always() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-and-coverage-reports
           path: |
+            target/bom.json
+            jpa-rsql-search-*/target/bom.json
             jpa-rsql-search-*/target/site/jacoco/
             integration-tests/target/site/jacoco-aggregate/
             jpa-rsql-search-*/target/surefire-reports/
@@ -128,10 +130,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Java ${{ matrix.java }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
           distribution: temurin
           java-version: ${{ matrix.java }}
