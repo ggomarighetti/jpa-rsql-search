@@ -1,9 +1,10 @@
 # jpa-rsql-search
 
 [![Verify](https://github.com/ggomarighetti/jpa-rsql-search/actions/workflows/verify.yml/badge.svg)](https://github.com/ggomarighetti/jpa-rsql-search/actions/workflows/verify.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.ggomarighetti/jpa-rsql-search.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.ggomarighetti/jpa-rsql-search)
-[![Javadocs](https://javadoc.io/badge2/io.github.ggomarighetti/jpa-rsql-search/javadoc.svg)](https://javadoc.io/doc/io.github.ggomarighetti/jpa-rsql-search)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.ggomarighetti/jpa-rsql-search-spring-boot-starter.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.ggomarighetti/jpa-rsql-search-spring-boot-starter)
+[![Javadocs](https://javadoc.io/badge2/io.github.ggomarighetti/jpa-rsql-search-api/javadoc.svg)](https://javadoc.io/doc/io.github.ggomarighetti/jpa-rsql-search-api)
 [![GitHub Release](https://img.shields.io/github/v/release/ggomarighetti/jpa-rsql-search?display_name=tag)](https://github.com/ggomarighetti/jpa-rsql-search/releases)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ggomarighetti/jpa-rsql-search/badge)](https://scorecard.dev/viewer/?uri=github.com/ggomarighetti/jpa-rsql-search)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-007396)](https://adoptium.net/)
 [![Spring Boot 4](https://img.shields.io/badge/Spring%20Boot-4.x-6DB33F)](https://spring.io/projects/spring-boot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -86,6 +87,7 @@ public search contract around it.
 [Configuration](#configuration) |
 [Error Handling](#error-handling) |
 [Customization](#customization) |
+[Security](#security) |
 [Project Status](#project-status)
 
 ## Installation
@@ -95,16 +97,20 @@ Maven:
 ```xml
 <dependency>
   <groupId>io.github.ggomarighetti</groupId>
-  <artifactId>jpa-rsql-search</artifactId>
-  <version>1.0.1</version>
+  <artifactId>jpa-rsql-search-spring-boot-starter</artifactId>
+  <version>2.0.0</version>
 </dependency>
 ```
 
 Gradle Kotlin DSL:
 
 ```kotlin
-implementation("io.github.ggomarighetti:jpa-rsql-search:1.0.1")
+implementation("io.github.ggomarighetti:jpa-rsql-search-spring-boot-starter:2.0.0")
 ```
+
+The starter brings in the API, core compiler, JPA validation, and default
+Perplexhub backend. Applications that do not use Spring Boot can depend on the
+individual `jpa-rsql-search-*` modules instead.
 
 ## Quick Example
 
@@ -172,7 +178,7 @@ public class ProductSearchUseCase {
 | Type | Purpose |
 |---|---|
 | `SearchDefinition<T>` | Immutable contract for one entity and search use case |
-| `SearchDefinitionFactory` | Creates definitions with application-wide path limits |
+| `SearchDefinition.Factory` | Creates definitions with application-wide path limits |
 | `SearchCompiler` | Validates and compiles a complete request |
 | `CompiledSearch<T>` | Resulting `Specification<T>` and validated `Pageable` |
 | `SearchPolicy` | Global and definition-local protection limits |
@@ -189,7 +195,7 @@ SearchDefinition<Product> definition = SearchDefinition.builder()
 ```
 
 In Spring Boot applications, prefer the auto-configured
-`SearchDefinitionFactory` when definitions should inherit global path-depth
+`SearchDefinition.Factory` when definitions should inherit global path-depth
 policy during construction:
 
 ```java
@@ -545,7 +551,7 @@ defaultUnpagedSize, translatedSort)`. Use
 
 Setting `jpa.rsql.search.rsql.enabled=false` disables the built-in RSQL engine,
 Perplexhub backend, and related RSQL infrastructure. In that mode the
-auto-configuration still creates `SearchDefinitionFactory`, but it creates
+auto-configuration still creates `SearchDefinition.Factory`, but it creates
 `SearchCompiler` only when the application provides its own `SearchRsqlEngine`
 bean.
 
@@ -812,17 +818,31 @@ compiler, or a `RsqlParserFactory` through `SearchRsqlEngineCustomizer` to
 replace parser construction. Register one or more `SearchDefinitionValidator`
 beans to enforce additional runtime checks on completed definitions.
 
+## Security
+
+Report suspected vulnerabilities privately through
+[GitHub Security Advisories](https://github.com/ggomarighetti/jpa-rsql-search/security/advisories/new);
+do not open a public issue. The supported-version policy, response targets, and
+disclosure process are documented in [SECURITY.md](SECURITY.md).
+
+Release assets include SHA-256 checksums, CycloneDX SBOMs, build information,
+and Sigstore attestations. Verification instructions are in
+[docs/RELEASE_SECURITY.md](docs/RELEASE_SECURITY.md), and the project's OpenSSF
+control mapping is in [docs/OPENSSF.md](docs/OPENSSF.md).
+
 ## Project Status
 
-`jpa-rsql-search` is a stable 1.x library:
+`jpa-rsql-search` is a modular 2.x library:
 
-- current version: `1.0.1`;
-- releases are published to Maven Central under
-  `io.github.ggomarighetti:jpa-rsql-search`;
+- current development line: `2.0.0`;
+- releases are published as `io.github.ggomarighetti:jpa-rsql-search-*`
+  modules, with `jpa-rsql-search-spring-boot-starter` as the usual entry point;
 - the public API follows Semantic Versioning;
 - Spring Boot configuration metadata is included in the generated JAR;
-- the implementation is covered by unit, fuzz/property-style, and PostgreSQL
-  integration tests.
+- the implementation is covered by unit, property, Jazzer/ClusterFuzzLite, and
+  PostgreSQL integration tests;
+- Scorecard, CodeQL, OSV-Scanner, dependency review, SBOM generation, and
+  reproducible-build checks run in GitHub Actions.
 
 ## Build
 
@@ -840,9 +860,9 @@ Generate JaCoCo coverage for unit and integration tests:
 ./mvnw -Pcoverage verify
 ```
 
-The XML report is written to `target/site/jacoco/jacoco.xml`; the HTML report is
-written to `target/site/jacoco/index.html`. CI uploads the JaCoCo report and
-JUnit XML test results to Codecov, and runs SonarQube Cloud analysis when the
+The aggregate XML report is written to
+`integration-tests/target/site/jacoco-aggregate/jacoco.xml`. CI uploads JaCoCo
+and JUnit results to Codecov, and runs SonarQube Cloud analysis when the
 repository has a `SONAR_TOKEN` secret configured.
 
 Verify public Javadocs and release checks:
@@ -851,12 +871,17 @@ Verify public Javadocs and release checks:
 ./mvnw -Prelease verify
 ```
 
+Generate CycloneDX SBOMs and reproducible-build metadata:
+
+```bash
+./mvnw -Psbom,reproducible -DskipTests package
+```
+
 ## Contributing
 
 Issues, bug reports, documentation improvements, and pull requests are welcome.
-Please keep proposed API changes small, explicit, and accompanied by tests or
-documentation updates where possible. PR titles should follow Conventional
-Commits so release notes and version bumps remain predictable.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow, review
+policy, Conventional Commit rules, and required DCO sign-off.
 
 ## License
 

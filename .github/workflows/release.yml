@@ -28,21 +28,22 @@ on:
         default: false
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
-
-env:
-  MAVEN_ARGS: -B -ntp -nsu
 
 jobs:
   release:
     name: Release Maven Central
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+      packages: write
     env:
       CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
       CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
@@ -60,12 +61,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Java 25
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
           distribution: temurin
           java-version: "25"
@@ -87,8 +89,10 @@ jobs:
           fi
 
           if [[ "${version}" == *-SNAPSHOT ]]; then
-            echo "release=false" >> "$GITHUB_OUTPUT"
-            echo "version=${version}" >> "$GITHUB_OUTPUT"
+            {
+              echo "release=false"
+              echo "version=${version}"
+            } >> "$GITHUB_OUTPUT"
             echo "::notice::pom.xml is at ${version}; skipping release publication."
             exit 0
           fi
@@ -100,9 +104,11 @@ jobs:
           fi
 
           if [[ "${tag_exists}" == "true" && "${ALLOW_EXISTING_TAG}" != "true" ]]; then
-            echo "release=false" >> "$GITHUB_OUTPUT"
-            echo "version=${version}" >> "$GITHUB_OUTPUT"
-            echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+            {
+              echo "release=false"
+              echo "version=${version}"
+              echo "tag=${tag}"
+            } >> "$GITHUB_OUTPUT"
             echo "::notice::${tag} already exists; skipping publication."
             exit 0
           fi
@@ -117,10 +123,12 @@ jobs:
             fi
           fi
 
-          echo "release=true" >> "$GITHUB_OUTPUT"
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-          echo "tag_exists=${tag_exists}" >> "$GITHUB_OUTPUT"
+          {
+            echo "release=true"
+            echo "version=${version}"
+            echo "tag=${tag}"
+            echo "tag_exists=${tag_exists}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Validate release metadata
         if: steps.release.outputs.release == 'true'
@@ -151,13 +159,13 @@ jobs:
 
       - name: Verify release build
         if: steps.release.outputs.release == 'true'
-        run: ./mvnw $MAVEN_ARGS -Pcoverage,release verify
+        run: ./mvnw -B -ntp -nsu -Pcoverage,release,sbom,reproducible verify
 
       - name: Stage Maven artifacts
         if: steps.release.outputs.release == 'true'
         run: |
           rm -rf target/staging-deploy
-          ./mvnw $MAVEN_ARGS -Ppublication -DskipTests deploy
+          ./mvnw -B -ntp -nsu -Ppublication,sbom,reproducible -DskipTests deploy
 
       - name: Inspect staged artifacts
         if: steps.release.outputs.release == 'true'
@@ -184,22 +192,71 @@ jobs:
             test -f "${artifact_dir}/${artifact}-${version}.jar"
             test -f "${artifact_dir}/${artifact}-${version}-sources.jar"
             test -f "${artifact_dir}/${artifact}-${version}-javadoc.jar"
+            test -f "${artifact_dir}/${artifact}-${version}-cyclonedx.json"
           done
 
           test ! -e "${group_dir}/jpa-rsql-search/${version}"
           test ! -e "${group_dir}/jpa-rsql-search-integration-tests/${version}"
           find "${group_dir}" -type f | sort
 
+      - name: Prepare release evidence
+        if: steps.release.outputs.release == 'true'
+        id: evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${{ steps.release.outputs.version }}"
+          mkdir -p release-assets
+          cp target/bom.json "release-assets/jpa-rsql-search-${version}-aggregate-cyclonedx.json"
+          cp "target/jpa-rsql-search-parent-${version}.buildinfo" \
+            "release-assets/jpa-rsql-search-${version}.buildinfo"
+
+          find target/staging-deploy -type f -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > "release-assets/jpa-rsql-search-${version}-SHA256SUMS"
+
+      - name: Attest release provenance
+        if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
+        id: provenance
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-checksums: release-assets/jpa-rsql-search-${{ steps.release.outputs.version }}-SHA256SUMS
+          create-storage-record: false
+
+      - name: Attest aggregate SBOM
+        if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
+        id: sbom-attestation
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-checksums: release-assets/jpa-rsql-search-${{ steps.release.outputs.version }}-SHA256SUMS
+          sbom-path: release-assets/jpa-rsql-search-${{ steps.release.outputs.version }}-aggregate-cyclonedx.json
+          create-storage-record: false
+
+      - name: Collect Sigstore bundles
+        if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.release.outputs.version }}"
+          cp "${{ steps.provenance.outputs.bundle-path }}" \
+            "release-assets/jpa-rsql-search-${version}-provenance.sigstore.json"
+          cp "${{ steps.sbom-attestation.outputs.bundle-path }}" \
+            "release-assets/jpa-rsql-search-${version}-sbom.sigstore.json"
+
       - name: Validate JReleaser configuration
         if: steps.release.outputs.release == 'true'
-        run: ./mvnw $MAVEN_ARGS -N jreleaser:config
+        run: ./mvnw -B -ntp -nsu -N jreleaser:config
 
       - name: JReleaser dry-run
         if: steps.release.outputs.release == 'true'
-        run: ./mvnw $MAVEN_ARGS -N jreleaser:deploy -Djreleaser.dry.run=true
+        run: ./mvnw -B -ntp -nsu -N jreleaser:deploy -Djreleaser.dry.run=true
 
       - name: Create signed tag
         if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true' && steps.release.outputs.tag_exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -228,18 +285,19 @@ jobs:
           tag="${{ steps.release.outputs.tag }}"
           git tag -s "${tag}" -m "jpa-rsql-search ${tag}"
           git tag -v "${tag}"
+          gh auth setup-git
           git push origin "${tag}"
 
       - name: Publish to GitHub Packages
         if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
-        run: ./mvnw $MAVEN_ARGS -Ppublication -DskipTests "-DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}" deploy
+        run: ./mvnw -B -ntp -nsu -Ppublication -DskipTests "-DaltDeploymentRepository=github::default::https://maven.pkg.github.com/${{ github.repository }}" deploy
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: Publish to Maven Central
         if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
-        run: ./mvnw $MAVEN_ARGS -N jreleaser:deploy
+        run: ./mvnw -B -ntp -nsu -N jreleaser:deploy
 
       - name: Extract release notes
         if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
@@ -273,9 +331,12 @@ jobs:
           else
             gh release create "${tag}" --title "${title}" --notes-file release-notes.md --latest
           fi
+          gh release upload "${tag}" release-assets/* --clobber
 
       - name: Create version branch
         if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -296,7 +357,10 @@ jobs:
             exit 0
           fi
 
-          git push origin "${tag_commit}:${branch_ref}"
+          gh api "repos/${GITHUB_REPOSITORY}/git/refs" \
+            --method POST \
+            --field ref="${branch_ref}" \
+            --field sha="${tag_commit}"
 
       - name: Release summary
         if: steps.release.outputs.release == 'true'
@@ -310,6 +374,9 @@ jobs:
             echo "- Dry run: ${DRY_RUN}"
             echo "- Existing tag: ${{ steps.release.outputs.tag_exists }}"
             echo "- Parent plus public modules: staged atomically"
+            echo "- CycloneDX SBOMs: attached to Maven artifacts"
+            echo "- Provenance and SBOM attestations: signed with Sigstore"
+            echo "- SHA-256 manifest and buildinfo: attached to the GitHub release"
             echo "- Retired jpa-rsql-search artifact: not generated"
             echo "- Maven Central: published when dry run is false"
             echo "- GitHub Packages: published when dry run is false"

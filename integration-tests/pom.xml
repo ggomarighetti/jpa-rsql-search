@@ -10,6 +10,7 @@
   <artifactId>jpa-rsql-search-integration-tests</artifactId>
   <name>jpa-rsql-search integration tests</name>
   <properties>
+    <cyclonedx.skip>true</cyclonedx.skip>
     <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
   <dependencies>
