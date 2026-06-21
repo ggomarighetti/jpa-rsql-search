@@ -8,7 +8,8 @@ on:
       - reopened
       - synchronize
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   title:

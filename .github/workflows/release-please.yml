@@ -6,7 +6,8 @@ on:
       - master
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 concurrency:
   group: release-please-${{ github.ref }}

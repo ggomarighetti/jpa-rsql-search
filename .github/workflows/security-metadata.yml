@@ -9,7 +9,8 @@ on:
       - master
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   security-insights:
@@ -34,6 +35,8 @@ jobs:
           set -euo pipefail
           schema="${RUNNER_TEMP}/security-insights-schema.cue"
           curl --fail --silent --show-error --location \
+            --proto '=https' \
+            --proto-redir '=https' \
             "https://raw.githubusercontent.com/ossf/security-insights/701ac2a02ef17fc8b316f5df685428773c51372a/spec/schema.cue" \
             --output "${schema}"
           cue vet -d '#SecurityInsights' "${schema}" security-insights.yml
