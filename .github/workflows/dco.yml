@@ -1,0 +1,44 @@
+name: Developer Certificate of Origin
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    name: Check commit sign-offs
+    if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Verify Signed-off-by trailers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          PULL_REQUEST: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          missing="$(gh api --paginate \
+            "repos/${REPOSITORY}/pulls/${PULL_REQUEST}/commits" \
+            --jq '.[] | select(.commit.message | test("(?m)^Signed-off-by: .+ <[^>]+>$") | not) | "\(.sha[0:12]) \(.commit.author.name)"')"
+
+          if [[ -n "${missing}" ]]; then
+            echo "::error::Every human-authored commit must include a Signed-off-by trailer."
+            echo "${missing}"
+            echo "Use: git commit --amend --signoff"
+            exit 1
+          fi

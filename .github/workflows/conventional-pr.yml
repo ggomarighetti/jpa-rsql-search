@@ -9,12 +9,14 @@ on:
       - synchronize
 
 permissions:
-  pull-requests: read
+  contents: read
 
 jobs:
   title:
     name: Validate PR title
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     steps:
       - name: Validate title
         env:

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ggomarighetti/jpa-rsql-search/security/advisories/new
+    about: Report suspected vulnerabilities privately.
+  - name: Usage question
+    url: https://github.com/ggomarighetti/jpa-rsql-search/discussions
+    about: Ask for help or discuss designs.
