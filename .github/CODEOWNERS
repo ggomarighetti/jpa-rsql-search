@@ -1,7 +1,7 @@
 * @ggomarighetti
 
 /.github/ @ggomarighetti
-/docs/SECURITY.md @ggomarighetti
+/SECURITY.md @ggomarighetti
 /docs/ @ggomarighetti
 /pom.xml @ggomarighetti
 /jreleaser.yml @ggomarighetti
