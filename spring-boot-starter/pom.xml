@@ -104,7 +104,7 @@
         <configuration>
           <show>package</show>
           <sourceFileIncludes>
-            <sourceFileInclude>**/JpaRsqlSearchAutoConfiguration.java</sourceFileInclude>
+            <sourceFileInclude>**/RsqlJpaSearchAutoConfiguration.java</sourceFileInclude>
           </sourceFileIncludes>
         </configuration>
       </plugin>
