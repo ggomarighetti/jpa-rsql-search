@@ -1,16 +1,16 @@
-# jpa-rsql-search
+# rsql-jpa-search
 
-[![Verify](https://github.com/ggomarighetti/jpa-rsql-search/actions/workflows/verify.yml/badge.svg)](https://github.com/ggomarighetti/jpa-rsql-search/actions/workflows/verify.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.ggomarighetti/jpa-rsql-search-spring-boot-starter.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.ggomarighetti/jpa-rsql-search-spring-boot-starter)
-[![Javadocs](https://javadoc.io/badge2/io.github.ggomarighetti/jpa-rsql-search-api/javadoc.svg)](https://javadoc.io/doc/io.github.ggomarighetti/jpa-rsql-search-api)
-[![GitHub Release](https://img.shields.io/github/v/release/ggomarighetti/jpa-rsql-search?display_name=tag)](https://github.com/ggomarighetti/jpa-rsql-search/releases)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ggomarighetti/jpa-rsql-search/badge)](https://scorecard.dev/viewer/?uri=github.com/ggomarighetti/jpa-rsql-search)
+[![Verify](https://github.com/ggomarighetti/rsql-jpa-search/actions/workflows/verify.yml/badge.svg)](https://github.com/ggomarighetti/rsql-jpa-search/actions/workflows/verify.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.ggomarighetti/rsql-jpa-search-spring-boot-starter.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.ggomarighetti/rsql-jpa-search-spring-boot-starter)
+[![Javadocs](https://javadoc.io/badge2/io.github.ggomarighetti/rsql-jpa-search-api/javadoc.svg)](https://javadoc.io/doc/io.github.ggomarighetti/rsql-jpa-search-api)
+[![GitHub Release](https://img.shields.io/github/v/release/ggomarighetti/rsql-jpa-search?display_name=tag)](https://github.com/ggomarighetti/rsql-jpa-search/releases)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ggomarighetti/rsql-jpa-search/badge)](https://scorecard.dev/viewer/?uri=github.com/ggomarighetti/rsql-jpa-search)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-007396)](https://adoptium.net/)
 [![Spring Boot 4](https://img.shields.io/badge/Spring%20Boot-4.x-6DB33F)](https://spring.io/projects/spring-boot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Status: stable](https://img.shields.io/badge/status-stable-brightgreen)](#project-status)
 
-`jpa-rsql-search` is a small contract layer for Spring applications that accept
+`rsql-jpa-search` is a small contract layer for Spring applications that accept
 dynamic search input and need to turn it into Spring Data JPA artifacts. It does
 not run the query itself. Your application declares a `SearchDefinition<T>` for
 one search use case, passes the incoming RSQL filter, optional query text,
@@ -22,7 +22,7 @@ flowchart LR
     input["filter: String<br/>query: String?<br/>pageable: Pageable"]
     repository["repository.findAll(...)<br/><small>extends JpaSpecificationExecutor&lt;T&gt;</small>"]
 
-    subgraph helper["jpa-rsql-search"]
+    subgraph helper["rsql-jpa-search"]
         direction LR
         contract["SearchCompiler<br/><small>requires SearchDefinition&lt;T&gt;</small>"]
         compiled["CompiledSearch&lt;T&gt;<br/><small>returns Specification&lt;T&gt; + Pageable</small>"]
@@ -69,7 +69,7 @@ You can, and this library deliberately builds on
 [perplexhub/rsql-jpa-specification](https://github.com/perplexhub/rsql-jpa-specification)
 for the RSQL-to-JPA `Specification` translation.
 
-`jpa-rsql-search` adds the application contract around that translation. It
+`rsql-jpa-search` adds the application contract around that translation. It
 lets you expose stable public aliases instead of entity paths, decide which
 fields can be filtered or sorted, restrict operators and sort directions per
 field, convert and validate values with Spring and Hibernate Validator, attach
@@ -97,7 +97,7 @@ Maven:
 ```xml
 <dependency>
   <groupId>io.github.ggomarighetti</groupId>
-  <artifactId>jpa-rsql-search-spring-boot-starter</artifactId>
+  <artifactId>rsql-jpa-search-spring-boot-starter</artifactId>
   <version>2.0.0</version>
 </dependency>
 ```
@@ -105,12 +105,31 @@ Maven:
 Gradle Kotlin DSL:
 
 ```kotlin
-implementation("io.github.ggomarighetti:jpa-rsql-search-spring-boot-starter:2.0.0")
+implementation("io.github.ggomarighetti:rsql-jpa-search-spring-boot-starter:2.0.0")
 ```
 
 The starter brings in the API, core compiler, JPA validation, and default
 Perplexhub backend. Applications that do not use Spring Boot can depend on the
-individual `jpa-rsql-search-*` modules instead.
+individual `rsql-jpa-search-*` modules instead.
+
+### Migrating from `jpa-rsql-search`
+
+The 2.x rename is intentionally consistent across every public identifier:
+
+| Before | After |
+| --- | --- |
+| Repository `jpa-rsql-search` | Repository `rsql-jpa-search` |
+| Maven artifacts `jpa-rsql-search-*` | Maven artifacts `rsql-jpa-search-*` |
+| Package `io.github.ggomarighetti.jparsqlsearch` | Package `io.github.ggomarighetti.rsqljpasearch` |
+| Properties `jpa.rsql.search.*` | Properties `rsql.jpa.search.*` |
+| `JpaRsqlSearchAutoConfiguration` | `RsqlJpaSearchAutoConfiguration` |
+| `JpaRsqlSearchRsqlAutoConfiguration` | `RsqlJpaSearchEngineAutoConfiguration` |
+| `JpaRsqlSearchProperties` | `RsqlJpaSearchProperties` |
+
+No compatibility aliases are published under the old coordinates, packages,
+or property prefix. Update dependencies, imports, configuration, reflection
+strings, native-image hints, and any explicit auto-configuration references
+together.
 
 ## Quick Example
 
@@ -408,7 +427,7 @@ SearchDefinition<Product> definition = SearchDefinition.builder()
 
 Your application can implement query matching with database functions,
 normalized columns, indexed expressions, or ordinary Criteria API predicates.
-`jpa-rsql-search` does not force a search strategy.
+`rsql-jpa-search` does not force a search strategy.
 
 ### Paging
 
@@ -503,7 +522,7 @@ Clients cannot remove or override those mandatory predicates.
 ## Configuration
 
 Spring Boot auto-configuration binds global limits from the
-`jpa.rsql.search` prefix and turns them into a `SearchPolicy`. Most
+`rsql.jpa.search` prefix and turns them into a `SearchPolicy`. Most
 applications only override the few limits that should be tighter for their data
 model or traffic profile:
 
@@ -542,14 +561,14 @@ of 100 with a 5000-row offset cap, unpaged requests are disabled, sort orders
 are capped at 3, to-many sorting is rejected, slice compilation is enabled, and
 definition paths are capped at 3 segments.
 
-When unpaged requests are enabled with `jpa.rsql.search.paging.allow-unpaged`
+When unpaged requests are enabled with `rsql.jpa.search.paging.allow-unpaged`
 or a per-definition limit override, the compiler still does not return an
 unbounded `Pageable`. It records the original unpaged input for protection
 checks, translates allowed sort aliases, and returns `PageRequest.of(0,
 defaultUnpagedSize, translatedSort)`. Use
-`jpa.rsql.search.paging.default-unpaged-size` to choose that bounded page size.
+`rsql.jpa.search.paging.default-unpaged-size` to choose that bounded page size.
 
-Setting `jpa.rsql.search.rsql.enabled=false` disables the built-in RSQL engine,
+Setting `rsql.jpa.search.rsql.enabled=false` disables the built-in RSQL engine,
 Perplexhub backend, and related RSQL infrastructure. In that mode the
 auto-configuration still creates `SearchDefinition.Factory`, but it creates
 `SearchCompiler` only when the application provides its own `SearchRsqlEngine`
@@ -660,7 +679,7 @@ The everyday API is intentionally small, but the RSQL layer remains extensible.
 | `RsqlParserFactory` | Replace parser construction |
 | `SearchDefinitionValidator` | Add runtime definition checks |
 | `ConversionService` / `Converter<String, T>` | Add application-specific value conversion |
-| `jpa.rsql.search.rsql.perplexhub.*` | Configure the bundled Perplexhub backend |
+| `rsql.jpa.search.rsql.perplexhub.*` | Configure the bundled Perplexhub backend |
 
 `SearchRsqlEngine.builder()` starts with the built-in operator dialect. For a
 strictly custom dialect, call `.withoutDefaultOperators()` before adding custom
@@ -821,7 +840,7 @@ beans to enforce additional runtime checks on completed definitions.
 ## Security
 
 Report suspected vulnerabilities privately through
-[GitHub Security Advisories](https://github.com/ggomarighetti/jpa-rsql-search/security/advisories/new);
+[GitHub Security Advisories](https://github.com/ggomarighetti/rsql-jpa-search/security/advisories/new);
 do not open a public issue. The supported-version policy, response targets, and
 disclosure process are documented in [SECURITY.md](SECURITY.md).
 
@@ -832,11 +851,11 @@ control mapping is in [OPENSSF.md](docs/OPENSSF.md).
 
 ## Project Status
 
-`jpa-rsql-search` is a modular 2.x library:
+`rsql-jpa-search` is a modular 2.x library:
 
 - current development line: `2.0.0`;
-- releases are published as `io.github.ggomarighetti:jpa-rsql-search-*`
-  modules, with `jpa-rsql-search-spring-boot-starter` as the usual entry point;
+- releases are published as `io.github.ggomarighetti:rsql-jpa-search-*`
+  modules, with `rsql-jpa-search-spring-boot-starter` as the usual entry point;
 - the public API follows Semantic Versioning;
 - Spring Boot configuration metadata is included in the generated JAR;
 - the implementation is covered by unit, property, Jazzer, and

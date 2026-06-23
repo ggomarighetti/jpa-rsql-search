@@ -28,7 +28,7 @@ With GitHub CLI:
 
 ```bash
 gh attestation verify artifact.jar \
-  --repo ggomarighetti/jpa-rsql-search
+  --repo ggomarighetti/rsql-jpa-search
 ```
 
 Verification must identify this repository and the release workflow. Also

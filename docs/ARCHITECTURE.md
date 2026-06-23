@@ -1,19 +1,19 @@
 # Architecture
 
-`jpa-rsql-search` turns explicitly allowed search input into bounded Spring Data
+`rsql-jpa-search` turns explicitly allowed search input into bounded Spring Data
 JPA specifications.
 
 ## Modules
 
-- `jpa-rsql-search-api`: public definitions, policies, paths, filtering,
+- `rsql-jpa-search-api`: public definitions, policies, paths, filtering,
   sorting, paging, and query contracts.
-- `jpa-rsql-search-rsql-spi`: backend-neutral RSQL AST, parser contracts,
+- `rsql-jpa-search-rsql-spi`: backend-neutral RSQL AST, parser contracts,
   operator metadata, and JPA predicate bindings.
-- `jpa-rsql-search-core`: guarded compilation, validation, engine construction,
+- `rsql-jpa-search-core`: guarded compilation, validation, engine construction,
   and protection limits.
-- `jpa-rsql-search-jpa-validation`: JPA metamodel validation.
-- `jpa-rsql-search-perplexhub`: Perplexhub parser/backend integration.
-- `jpa-rsql-search-spring-boot-starter`: auto-configuration and configuration
+- `rsql-jpa-search-jpa-validation`: JPA metamodel validation.
+- `rsql-jpa-search-perplexhub`: Perplexhub parser/backend integration.
+- `rsql-jpa-search-spring-boot-starter`: auto-configuration and configuration
   metadata.
 - `integration`: architecture, consumer, and PostgreSQL verification; it
   is never published.

@@ -24,7 +24,7 @@ are not tolerated.
 
 Report conduct concerns privately through:
 
-https://github.com/ggomarighetti/jpa-rsql-search/security/advisories/new
+https://github.com/ggomarighetti/rsql-jpa-search/security/advisories/new
 
 The maintainer may remove content, restrict participation, or ban contributors
 when necessary. Reports are handled confidentially to the extent practical.
