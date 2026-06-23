@@ -2,9 +2,9 @@
 
 ## Where to ask
 
-- Use [GitHub Discussions](https://github.com/ggomarighetti/jpa-rsql-search/discussions)
+- Use [GitHub Discussions](https://github.com/ggomarighetti/rsql-jpa-search/discussions)
   for usage questions and design discussion.
-- Use [GitHub Issues](https://github.com/ggomarighetti/jpa-rsql-search/issues)
+- Use [GitHub Issues](https://github.com/ggomarighetti/rsql-jpa-search/issues)
   for reproducible defects and feature requests.
 - Use private vulnerability reporting for security issues as described in
   [SECURITY.md](SECURITY.md).

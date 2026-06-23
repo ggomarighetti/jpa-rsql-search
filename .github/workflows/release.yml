@@ -6,7 +6,12 @@ on:
       - master
     paths:
       - pom.xml
-      - jpa-rsql-search-*/pom.xml
+      - api/pom.xml
+      - rsql-spi/pom.xml
+      - core/pom.xml
+      - jpa-validation/pom.xml
+      - perplexhub/pom.xml
+      - spring-boot-starter/pom.xml
       - integration/pom.xml
       - CHANGELOG.md
       - .github/release/jreleaser.yml
@@ -175,16 +180,16 @@ jobs:
 
           version="${{ steps.release.outputs.version }}"
           group_dir="target/staging-deploy/io/github/ggomarighetti"
-          parent_dir="${group_dir}/jpa-rsql-search-parent/${version}"
-          test -f "${parent_dir}/jpa-rsql-search-parent-${version}.pom"
+          parent_dir="${group_dir}/rsql-jpa-search-parent/${version}"
+          test -f "${parent_dir}/rsql-jpa-search-parent-${version}.pom"
 
           artifacts=(
-            jpa-rsql-search-api
-            jpa-rsql-search-rsql-spi
-            jpa-rsql-search-core
-            jpa-rsql-search-jpa-validation
-            jpa-rsql-search-perplexhub
-            jpa-rsql-search-spring-boot-starter
+            rsql-jpa-search-api
+            rsql-jpa-search-rsql-spi
+            rsql-jpa-search-core
+            rsql-jpa-search-jpa-validation
+            rsql-jpa-search-perplexhub
+            rsql-jpa-search-spring-boot-starter
           )
           for artifact in "${artifacts[@]}"; do
             artifact_dir="${group_dir}/${artifact}/${version}"
@@ -195,8 +200,22 @@ jobs:
             test -f "${artifact_dir}/${artifact}-${version}-cyclonedx.json"
           done
 
-          test ! -e "${group_dir}/jpa-rsql-search/${version}"
-          test ! -e "${group_dir}/jpa-rsql-search-integration-tests/${version}"
+          unpublished=(
+            jpa-rsql-search
+            jpa-rsql-search-parent
+            jpa-rsql-search-api
+            jpa-rsql-search-rsql-spi
+            jpa-rsql-search-core
+            jpa-rsql-search-jpa-validation
+            jpa-rsql-search-perplexhub
+            jpa-rsql-search-spring-boot-starter
+            jpa-rsql-search-integration-tests
+            rsql-jpa-search
+            rsql-jpa-search-integration-tests
+          )
+          for artifact in "${unpublished[@]}"; do
+            test ! -e "${group_dir}/${artifact}/${version}"
+          done
           find "${group_dir}" -type f | sort
 
       - name: Prepare release evidence
@@ -208,21 +227,21 @@ jobs:
 
           version="${{ steps.release.outputs.version }}"
           mkdir -p release-assets
-          cp target/bom.json "release-assets/jpa-rsql-search-${version}-aggregate-cyclonedx.json"
-          cp "target/jpa-rsql-search-parent-${version}.buildinfo" \
-            "release-assets/jpa-rsql-search-${version}.buildinfo"
+          cp target/bom.json "release-assets/rsql-jpa-search-${version}-aggregate-cyclonedx.json"
+          cp "target/rsql-jpa-search-parent-${version}.buildinfo" \
+            "release-assets/rsql-jpa-search-${version}.buildinfo"
 
           find target/staging-deploy -type f -print0 \
             | sort -z \
             | xargs -0 sha256sum \
-            > "release-assets/jpa-rsql-search-${version}-SHA256SUMS"
+            > "release-assets/rsql-jpa-search-${version}-SHA256SUMS"
 
       - name: Attest release provenance
         if: steps.release.outputs.release == 'true' && env.DRY_RUN != 'true'
         id: provenance
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         with:
-          subject-checksums: release-assets/jpa-rsql-search-${{ steps.release.outputs.version }}-SHA256SUMS
+          subject-checksums: release-assets/rsql-jpa-search-${{ steps.release.outputs.version }}-SHA256SUMS
           create-storage-record: false
 
       - name: Attest aggregate SBOM
@@ -230,8 +249,8 @@ jobs:
         id: sbom-attestation
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         with:
-          subject-checksums: release-assets/jpa-rsql-search-${{ steps.release.outputs.version }}-SHA256SUMS
-          sbom-path: release-assets/jpa-rsql-search-${{ steps.release.outputs.version }}-aggregate-cyclonedx.json
+          subject-checksums: release-assets/rsql-jpa-search-${{ steps.release.outputs.version }}-SHA256SUMS
+          sbom-path: release-assets/rsql-jpa-search-${{ steps.release.outputs.version }}-aggregate-cyclonedx.json
           create-storage-record: false
 
       - name: Collect Sigstore bundles
@@ -241,9 +260,9 @@ jobs:
           set -euo pipefail
           version="${{ steps.release.outputs.version }}"
           cp "${{ steps.provenance.outputs.bundle-path }}" \
-            "release-assets/jpa-rsql-search-${version}-provenance.sigstore.json"
+            "release-assets/rsql-jpa-search-${version}-provenance.sigstore.json"
           cp "${{ steps.sbom-attestation.outputs.bundle-path }}" \
-            "release-assets/jpa-rsql-search-${version}-sbom.sigstore.json"
+            "release-assets/rsql-jpa-search-${version}-sbom.sigstore.json"
 
       - name: Validate JReleaser configuration
         if: steps.release.outputs.release == 'true'
@@ -283,7 +302,7 @@ jobs:
           git config tag.gpgsign true
 
           tag="${{ steps.release.outputs.tag }}"
-          git tag -s "${tag}" -m "jpa-rsql-search ${tag}"
+          git tag -s "${tag}" -m "rsql-jpa-search ${tag}"
           git tag -v "${tag}"
           gh auth setup-git
           git push origin "${tag}"
@@ -325,7 +344,7 @@ jobs:
           set -euo pipefail
 
           tag="${{ steps.release.outputs.tag }}"
-          title="jpa-rsql-search modular v2 ${tag}"
+          title="rsql-jpa-search modular v2 ${tag}"
           if gh release view "${tag}" >/dev/null 2>&1; then
             gh release edit "${tag}" --title "${title}" --notes-file release-notes.md --latest
           else
@@ -377,7 +396,8 @@ jobs:
             echo "- CycloneDX SBOMs: attached to Maven artifacts"
             echo "- Provenance and SBOM attestations: signed with Sigstore"
             echo "- SHA-256 manifest and buildinfo: attached to the GitHub release"
-            echo "- Retired jpa-rsql-search artifact: not generated"
+            echo "- Retired jpa-rsql-search coordinates: not generated"
+            echo "- rsql-jpa-search integration and monolithic coordinates: not generated"
             echo "- Maven Central: published when dry run is false"
             echo "- GitHub Packages: published when dry run is false"
             echo "- Version branch: ${{ steps.release.outputs.version }} when dry run is false"

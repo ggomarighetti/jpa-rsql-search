@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.github.ggomarighetti</groupId>
-    <artifactId>jpa-rsql-search-parent</artifactId>
+    <artifactId>rsql-jpa-search-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>jpa-rsql-search-integration-tests</artifactId>
-  <name>jpa-rsql-search integration tests</name>
+  <artifactId>rsql-jpa-search-integration-tests</artifactId>
+  <name>rsql-jpa-search integration tests</name>
   <properties>
     <cyclonedx.skip>true</cyclonedx.skip>
     <maven.deploy.skip>true</maven.deploy.skip>
@@ -16,37 +16,37 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jpa-rsql-search-api</artifactId>
+      <artifactId>rsql-jpa-search-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jpa-rsql-search-rsql-spi</artifactId>
+      <artifactId>rsql-jpa-search-rsql-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jpa-rsql-search-core</artifactId>
+      <artifactId>rsql-jpa-search-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jpa-rsql-search-jpa-validation</artifactId>
+      <artifactId>rsql-jpa-search-jpa-validation</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jpa-rsql-search-perplexhub</artifactId>
+      <artifactId>rsql-jpa-search-perplexhub</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jpa-rsql-search-spring-boot-starter</artifactId>
+      <artifactId>rsql-jpa-search-spring-boot-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>jpa-rsql-search-core</artifactId>
+      <artifactId>rsql-jpa-search-core</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <classifier>tests</classifier>

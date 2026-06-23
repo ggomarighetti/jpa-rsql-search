@@ -1,41 +1,41 @@
 header:
   schema-version: 2.2.0
-  last-updated: '2026-06-22'
-  last-reviewed: '2026-06-22'
-  url: https://raw.githubusercontent.com/ggomarighetti/jpa-rsql-search/refs/heads/master/SECURITY-INSIGHTS.yml
+  last-updated: '2026-06-23'
+  last-reviewed: '2026-06-23'
+  url: https://raw.githubusercontent.com/ggomarighetti/rsql-jpa-search/refs/heads/master/SECURITY-INSIGHTS.yml
   comment: |
-    Single-repository Security Insights document for jpa-rsql-search.
+    Single-repository Security Insights document for rsql-jpa-search.
 
 project:
-  name: jpa-rsql-search
-  homepage: https://github.com/ggomarighetti/jpa-rsql-search
-  roadmap: https://github.com/ggomarighetti/jpa-rsql-search/issues
+  name: rsql-jpa-search
+  homepage: https://github.com/ggomarighetti/rsql-jpa-search
+  roadmap: https://github.com/ggomarighetti/rsql-jpa-search/issues
   administrators:
     - name: Guillermo Orue Marighetti
       affiliation: Independent
       social: https://github.com/ggomarighetti
       primary: true
   documentation:
-    quickstart-guide: https://github.com/ggomarighetti/jpa-rsql-search#quick-example
-    detailed-guide: https://github.com/ggomarighetti/jpa-rsql-search#api-reference
-    code-of-conduct: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/CODE_OF_CONDUCT.md
-    design: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/docs/ARCHITECTURE.md
-    release-process: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/docs/RELEASE_SECURITY.md
-    support-policy: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/SUPPORT.md
-    signature-verification: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/docs/RELEASE_SECURITY.md
+    quickstart-guide: https://github.com/ggomarighetti/rsql-jpa-search#quick-example
+    detailed-guide: https://github.com/ggomarighetti/rsql-jpa-search#api-reference
+    code-of-conduct: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/CODE_OF_CONDUCT.md
+    design: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/docs/ARCHITECTURE.md
+    release-process: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/docs/RELEASE_SECURITY.md
+    support-policy: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/SUPPORT.md
+    signature-verification: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/docs/RELEASE_SECURITY.md
   repositories:
-    - name: jpa-rsql-search
-      url: https://github.com/ggomarighetti/jpa-rsql-search
+    - name: rsql-jpa-search
+      url: https://github.com/ggomarighetti/rsql-jpa-search
       comment: |
         Authoritative source, build, security, and release repository.
   vulnerability-reporting:
     reports-accepted: true
     bug-bounty-available: false
     contact:
-      name: jpa-rsql-search maintainer
+      name: rsql-jpa-search maintainer
       social: https://github.com/ggomarighetti
       primary: true
-    policy: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/SECURITY.md
+    policy: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/SECURITY.md
     in-scope:
       - authorization bypass caused by search compilation
       - denial of service caused by unbounded input processing
@@ -47,7 +47,7 @@ project:
       - reports without a security impact
 
 repository:
-  url: https://github.com/ggomarighetti/jpa-rsql-search
+  url: https://github.com/ggomarighetti/rsql-jpa-search
   status: active
   bug-fixes-only: false
   accepts-change-request: true
@@ -59,38 +59,38 @@ repository:
       social: https://github.com/ggomarighetti
       primary: true
   documentation:
-    contributing-guide: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/CONTRIBUTING.md
-    review-policy: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/CONTRIBUTING.md#review
-    security-policy: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/SECURITY.md
-    governance: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/GOVERNANCE.md
-    dependency-management-policy: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/docs/DEPENDENCY_POLICY.md
+    contributing-guide: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/CONTRIBUTING.md
+    review-policy: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/CONTRIBUTING.md#review
+    security-policy: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/SECURITY.md
+    governance: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/GOVERNANCE.md
+    dependency-management-policy: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/docs/DEPENDENCY_POLICY.md
   license:
-    url: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/LICENSE
+    url: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/LICENSE
     expression: MIT
   release:
-    changelog: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/CHANGELOG.md
+    changelog: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/CHANGELOG.md
     automated-pipeline: true
     attestations:
       - name: GitHub artifact provenance
         predicate-uri: https://slsa.dev/provenance/v1
-        location: https://github.com/ggomarighetti/jpa-rsql-search/attestations
+        location: https://github.com/ggomarighetti/rsql-jpa-search/attestations
         comment: Sigstore bundles are also attached to each GitHub release.
       - name: CycloneDX SBOM
         predicate-uri: https://cyclonedx.org/bom
-        location: https://github.com/ggomarighetti/jpa-rsql-search/releases
+        location: https://github.com/ggomarighetti/rsql-jpa-search/releases
         comment: Each release publishes module and aggregate CycloneDX JSON SBOMs.
     distribution-points:
       - uri: https://central.sonatype.com/namespace/io.github.ggomarighetti
         comment: Maven Central
-      - uri: https://github.com/ggomarighetti/jpa-rsql-search/releases
+      - uri: https://github.com/ggomarighetti/rsql-jpa-search/releases
         comment: GitHub releases and verification evidence
     license:
-      url: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/LICENSE
+      url: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/LICENSE
       expression: MIT
   security:
     assessments:
       self:
-        evidence: https://github.com/ggomarighetti/jpa-rsql-search/blob/master/docs/OPENSSF.md
+        evidence: https://github.com/ggomarighetti/rsql-jpa-search/blob/master/docs/OPENSSF.md
         date: '2026-06-21'
         comment: |
           Self-assessed against OSPS Baseline 2026.02.19.

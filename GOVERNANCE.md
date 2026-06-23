@@ -1,6 +1,6 @@
 # Governance
 
-`jpa-rsql-search` is currently a maintainer-led project.
+`rsql-jpa-search` is currently a maintainer-led project.
 
 ## Roles
 

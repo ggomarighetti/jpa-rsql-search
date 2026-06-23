@@ -3,14 +3,30 @@
 All notable changes to this project are documented here. Releases follow
 Semantic Versioning and release notes are maintained from Conventional Commits.
 
-## [1.0.1](https://github.com/ggomarighetti/jpa-rsql-search/releases/tag/v1.0.1) (2026-06-18)
+## [Unreleased]
+
+### Breaking Changes
+
+- Rename the project and repository from `jpa-rsql-search` to
+  `rsql-jpa-search`.
+- Rename published Maven modules from `jpa-rsql-search-*` to
+  `rsql-jpa-search-*`.
+- Move the Java namespace from
+  `io.github.ggomarighetti.jparsqlsearch` to
+  `io.github.ggomarighetti.rsqljpasearch`.
+- Rename the Spring Boot property prefix from `jpa.rsql.search` to
+  `rsql.jpa.search`.
+- Rename Spring Boot auto-configuration types to use the `RsqlJpaSearch`
+  prefix.
+
+## [1.0.1](https://github.com/ggomarighetti/rsql-jpa-search/releases/tag/v1.0.1) (2026-06-18)
 
 ### Release Metadata
 
 - Correct the published developer name to Guillermo Orue Marighetti.
 - Publish release artifacts to GitHub Packages in addition to Maven Central.
 
-## [1.0.0](https://github.com/ggomarighetti/jpa-rsql-search/releases/tag/v1.0.0) (2026-06-17)
+## [1.0.0](https://github.com/ggomarighetti/rsql-jpa-search/releases/tag/v1.0.0) (2026-06-17)
 
 ### Features
 

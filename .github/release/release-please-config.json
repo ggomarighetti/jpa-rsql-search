@@ -2,8 +2,8 @@
   "packages": {
     ".": {
       "release-type": "maven",
-      "package-name": "jpa-rsql-search-parent",
-      "component": "jpa-rsql-search",
+      "package-name": "rsql-jpa-search-parent",
+      "component": "rsql-jpa-search",
       "changelog-path": "CHANGELOG.md",
       "include-component-in-tag": false,
       "include-v-in-tag": true,

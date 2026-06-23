@@ -5,22 +5,22 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.ggomarighetti</groupId>
-  <artifactId>jpa-rsql-search-parent</artifactId>
+  <artifactId>rsql-jpa-search-parent</artifactId>
   <version>2.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>jpa-rsql-search parent</name>
+  <name>rsql-jpa-search parent</name>
   <description>Modular RSQL search infrastructure for Spring Data JPA.</description>
-  <url>https://github.com/ggomarighetti/jpa-rsql-search</url>
+  <url>https://github.com/ggomarighetti/rsql-jpa-search</url>
   <inceptionYear>2026</inceptionYear>
 
   <modules>
-    <module>jpa-rsql-search-api</module>
-    <module>jpa-rsql-search-rsql-spi</module>
-    <module>jpa-rsql-search-core</module>
-    <module>jpa-rsql-search-jpa-validation</module>
-    <module>jpa-rsql-search-perplexhub</module>
-    <module>jpa-rsql-search-spring-boot-starter</module>
+    <module>api</module>
+    <module>rsql-spi</module>
+    <module>core</module>
+    <module>jpa-validation</module>
+    <module>perplexhub</module>
+    <module>spring-boot-starter</module>
     <module>integration</module>
   </modules>
 
@@ -45,9 +45,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/ggomarighetti/jpa-rsql-search.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/ggomarighetti/jpa-rsql-search.git</developerConnection>
-    <url>https://github.com/ggomarighetti/jpa-rsql-search</url>
+    <connection>scm:git:https://github.com/ggomarighetti/rsql-jpa-search.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/ggomarighetti/rsql-jpa-search.git</developerConnection>
+    <url>https://github.com/ggomarighetti/rsql-jpa-search</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -70,8 +70,9 @@
     <cyclonedx.maven.plugin.version>2.9.2</cyclonedx.maven.plugin.version>
     <maven.artifact.plugin.version>3.6.1</maven.artifact.plugin.version>
     <jazzer.version>0.30.0</jazzer.version>
-    <sonar.projectKey>ggomarighetti_jpa-rsql-search</sonar.projectKey>
-    <sonar.projectName>jpa-rsql-search</sonar.projectName>
+    <!-- Stable external key updated in SonarQube Cloud to preserve analysis history after the repository rename. -->
+    <sonar.projectKey>ggomarighetti_rsql-jpa-search</sonar.projectKey>
+    <sonar.projectName>rsql-jpa-search</sonar.projectName>
     <sonar.organization>ggomarighetti</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/integration/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
@@ -96,27 +97,27 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>jpa-rsql-search-api</artifactId>
+        <artifactId>rsql-jpa-search-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>jpa-rsql-search-rsql-spi</artifactId>
+        <artifactId>rsql-jpa-search-rsql-spi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>jpa-rsql-search-core</artifactId>
+        <artifactId>rsql-jpa-search-core</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>jpa-rsql-search-jpa-validation</artifactId>
+        <artifactId>rsql-jpa-search-jpa-validation</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>jpa-rsql-search-perplexhub</artifactId>
+        <artifactId>rsql-jpa-search-perplexhub</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

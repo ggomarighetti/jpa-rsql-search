@@ -15,7 +15,7 @@ Do not open a public issue for a suspected vulnerability.
 
 Use GitHub's private vulnerability reporting form:
 
-https://github.com/ggomarighetti/jpa-rsql-search/security/advisories/new
+https://github.com/ggomarighetti/rsql-jpa-search/security/advisories/new
 
 Include, when possible:
 
