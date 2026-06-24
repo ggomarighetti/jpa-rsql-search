@@ -9,6 +9,8 @@
   </parent>
   <artifactId>rsql-jpa-search-jpa-validation</artifactId>
   <name>rsql-jpa-search JPA validation</name>
+  <description>JPA metamodel validation support for rsql-jpa-search criteria and paths.</description>
+  <url>https://github.com/ggomarighetti/rsql-jpa-search/tree/master/jpa-validation</url>
   <properties>
     <jacoco.line.minimum>0.94</jacoco.line.minimum>
     <jacoco.branch.minimum>1.00</jacoco.branch.minimum>

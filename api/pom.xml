@@ -9,6 +9,8 @@
   </parent>
   <artifactId>rsql-jpa-search-api</artifactId>
   <name>rsql-jpa-search API</name>
+  <description>Public API contracts and Spring Data JPA search abstractions for rsql-jpa-search.</description>
+  <url>https://github.com/ggomarighetti/rsql-jpa-search/tree/master/api</url>
   <properties>
     <jacoco.line.minimum>0.95</jacoco.line.minimum>
     <jacoco.branch.minimum>0.85</jacoco.branch.minimum>

@@ -9,6 +9,8 @@
   </parent>
   <artifactId>rsql-jpa-search-spring-boot-starter</artifactId>
   <name>rsql-jpa-search Spring Boot starter</name>
+  <description>Spring Boot auto-configuration starter for rsql-jpa-search.</description>
+  <url>https://github.com/ggomarighetti/rsql-jpa-search/tree/master/spring-boot-starter</url>
   <properties>
     <jacoco.line.minimum>0.99</jacoco.line.minimum>
     <jacoco.branch.minimum>1.00</jacoco.branch.minimum>
