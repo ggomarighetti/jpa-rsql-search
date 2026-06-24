@@ -104,10 +104,12 @@ class SearchSpecificationSortingTest {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, handler);
     }
 
+    @SuppressWarnings("unchecked")
     private static Root<TestTypes.Product> namedRoot(String name, RecordingCriteriaBuilder builder) {
         return proxy(Root.class, pathHandler(name, builder));
     }
 
+    @SuppressWarnings("unchecked")
     private static InvocationHandler pathHandler(String name, RecordingCriteriaBuilder builder) {
         return (proxy, method, args) -> switch (method.getName()) {
             case "get" -> {
@@ -123,6 +125,7 @@ class SearchSpecificationSortingTest {
         };
     }
 
+    @SuppressWarnings("unchecked")
     private static Expression<?> expression(String name) {
         return proxy(Expression.class, (proxy, method, args) -> switch (method.getName()) {
             case "as" -> expression(name);
@@ -155,6 +158,7 @@ class SearchSpecificationSortingTest {
             this.resultType = resultType;
         }
 
+        @SuppressWarnings("unchecked")
         private CriteriaQuery<T> proxy() {
             return SearchSpecificationSortingTest.proxy(CriteriaQuery.class, (proxy, method, args) -> {
                 if ("getResultType".equals(method.getName())) {
@@ -177,6 +181,7 @@ class SearchSpecificationSortingTest {
         private final List<Class<?>> treatedTypes = new ArrayList<>();
         private final List<String> orderCalls = new ArrayList<>();
 
+        @SuppressWarnings("unchecked")
         private CriteriaBuilder proxy() {
             return SearchSpecificationSortingTest.proxy(CriteriaBuilder.class, (proxy, method, args) -> switch (method.getName()) {
                 case "treat" -> {
@@ -198,6 +203,7 @@ class SearchSpecificationSortingTest {
             });
         }
 
+        @SuppressWarnings("unchecked")
         private CriteriaBuilder.Case<Integer> selectCase() {
             return SearchSpecificationSortingTest.proxy(
                     CriteriaBuilder.Case.class,

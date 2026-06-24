@@ -2,6 +2,7 @@ package io.github.ggomarighetti.rsqljpasearch.rsql;
 
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
+import cz.jirutka.rsql.parser.ast.Arity;
 import cz.jirutka.rsql.parser.ast.Node;
 import cz.jirutka.rsql.parser.ast.RSQLVisitor;
 import io.github.ggomarighetti.rsqljpasearch.rsql.metadata.RsqlOperatorRegistry;
@@ -15,10 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class RsqlAstTest {
     @Test
-    @SuppressWarnings("deprecation")
     void rejectsComparisonNodesWithUnregisteredOperators() {
         ComparisonNode node = new ComparisonNode(
-                new ComparisonOperator("=missing=", true),
+                new ComparisonOperator("=missing=", Arity.nary(1)),
                 "email",
                 List.of("person@example.com"));
 

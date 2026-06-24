@@ -1,6 +1,7 @@
 package io.github.ggomarighetti.rsqljpasearch.compile;
 
 import io.github.ggomarighetti.rsqljpasearch.unit.TestRsqlEngines;
+import cz.jirutka.rsql.parser.ast.Arity;
 import cz.jirutka.rsql.parser.ast.ComparisonNode;
 import cz.jirutka.rsql.parser.ast.ComparisonOperator;
 import cz.jirutka.rsql.parser.ast.Node;
@@ -443,7 +444,6 @@ class RsqlSearchGuardTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     void rejectsOperatorWithInvalidArity() throws ReflectiveOperationException {
         RsqlOperator pair = RsqlOperator.of("PAIR");
         RsqlOperatorDescriptor descriptor = RsqlOperatorDescriptor.builder(pair)
@@ -458,7 +458,7 @@ class RsqlSearchGuardTest {
         RsqlRulesValidator validator = validator(definition, new RsqlOperatorRegistry(List.of(descriptor)));
 
         List<RsqlValidationError> errors = validator.validate(ast(new ComparisonNode(
-                new ComparisonOperator("=pair=", true),
+                new ComparisonOperator("=pair=", Arity.nary(1)),
                 "email",
                 List.of("person@example.com"))));
 
@@ -735,7 +735,7 @@ class RsqlSearchGuardTest {
                 new SearchProtectionContext(policy, SearchProtectionContext.Mode.PAGE),
                 new RsqlOperatorRegistry(List.of(descriptor)));
         RsqlAst comparison = astUnchecked(new ComparisonNode(
-                new ComparisonOperator("=pair=", true),
+                new ComparisonOperator("=pair=", Arity.nary(1)),
                 "email",
                 List.of("person@example.com")));
 
