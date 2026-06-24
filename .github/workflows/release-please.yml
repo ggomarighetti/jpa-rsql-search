@@ -15,9 +15,7 @@ jobs:
     name: Release Please
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+      contents: read
     steps:
       - name: Check bootstrap release tag
         id: bootstrap
@@ -32,11 +30,22 @@ jobs:
             echo "::notice::v1.0.0 does not exist yet; release-please is disabled until the bootstrap release is published."
           fi
 
+      - name: Validate release-please token
+        if: steps.bootstrap.outputs.ready == 'true'
+        shell: bash
+        env:
+          RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: |
+          if [[ -z "${RELEASE_PLEASE_TOKEN}" ]]; then
+            echo "::error::Configure RELEASE_PLEASE_TOKEN as a fine-grained PAT or GitHub App token with contents, issues, and pull requests write access."
+            exit 1
+          fi
+
       - name: Release Please
         if: steps.bootstrap.outputs.ready == 'true'
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           target-branch: master
           config-file: .github/release/release-please-config.json
           manifest-file: .github/release/release-please-manifest.json
