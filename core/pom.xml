@@ -9,6 +9,8 @@
   </parent>
   <artifactId>rsql-jpa-search-core</artifactId>
   <name>rsql-jpa-search core</name>
+  <description>Core RSQL-to-Spring Data JPA query implementation for rsql-jpa-search.</description>
+  <url>https://github.com/ggomarighetti/rsql-jpa-search/tree/master/core</url>
   <properties>
     <jacoco.line.minimum>0.97</jacoco.line.minimum>
     <jacoco.branch.minimum>0.98</jacoco.branch.minimum>

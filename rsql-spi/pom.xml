@@ -9,6 +9,8 @@
   </parent>
   <artifactId>rsql-jpa-search-rsql-spi</artifactId>
   <name>rsql-jpa-search RSQL SPI</name>
+  <description>RSQL parser integration SPI for converting RSQL expressions into rsql-jpa-search criteria.</description>
+  <url>https://github.com/ggomarighetti/rsql-jpa-search/tree/master/rsql-spi</url>
   <properties>
     <jacoco.line.minimum>0.89</jacoco.line.minimum>
     <jacoco.branch.minimum>1.00</jacoco.branch.minimum>

@@ -9,6 +9,8 @@
   </parent>
   <artifactId>rsql-jpa-search-perplexhub</artifactId>
   <name>rsql-jpa-search Perplexhub adapter</name>
+  <description>Adapter module that bridges rsql-jpa-search with the Perplexhub RSQL JPA model.</description>
+  <url>https://github.com/ggomarighetti/rsql-jpa-search/tree/master/perplexhub</url>
   <properties>
     <jacoco.line.minimum>0.62</jacoco.line.minimum>
     <jacoco.branch.minimum>0.66</jacoco.branch.minimum>
