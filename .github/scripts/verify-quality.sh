@@ -28,7 +28,7 @@ if [[ "${skip_release}" != "true" ]]; then
   ./mvnw -B -ntp -nsu -Pcoverage,release,sbom,reproducible verify
 fi
 
-./mvnw -B -ntp -nsu -pl integration -am -Pconsumer-tests verify
+./mvnw -B -ntp -nsu -pl integration -am -Pconsumer-tests install
 ./mvnw -B -ntp -nsu -DskipTests org.apache.maven.plugins:maven-dependency-plugin:3.9.0:analyze
 
 if [[ "${skip_docker}" != "true" ]]; then

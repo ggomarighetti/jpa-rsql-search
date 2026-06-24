@@ -15,7 +15,7 @@ try {
         & .\mvnw.cmd -B -ntp -nsu "-Pcoverage,release,sbom,reproducible" verify
     }
 
-    & .\mvnw.cmd -B -ntp -nsu -pl integration -am "-Pconsumer-tests" verify
+    & .\mvnw.cmd -B -ntp -nsu -pl integration -am "-Pconsumer-tests" install
     & .\mvnw.cmd -B -ntp -nsu -DskipTests org.apache.maven.plugins:maven-dependency-plugin:3.9.0:analyze
 
     if (-not $SkipDockerChecks) {

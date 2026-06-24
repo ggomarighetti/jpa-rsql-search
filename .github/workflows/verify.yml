@@ -173,7 +173,7 @@ jobs:
           cache: maven
 
       - name: Verify consumer projects
-        run: ./mvnw -B -ntp -nsu -pl integration -am -Pconsumer-tests verify
+        run: ./mvnw -B -ntp -nsu -pl integration -am -Pconsumer-tests install
 
       - name: Upload consumer compatibility artifacts
         if: ${{ always() }}
