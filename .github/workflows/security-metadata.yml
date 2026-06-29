@@ -26,20 +26,19 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up CUE
-        uses: cue-lang/setup-cue@a93fa358375740cd8b0078f76355512b9208acb1 # v1.0.1
-
       - name: Validate document
         shell: bash
         run: |
           set -euo pipefail
-          schema="${RUNNER_TEMP}/security-insights-schema.cue"
+          schema="target/security-insights-schema.cue"
+          mkdir -p target
           curl --fail --silent --show-error --location \
             --proto '=https' \
             --proto-redir '=https' \
             "https://raw.githubusercontent.com/ossf/security-insights/701ac2a02ef17fc8b316f5df685428773c51372a/spec/schema.cue" \
             --output "${schema}"
-          cue vet -d '#SecurityInsights' "${schema}" SECURITY-INSIGHTS.yml
+          docker compose --file .github/tools/compose.yml run --rm \
+            cue vet -d '#SecurityInsights' "${schema}" SECURITY-INSIGHTS.yml
 
   actionlint:
     name: Validate GitHub Actions
@@ -57,8 +56,4 @@ jobs:
       - name: Run actionlint
         shell: bash
         run: |
-          docker run --rm \
-            --volume "${PWD}:/repo" \
-            --workdir /repo \
-            rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 \
-            -color
+          docker compose --file .github/tools/compose.yml run --rm actionlint -color

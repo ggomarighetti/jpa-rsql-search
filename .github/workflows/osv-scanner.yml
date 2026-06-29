@@ -61,6 +61,11 @@ jobs:
       security-events: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
       - name: Download aggregate SBOM
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
@@ -70,13 +75,12 @@ jobs:
       - name: Scan SBOM
         shell: bash
         run: |
-          docker run --rm \
-            --volume "${PWD}:/src" \
-            ghcr.io/google/osv-scanner@sha256:5116601dedc01c1c580eb92371883ec052fc4c13c3fbc109d621a63ac416d475 \
+          docker compose --file .github/tools/compose.yml run --rm \
+            osv-scanner \
             scan \
-            -L /src/bom.json \
+            -L /workspace/bom.json \
             --format sarif \
-            --output-file /src/osv-results.sarif
+            --output-file /workspace/osv-results.sarif
 
       - name: Upload OSV results artifact
         if: ${{ always() }}

@@ -45,11 +45,10 @@ jobs:
 
       - name: Build fuzzers
         env:
-          BUILD_FUZZERS_IMAGE: gcr.io/oss-fuzz-base/clusterfuzzlite-build-fuzzers@sha256:79a88907cce4e93d48b5c5ca97a833686636d07d91b7d82abf9e39ebd96b0b42
           CFL_CONTAINER: cflite-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.sanitizer }}
           SANITIZER: ${{ matrix.sanitizer }}
         run: |
-          docker run --rm --name "$CFL_CONTAINER" \
+          docker compose --file .github/tools/compose.yml run --rm --name "$CFL_CONTAINER" \
             --volume /var/run/docker.sock:/var/run/docker.sock \
             --volume "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             --workdir "${GITHUB_WORKSPACE}" \
@@ -62,17 +61,16 @@ jobs:
             --env "KEEP_UNAFFECTED_FUZZ_TARGETS=true" \
             --env "LOW_DISK_SPACE=true" \
             --env "NO_CLUSTERFUZZ_DEPLOYMENT=true" \
-            "$BUILD_FUZZERS_IMAGE"
+            clusterfuzzlite-build-fuzzers
 
       - name: Run fuzzers
         env:
           CFL_CONTAINER: cflite-run-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.sanitizer }}
           FUZZ_SECONDS: ${{ github.event_name == 'schedule' && '300' || '60' }}
           MODE: ${{ github.event_name == 'pull_request' && 'code-change' || 'batch' }}
-          RUN_FUZZERS_IMAGE: gcr.io/oss-fuzz-base/clusterfuzzlite-run-fuzzers@sha256:0c3180277e25dd8637a55270f666fbdac038be38fa736080c95ade75a84e8637
           SANITIZER: ${{ matrix.sanitizer }}
         run: |
-          docker run --rm --name "$CFL_CONTAINER" \
+          docker compose --file .github/tools/compose.yml run --rm --name "$CFL_CONTAINER" \
             --volume /var/run/docker.sock:/var/run/docker.sock \
             --volume "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             --workdir "${GITHUB_WORKSPACE}" \
@@ -87,4 +85,4 @@ jobs:
             --env "PARALLEL_FUZZING=true" \
             --env "LOW_DISK_SPACE=true" \
             --env "NO_CLUSTERFUZZ_DEPLOYMENT=true" \
-            "$RUN_FUZZERS_IMAGE"
+            clusterfuzzlite-run-fuzzers

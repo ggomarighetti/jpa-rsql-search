@@ -1,0 +1,24 @@
+services:
+  cue:
+    image: cuelang/cue:0.16.1@sha256:02a15644a421cbbb91a6137d980b061b1f93ccf3504c8efcd091ec8060e6a406
+    working_dir: /workspace
+    volumes:
+      - ../..:/workspace
+
+  actionlint:
+    image: rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+    working_dir: /workspace
+    volumes:
+      - ../..:/workspace
+
+  osv-scanner:
+    image: ghcr.io/google/osv-scanner:v2.4.0@sha256:5116601dedc01c1c580eb92371883ec052fc4c13c3fbc109d621a63ac416d475
+    working_dir: /workspace
+    volumes:
+      - ../..:/workspace
+
+  clusterfuzzlite-build-fuzzers:
+    image: gcr.io/oss-fuzz-base/clusterfuzzlite-build-fuzzers:v1@sha256:79a88907cce4e93d48b5c5ca97a833686636d07d91b7d82abf9e39ebd96b0b42
+
+  clusterfuzzlite-run-fuzzers:
+    image: gcr.io/oss-fuzz-base/clusterfuzzlite-run-fuzzers:v1@sha256:0c3180277e25dd8637a55270f666fbdac038be38fa736080c95ade75a84e8637
